@@ -1,0 +1,303 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+.kep-wrap{font-family:Inter,Arial,sans-serif;color:#e5e7eb;background:linear-gradient(135deg,#0b1220,#111827);border:1px solid #263244;border-radius:20px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.kep-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px;flex-wrap:wrap}.kep-head h2{margin:0;font-size:24px;color:#fff}.kep-head p{margin:5px 0 0;color:#94a3b8;font-size:12px}.kep-card{background:rgba(15,23,42,.78);border:1px solid #263244;border-radius:16px;padding:18px}.kep-btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;color:#fff;background:#2563eb;font-weight:700}.kep-btn.alt{background:#475569}.kep-btn.green{background:#059669}.kep-btn.orange{background:#d97706}.kep-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:end}.kep-field{display:flex;flex-direction:column;gap:6px;min-width:160px}.kep-field label{font-size:10px;text-transform:uppercase;font-weight:800;color:#94a3b8}.kep-field input,.kep-field select{width:100%;box-sizing:border-box;background:#0b1220;border:1px solid #334155;color:#fff;border-radius:9px;padding:10px;font-size:12px;outline:none}.kep-table-wrap{overflow:auto;max-height:560px;border:1px solid #263244;border-radius:12px}.kep-table{width:100%;border-collapse:collapse;min-width:2200px}.kep-table th,.kep-table td{padding:8px 9px;border-bottom:1px solid #263244;font-size:10px;text-align:center;white-space:nowrap}.kep-table th{background:#0b1220;color:#cbd5e1;position:sticky;top:0;z-index:2}.kep-table td{color:#dbe4ef}.kep-table td:nth-child(2){text-align:left;font-weight:700}.kep-msg{margin-top:10px;font-size:12px}.kep-ok{color:#34d399}.kep-err{color:#f87171}.kep-note{font-size:10px;color:#64748b;line-height:1.5}.kep-statline{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}.kep-pill{padding:5px 9px;border-radius:999px;background:#0b1220;border:1px solid #334155;color:#cbd5e1;font-size:10px}
+@media(max-width:850px){.kep-wrap{padding:15px}.kep-field{min-width:130px;flex:1}.kep-toolbar{align-items:stretch}}
+
+/* CSS Laporan */
+.rb-report{margin-top:18px;background:rgba(15,23,42,.78);border:1px solid #263244;border-radius:16px;padding:18px}
+.rb-report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.rb-report-head h3{margin:0;color:#fff;font-size:15px}
+.rb-report-head p{margin:4px 0 0;color:#94a3b8;font-size:11px}
+.rb-report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.rb-report-field{display:flex;flex-direction:column;gap:5px}
+.rb-report-field label{font-size:10px;color:#94a3b8;font-weight:800;text-transform:uppercase}
+.rb-report-field input,.rb-report-field select{width:100%;box-sizing:border-box;background:#0b1220;color:#fff;border:1px solid #334155;border-radius:9px;padding:9px;font-size:11px;outline:none}
+.rb-report-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.rb-report-btn{flex:1;border:0;border-radius:10px;padding:11px 12px;color:#fff;font-weight:800;font-size:11px;cursor:pointer;text-align:center}
+.rb-report-btn.green{background:#059669}
+.rb-report-btn.purple{background:#7c3aed}
+.rb-report-preview{margin-top:14px;border:1px solid #263244;border-radius:12px;overflow:auto;display:none}
+.rb-report-preview .rtitle{padding:13px;background:#0b1220;border-bottom:1px solid #263244}
+.rb-report-preview .rtitle b{display:block;color:#fff;font-size:13px}
+.rb-report-preview .rtitle span{font-size:10px;color:#94a3b8}
+.rb-report-table{width:100%;border-collapse:collapse;min-width:900px}
+.rb-report-table th,.rb-report-table td{padding:8px 9px;border-bottom:1px solid #263244;font-size:10px;text-align:left;white-space:nowrap}
+.rb-report-table th{background:#020617;color:#cbd5e1}
+.rb-report-table td{color:#dbe4ef}
+.rb-report-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:12px}
+.rb-report-summary .sbox{background:#0b1220;border:1px solid #263244;border-radius:10px;padding:9px}
+.rb-report-summary b{display:block;font-size:17px;color:#fff}
+.rb-report-summary span{font-size:9px;color:#94a3b8}
+.rb-report-note{padding:0 12px 12px;font-size:10px;color:#64748b}
+@media(max-width:850px){.rb-report-grid{grid-template-columns:1fr}}
+</style>
+
+<div class="kep-wrap">
+  <div class="kep-head">
+    <div><h2>📅 Rekap Kehadiran Bulanan</h2><p>Format mengikuti template rekap bulanan: cut-off tanggal 21 bulan sebelumnya sampai tanggal 20 bulan berjalan.</p></div>
+    <button class="kep-btn alt" type="button" onclick="rbLoad()">↻ Refresh</button>
+  </div>
+
+  <div class="rb-report" id="rb-report-box">
+    <div class="rb-report-head">
+      <div><h3>📊 Laporan & Cetak PDF Bulanan</h3><p>Laporan detail untuk Pelaksana dan ringkasan eksekutif untuk Pimpinan.</p></div>
+    </div>
+    <div class="rb-report-grid">
+      <div class="rb-report-field"><label>Bulan Laporan</label><select id="rb-report-month"></select></div>
+      <div class="rb-report-field"><label>Tahun</label><select id="rb-report-year"></select></div>
+      <div class="rb-report-field"><label>Pegawai</label><select id="rb-report-pegawai"><option value="">Semua Pegawai</option></select></div>
+    </div>
+    <div class="rb-report-actions">
+      <!-- PERBAIKAN: Tombol dibiarkan terlihat dulu -->
+      <button id="btn-rb-pel" class="rb-report-btn green" type="button" onclick="rbReportShow('pelaksana')">📄 Cetak PDF Pelaksana</button>
+      <button id="btn-rb-pim" class="rb-report-btn purple" type="button" onclick="rbReportShow('pimpinan')">📊 Cetak PDF Pimpinan</button>
+    </div>
+    <div id="rb-report-preview" class="rb-report-preview"></div>
+  </div>
+
+  <div class="kep-card" style="margin-bottom:16px">
+    <div class="kep-toolbar">
+      <div class="kep-field"><label>Bulan / Periode</label><select id="rb-bulan"></select></div>
+      <div class="kep-field"><label>Tahun</label><select id="rb-tahun"></select></div>
+      <button class="kep-btn green" type="button" onclick="rbAuto()">⚡ Rekap Otomatis dari Harian</button>
+      <div class="kep-field" style="margin-left:auto;min-width:230px"><label>Cari Nama</label><input id="rb-search" placeholder="Cari nama pegawai..." oninput="rbFilter()"></div>
+    </div>
+    <div id="rb-msg" class="kep-msg"></div>
+    <div class="kep-statline"><span class="kep-pill">Header: 27 kolom</span><span class="kep-pill">Dari/Sampai: MM-DD-YYYY</span><span class="kep-pill">Sumber: ABSENSI_HARIAN</span></div>
+  </div>
+
+  <div class="kep-card">
+    <div class="kep-table-wrap">
+      <table class="kep-table">
+        <thead><tr id="rb-head"></tr></thead>
+        <tbody id="rb-body"><tr><td>Memuat...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// =========================================================================
+// PENGATURAN GAMBAR LOGO KEPRI (BASE64)
+// Masukkan kode base64 logo provinsi Kepri di dalam tanda kutip berikut:
+// =========================================================================
+window.LOGO_KEPRI = ""; 
+
+(function(){
+  const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const headers=['No','Nama','Periode','Dari','Sampai','Hadir','Tidak Hadir','TLT+PSW','BTA','CAP','CB','CH','CTLN','CM','CS','CT','D','GS','H','IDT','IPA','MD','P1','S','TA','TB','TMK'];
+  let data=[]; let dailyData=[]; 
+  const $=id=>document.getElementById(id);
+  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+  function msg(t,ok=true){$('rb-msg').innerHTML='<span class="'+(ok?'kep-ok':'kep-err')+'">'+esc(t)+'</span>';}
+
+  $('rb-head').innerHTML=headers.map(h=>'<th>'+esc(h)+'</th>').join('');
+  let mOptions = months.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
+  $('rb-bulan').innerHTML = mOptions; $('rb-report-month').innerHTML = mOptions;
+  
+  const y=new Date().getFullYear(); let yOptions='';
+  for(let i=y-2;i<=y+2;i++) yOptions+=`<option>${i}</option>`;
+  $('rb-tahun').innerHTML = yOptions; $('rb-report-year').innerHTML = yOptions;
+  
+  $('rb-bulan').value=new Date().getMonth()+1; $('rb-report-month').value=new Date().getMonth()+1;
+  $('rb-tahun').value=y; $('rb-report-year').value=y;
+
+  window.rbLoad=function(){
+    google.script.run.withSuccessHandler(function(d){ data=d||[]; rbRender(); }).getAbsensiData();
+    google.script.run.withSuccessHandler(function(r){
+      dailyData = (r||[]).slice(1).map(x=>{
+        let t=x[3]||'', tipe=String(x[5]||'').trim()||'Kerja';
+        return { nama:String(x[1]||'').trim(), nip:String(x[2]||'-').trim(), tgl:t, hari:String(x[4]||'-').trim(), tipe:tipe, masuk:String(x[6]||'-').trim(), pulang:String(x[7]||'-').trim(), tltpsw:String(x[12]??0), alasan:String(x[13]||'-').trim() };
+      });
+      populate();
+    }).getTableDataKinerjaHarian();
+  };
+
+  function rbRender(){
+    const body=$('rb-body');
+    if(!data || data.length<=1){ body.innerHTML='<tr><td colspan="27" style="text-align:center;padding:18px">Belum ada data. Silakan Tarik/Sinkronisasi dari halaman Harian.</td></tr>'; return; }
+    const q=($('rb-search').value||'').toLowerCase().trim();
+    const periode=months[Number($('rb-bulan').value)-1];
+    let rows='';
+    for(let i=1;i<data.length;i++){
+      const r=data[i]||[];
+      const nama=String(r[1]||'');
+      if(q && !nama.toLowerCase().includes(q)) continue;
+      if(periode && String(r[2]||'').trim()!==periode) continue;
+      rows+='<tr>'+headers.map((_,c)=>'<td>'+esc(r[c]??'')+'</td>').join('')+'</tr>';
+    }
+    body.innerHTML=rows||'<tr><td colspan="27" style="text-align:center;padding:18px">Tidak ada data pada periode/filter ini.</td></tr>';
+  }
+  window.rbFilter=rbRender; $('rb-bulan').addEventListener('change',rbRender);
+
+  function populate(){
+    let names=[...new Set(dailyData.map(x=>x.nama).filter(n=>n&&n!=='-'))].sort();
+    $('rb-report-pegawai').innerHTML='<option value="">Semua Pegawai</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  }
+
+  function requirePDF(callback) {
+    // 1. Perbaiki pengecekan agar tidak diload ulang setiap kali diklik
+    if (window.jspdf && window.jspdf.jsPDF) { 
+      callback(); 
+      return; 
+    }
+    
+    Swal.fire({ title: 'Menyiapkan Mesin Cetak...', text: 'Mengunduh pustaka PDF dari server...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#10b981' });
+    
+    let s1 = document.createElement('script'); 
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s1.onload = () => {
+      let s2 = document.createElement('script'); 
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+      s2.onload = () => { 
+        // 2. Beri jeda waktu 500ms agar animasi popup benar-benar selesai sebelum ditutup
+        setTimeout(() => { callback(); }, 500); 
+      }; 
+      s2.onerror = () => { Swal.fire('Error', 'Gagal memuat pustaka AutoTable', 'error'); }; 
+      document.body.appendChild(s2);
+    }; 
+    s1.onerror = () => { Swal.fire('Error', 'Gagal memuat Mesin jsPDF', 'error'); }; 
+    document.body.appendChild(s1);
+  }
+
+  function getMonthlyRange(){
+    const m=Number($('rb-report-month').value), y=Number($('rb-report-year').value);
+    const end=new Date(y,m-1,20); const start=new Date(y,m-2,21);
+    const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return {start:iso(start), end:iso(end), startDate:start, endDate:end, m:m, y:y, str: `21 ${months[start.getMonth()]} ${start.getFullYear()} s.d. 20 ${months[end.getMonth()]} ${end.getFullYear()}`};
+  }
+
+  function filtered(){
+    const pRange = getMonthlyRange(), p=$('rb-report-pegawai').value;
+    return dailyData.filter(r=>{
+      if(!r.tgl) return false;
+      let dStr = r.tgl;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(dStr)){ let d=new Date(dStr); dStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+      let isHadirStatus = (r.masuk !== '-' && r.pulang !== '-');
+      r.status = isHadirStatus ? 'Hadir' : (r.alasan !== '-' ? r.alasan : 'Absen');
+      return (dStr >= pRange.start && dStr <= pRange.end) && (!p || r.nama===p);
+    });
+  }
+
+  // Fungsi Menggambar Logo di Kiri Atas KOP Surat
+  function drawKopKPHP(doc, w) {
+    if (window.LOGO_KEPRI && window.LOGO_KEPRI.length > 100) {
+      try { doc.addImage(window.LOGO_KEPRI, 'PNG', 15, 10, 18, 22); } catch(e){}
+    }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
+    doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 14, { align: "center" });
+    doc.setFontSize(16); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 21, { align: "center" });
+    doc.setFontSize(12); doc.text("UPTD KESATUAN PENGELOLAAN HUTAN PRODUKSI UNIT I KARIMUN", w/2, 27, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+    doc.text("Komplek Balai Penyuluh Pertanian Jalan Teluk Paku Ke. Pasir Panjang Kec. Meral Barat Kabupaten Karimun", w/2, 32, { align: "center" });
+    doc.text("Pos el : kphpkarimun@gmail.com", w/2, 36, { align: "center" });
+    doc.setLineWidth(1); doc.line(15, 40, w - 15, 40); doc.setLineWidth(0.3); doc.line(15, 41.5, w - 15, 41.5);
+  }
+
+  // Fungsi Menggambar Cover Halaman Depan
+  function drawCover(doc, w, title, subtitle, periode, sN) {
+    if (window.LOGO_KEPRI && window.LOGO_KEPRI.length > 100) {
+      try { doc.addImage(window.LOGO_KEPRI, 'PNG', (w/2)-15, 40, 30, 36); } catch(e){}
+    }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(0, 0, 0);
+    doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 95, { align: "center" });
+    doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 103, { align: "center" });
+    doc.setFontSize(14); doc.text("UPTD KPHP UNIT I KARIMUN", w/2, 111, { align: "center" });
+    doc.setLineWidth(1); doc.line((w/2)-50, 120, (w/2)+50, 120); doc.setLineWidth(0.3); doc.line((w/2)-50, 121.5, (w/2)+50, 121.5);
+    doc.setFontSize(22); doc.text(title, w/2, 145, { align: "center" }); doc.setFontSize(16); doc.text(subtitle, w/2, 155, { align: "center" });
+    doc.setFillColor(241, 245, 249); doc.roundedRect((w/2)-45, 165, 90, 12, 3, 3, 'FD');
+    doc.setFontSize(10); doc.text(periode, w/2, 173, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.text("Dilaporkan Oleh:", w/2, 220, { align: "center" });
+    doc.setFont("helvetica", "bold"); doc.text(sN, w/2, 227, { align: "center" });
+  }
+
+  window.rbReportShow=function(mode){
+    Swal.fire({ title: 'Menyiapkan Data...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#10b981' });
+    
+    try {
+      let rows=filtered(); if(!rows.length){ Swal.fire('Tidak Ada Data','Data absensi pada periode ini kosong.','info'); return; }
+      
+      const p=getMonthlyRange(); let box=$('rb-report-preview'); box.style.display='block';
+      let title=mode==='pelaksana'?'LAPORAN ABSENSI BULANAN – PELAKSANA':'LAPORAN ABSENSI BULANAN – PIMPINAN';
+      
+      if(mode==='pelaksana'){
+        let body=rows.slice().sort((a,b)=>a.tgl.localeCompare(b.tgl)||a.nama.localeCompare(b.nama)).map((r,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(r.nama)+'</b></td><td>'+esc(r.nip)+'</td><td>'+esc(r.tgl)+'</td><td>'+esc(r.hari)+'</td><td>'+esc(r.tipe)+'</td><td>'+esc(r.masuk)+'</td><td>'+esc(r.pulang)+'</td><td>'+esc(r.alasan)+'</td></tr>').join('');
+        box.innerHTML=`<div class="rtitle"><b>${title}</b><span>Periode: ${esc(p.str)}</span></div><table class="rb-report-table"><thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Tanggal</th><th>Hari</th><th>Tipe Hari</th><th>Masuk</th><th>Pulang</th><th>Keterangan</th></tr></thead><tbody>${body}</tbody></table>`;
+      }else{
+        let kerja=rows.filter(r=>r.tipe.toLowerCase()!=='libur'), hadir=kerja.filter(r=>r.masuk!=='-'&&r.pulang!=='-').length, absen=kerja.length-hadir, pct=kerja.length?(hadir/kerja.length*100).toFixed(1):'0.0';
+        let names=[...new Set(rows.map(r=>r.nama))].sort(), body=names.map((n,i)=>{let a=rows.filter(r=>r.nama===n),k=a.filter(r=>r.tipe.toLowerCase()!=='libur'),h=k.filter(r=>r.masuk!=='-'&&r.pulang!=='-').length,tk=k.length-h;return `<tr><td>${i+1}</td><td><b>${esc(n)}</b></td><td>${k.length}</td><td>${h}</td><td>${tk}</td><td>${k.length?(h/k.length*100).toFixed(1):'0.0'}%</td></tr>`}).join('');
+        box.innerHTML=`<div class="rtitle"><b>${title}</b><span>Periode: ${esc(p.str)}</span></div><div class="rb-report-summary"><div class="sbox"><b>${kerja.length}</b><span>Hari Kerja</span></div><div class="sbox"><b>${hadir}</b><span>Hadir</span></div><div class="sbox"><b>${absen}</b><span>Tidak Hadir</span></div><div class="sbox"><b>-</b><span>-</span></div><div class="sbox"><b>-</b><span>-</span></div></div><div class="rb-report-note">Persentase kehadiran: <b>${pct}%</b>.</div><table class="rb-report-table" style="min-width:680px"><thead><tr><th>No</th><th>Nama Pegawai</th><th>Hari Kerja</th><th>Hadir</th><th>Tidak Hadir</th><th>%</th></tr></thead><tbody>${body}</tbody></table>`;
+      }
+
+      requirePDF(() => {
+        try { generateBulananPDF(mode, rows, p); Swal.close(); } catch(errPDF) { Swal.fire('Error PDF', errPDF.message, 'error'); }
+      });
+    } catch(err) { Swal.fire('Error Data', err.message, 'error'); }
+  };
+
+  function generateBulananPDF(mode, rows, p){
+    const { jsPDF } = window.jspdf; const doc = new jsPDF(mode === 'pelaksana' ? 'l' : 'p', 'mm', 'a4'); const w = doc.internal.pageSize.getWidth();
+    const periodeStr = `21 ${months[p.startDate.getMonth()]} ${p.startDate.getFullYear()} s.d. 20 ${months[p.endDate.getMonth()]} ${p.endDate.getFullYear()}`;
+
+    let userNameEl = document.getElementById("namaUser"); let sN = userNameEl ? userNameEl.innerText.split('(')[0].trim() : "KEPALA UPTD KPHP UNIT I"; let sNp = "NIP. ............................."; 
+
+    drawCover(doc, w, mode === 'pelaksana' ? "LAPORAN RINCIAN BULANAN" : "LAPORAN EKSEKUTIF PIMPINAN", "KEDISIPLINAN BULANAN PEGAWAI", "PERIODE: " + periodeStr.toUpperCase(), sN);
+    doc.addPage(); drawKopKPHP(doc, w);
+
+    if (mode === 'pelaksana') {
+      doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text("LAPORAN RINCI KEHADIRAN BULANAN PEGAWAI", w/2, 52, { align: "center" });
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.text("Periode: " + p.str, w/2, 58, { align: "center" });
+
+      let tbRows = rows.slice().sort((a,b)=>a.tgl.localeCompare(b.tgl)||a.nama.localeCompare(b.nama)).map((r,i)=>[i+1, r.nama, r.nip, r.tgl, r.hari, r.tipe, r.masuk, r.pulang, r.status, r.alasan]);
+      doc.autoTable({ startY: 65, head: [["NO", "NAMA PEGAWAI", "NIP", "TANGGAL", "HARI", "TIPE", "MASUK", "PULANG", "STATUS", "KETERANGAN"]], body: tbRows, theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold', halign: 'center' }, styles: { fontSize: 7, halign: 'center', cellPadding: 2 }, columnStyles: { 1: { halign: 'left', fontStyle: 'bold' } } });
+
+      let fy = (doc.lastAutoTable && doc.lastAutoTable.finalY) || 150; fy += 15; if (fy > 170) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+      let curDate = new Date(); let ct = curDate.getDate() + " " + months[curDate.getMonth()] + " " + curDate.getFullYear();
+      doc.text("Karimun, " + ct, w-40, fy, { align: "center" }); doc.setFont("helvetica", "bold"); doc.text(sN, w-40, fy+25, { align: "center" }); doc.setFont("helvetica", "normal"); doc.text(sNp, w-40, fy+31, { align: "center" });
+
+    } else {
+      let kerja=rows.filter(r=>r.tipe.toLowerCase()!=='libur'); let hadir=kerja.filter(r=>r.masuk!=='-'&&r.pulang!=='-').length; let tTelat=kerja.filter(r=>parseInt(r.tltpsw) > 0).length; let tHadirFull = hadir - tTelat; let absen=kerja.filter(r=>r.status!=='Hadir').length; let pct=kerja.length ? Math.round((hadir/kerja.length)*100) : 0;
+      doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("LAPORAN EKSEKUTIF KEDISIPLINAN BULANAN", w/2, 52, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(59, 130, 246); doc.text("Periode: " + p.str, w/2, 58, { align: "center" }); doc.setTextColor(0, 0, 0);
+
+      let startY = 65; doc.setFillColor(248, 250, 252); doc.setDrawColor(203, 213, 225); doc.roundedRect(15, startY, 180, 50, 3, 3, 'FD'); doc.setFillColor(241, 245, 249); doc.roundedRect(15, startY, 180, 8, 3, 3, 'F'); doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 41, 59); doc.text("RINGKASAN EKSEKUTIF: Kehadiran Pegawai", 18, startY + 5.5);
+      let boxY = startY + 12; doc.setFillColor(255, 255, 255); doc.setDrawColor(226, 232, 240); doc.roundedRect(18, boxY, 52, 16, 2, 2, 'FD'); doc.setFontSize(7); doc.setTextColor(100, 116, 139); doc.text("TOTAL HARI KERJA", 44, boxY + 5, {align: "center"}); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text(kerja.length + " Hari", 44, boxY + 11, {align: "center"}); 
+      doc.setFillColor(255, 255, 255); doc.setDrawColor(226, 232, 240); doc.roundedRect(74, boxY, 52, 16, 2, 2, 'FD'); doc.setFontSize(7); doc.setTextColor(100, 116, 139); doc.text("TOTAL HADIR", 100, boxY + 5, {align: "center"}); doc.setFontSize(12); doc.setTextColor(16, 185, 129); doc.text(hadir + " Kehadiran", 100, boxY + 11, {align: "center"}); 
+      doc.setFillColor(255, 255, 255); doc.setDrawColor(226, 232, 240); doc.roundedRect(130, boxY, 52, 16, 2, 2, 'FD'); doc.setFontSize(7); doc.setTextColor(100, 116, 139); doc.text("TOTAL TIDAK HADIR", 156, boxY + 5, {align: "center"}); doc.setFontSize(12); doc.setTextColor(239, 68, 68); doc.text(absen + " Absen", 156, boxY + 11, {align: "center"});
+
+      let statusKehadiran = pct >= 80 ? "SANGAT DISIPLIN" : (pct >= 50 ? "CUKUP DISIPLIN" : "PERLU EVALUASI");
+      let narasi = 'Berdasarkan rekapitulasi kehadiran periode ' + p.str + ', rata-rata tingkat kedisiplinan pegawai berada pada level ' + statusKehadiran + ' (' + pct + '%). Total kehadiran secara kumulatif tercatat ' + hadir + ' kali, dengan rincian ' + tHadirFull + ' kehadiran tepat waktu dan ' + tTelat + ' kehadiran terlambat/PSW. Total ketidakhadiran tercatat ' + absen + ' kali.'; let narY = boxY + 20; doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(71, 85, 105); let splitNarasi = doc.splitTextToSize(narasi, 174); doc.text(splitNarasi, 18, narY + 4);
+
+      let tableStartY = startY + 55; doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(15, 23, 42); doc.text("TABEL REKAP KEHADIRAN PEGAWAI", w/2, tableStartY, {align: "center"});
+      let names=[...new Set(rows.map(r=>r.nama))].sort(); let tbRows=names.map((n,i)=>{let a=rows.filter(r=>r.nama===n),k=a.filter(r=>r.tipe.toLowerCase()!=='libur'),h=k.filter(r=>r.status==='Hadir').length,tk=k.filter(r=>r.status!=='Hadir').length;return [i+1, n, k.length, h, tk, k.length?Math.round((h/k.length)*100)+'%':'0%']});
+      doc.autoTable({ startY: tableStartY + 4, head: [["NO", "NAMA PEGAWAI", "HARI KERJA", "HADIR", "TIDAK HADIR", "%"]], body: tbRows, theme: 'grid', headStyles: { fillColor: [241, 245, 249], textColor: 0, fontStyle: 'bold', halign: 'center' }, bodyStyles: { textColor: 0 }, styles: { fontSize: 8.5, halign: 'center', cellPadding: 3 }, columnStyles: { 1: { halign: 'left', fontStyle: 'bold' } } });
+
+      let fy = (doc.lastAutoTable && doc.lastAutoTable.finalY) || 150; fy += 15; if (fy > 250) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+      let curDate = new Date(); let ct = curDate.getDate() + " " + months[curDate.getMonth()] + " " + curDate.getFullYear(); doc.text("Karimun, " + ct, 150, fy, { align: "center" }); doc.setFont("helvetica", "bold"); doc.text(sN, 150, fy+25, { align: "center" }); doc.setFont("helvetica", "normal"); doc.text(sNp, 150, fy+31, { align: "center" });
+    }
+    doc.save('Laporan_Absensi_Bulanan_'+(mode==='pelaksana'?'Pelaksana':'Pimpinan')+'_'+p.m+'_'+p.y+'.pdf');
+  }
+
+  rbLoad();
+
+  // MENGHILANGKAN TOMBOL MENGGUNAKAN ROLE EKSKLUSIF
+  google.script.run.withSuccessHandler(function(user){
+    if(user && user.role) {
+      let role = user.role.toUpperCase();
+      let btnRbPel = $('btn-rb-pel'); let btnRbPim = $('btn-rb-pim');
+
+      if(!role.includes("ADMIN") && !role.includes("SUPER ADMIN")) {
+        if(role.includes("PIMPINAN") || role.includes("KEPALA")) {
+          if(btnRbPel) btnRbPel.style.display = 'none';
+        } else {
+          if(btnRbPim) btnRbPim.style.display = 'none';
+        }
+      }
+    }
+  }).getCurrentUser();
+
+})();
+</script>

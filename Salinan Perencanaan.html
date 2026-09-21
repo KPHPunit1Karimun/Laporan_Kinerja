@@ -1,0 +1,476 @@
+<style>
+  /* TEMA SOLID PREMIUM: Mengatasi latar putih dari Index.html */
+  .bmd-premium { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #0f172a; /* Solid Dark Navy */
+    color: #f8fafc; 
+    padding: 25px;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+  
+  /* Container Kartu */
+  .solid-card { 
+    background-color: #1e293b; /* Lighter Dark Navy */
+    border: 1px solid #334155; 
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-bottom: 25px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+  }
+  
+  /* Section Form */
+  .solid-section { 
+    background-color: #0f172a; 
+    border-radius: 8px; 
+    padding: 16px; 
+    border: 1px solid #334155; 
+  }
+  
+  /* GRID MURNI (Dijamin tidak akan melebar 100%) */
+  .css-grid-3 { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr; gap: 24px; align-items: start; }
+  .css-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+  .css-grid-1 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .solid-section { min-height: 250px; }
+  @media(max-width:1100px){ .css-grid-3 { grid-template-columns:1fr; } }
+  
+  /* Form Input */
+  .bmd-input { 
+    width: 100%; 
+    background-color: #1e293b; 
+    border: 1px solid #475569; 
+    border-radius: 6px; 
+    padding: 12px 14px; 
+    color: #fff; 
+    font-size: 0.8rem; 
+    box-sizing: border-box;
+    transition: all 0.3s ease; 
+  }
+  .bmd-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+  .bmd-label { font-size: 0.7rem; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px; display: block; }
+  
+  /* Tombol */
+  .bmd-btn-primary { 
+    background-color: #3b82f6; 
+    color: #fff; 
+    font-weight: 700; 
+    padding: 8px 20px; 
+    border-radius: 6px; 
+    border: none; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-size: 0.75rem; 
+  }
+  .bmd-btn-primary:hover:not(:disabled) { background-color: #2563eb; }
+  
+  /* Tombol Kembali */
+  .bmd-btn-back {
+    background-color: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+  }
+  .bmd-btn-back:hover { background-color: #475569; }
+
+  /* Tabel Kustom */
+  .bmd-table-wrapper { max-height: 450px; overflow-y: auto; overflow-x: auto; border: 1px solid #334155; border-radius: 8px; }
+  .bmd-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 900px; }
+  .bmd-table th { background-color: #0f172a; color: #38bdf8; padding: 12px; text-align: left; text-transform: uppercase; font-weight: 800; border-bottom: 2px solid #38bdf8; position: sticky; top: 0; z-index: 10; }
+  .bmd-table td { padding: 12px 14px; border-bottom: 1px solid #334155; vertical-align: middle; color: #e2e8f0; }
+  .bmd-table tbody tr:hover td { background-color: #1e293b; }
+  
+  /* Badge */
+  .bmd-badge { padding: 4px 6px; border-radius: 4px; font-weight: 700; font-size: 0.65rem; display: inline-block; }
+  .badge-b  { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+  .badge-kb { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+  .badge-rb { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #dc2626; }
+  
+  /* Utility */
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .text-highlight { color: #38bdf8; }
+  
+  @media (max-width: 900px) { .css-grid-3 { grid-template-columns: 1fr; } }
+</style>
+
+<style>
+/* FINAL BMD FORM LAYOUT */
+#bmd-entri-container .css-grid-3{
+    display:grid !important;
+    grid-template-columns: 1.35fr 1fr 0.75fr !important;
+    gap:18px !important;
+    align-items:stretch;
+}
+
+#bmd-entri-container .solid-card{
+    padding:22px !important;
+}
+
+#bmd-entri-container .solid-section{
+    min-height:220px !important;
+    padding:18px !important;
+    background:#111827 !important;
+}
+
+#bmd-entri-container .css-grid-1{
+    gap:10px !important;
+}
+
+#bmd-entri-container .bmd-input{
+    height:42px !important;
+    font-size:13px !important;
+}
+
+#bmd-entri-container .bmd-label{
+    margin-bottom:5px !important;
+}
+
+#bmd-entri-container .solid-section h4{
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding-bottom:10px;
+}
+
+/* Kondisi dibuat lebih compact */
+#bmd-entri-container .solid-section:last-child .css-grid-1{
+    grid-template-columns:1fr;
+}
+
+@media(max-width:1200px){
+    #bmd-entri-container .css-grid-3{
+        grid-template-columns:1fr !important;
+    }
+}
+</style>
+
+
+<div class="bmd-premium" id="bmd-entri-container">
+  
+  <!-- Header -->
+  <div class="flex-between" style="margin-bottom: 20px;">
+    <h2 style="margin:0; font-size:22px; font-weight:bold;"><i class="fa-solid fa-square-plus text-highlight"></i> Entri & Database Aset</h2>
+    <button onclick="loadPage('BMD')" class="bmd-btn-back"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+  </div>
+
+  <!-- Form Entri (3 Kolom Rigid) -->
+  <div class="solid-card" style="border-top: 3px solid #38bdf8;">
+    <form id="form-bmd" onsubmit="event.preventDefault(); submitBMD_Optimistic();">
+      
+      <div class="flex-between" style="border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="margin:0; font-size:14px; font-weight:bold; color:#38bdf8;"><i class="fa-solid fa-file-signature"></i> Formulir Penambahan Aset</h3>
+        <button type="submit" id="btn-submit-bmd" class="bmd-btn-primary" style="min-width:160px;">
+<i class="fa-solid fa-cloud-arrow-up"></i> SIMPAN ASET
+</button>
+      </div>
+      
+      <div class="css-grid-3">
+        
+        <!-- Kolom 1: Identitas -->
+        <div class="solid-section">
+          <h4 style="margin:0 0 16px 0; font-size:12px; color:#818cf8; text-transform:uppercase;"><i class="fa-solid fa-tag"></i> Identitas Aset</h4>
+          <div class="css-grid-1">
+            <div><label class="bmd-label">Nama Barang *</label><input type="text" id="Nama_Barang" class="bmd-input uppercase-input" required></div>
+            <div class="css-grid-2">
+              <div><label class="bmd-label">Kode Barang *</label><input type="text" id="Kode_Barang" class="bmd-input uppercase-input" required></div>
+              <div><label class="bmd-label">Merk / Model</label><input type="text" id="Merk_Model" class="bmd-input uppercase-input"></div>
+            </div>
+            <div><label class="bmd-label">Nomor Seri</label><input type="text" id="No_Seri" class="bmd-input uppercase-input"></div>
+          </div>
+        </div>
+
+        <!-- Kolom 2: Nilai & Dokumen -->
+        <div class="solid-section">
+          <h4 style="margin:0 0 16px 0; font-size:12px; color:#34d399; text-transform:uppercase;"><i class="fa-solid fa-money-bill-wave"></i> Nilai & Dokumen</h4>
+          <div class="css-grid-1">
+            <div class="css-grid-2">
+              <div><label class="bmd-label">Tahun *</label><input type="number" id="Tahun_Perolehan" class="bmd-input" required></div>
+              <div><label class="bmd-label">Jumlah *</label><input type="number" id="Jumlah" class="bmd-input" value="1" required></div>
+            </div>
+            <div><label class="bmd-label">Harga Perolehan (Rp) *</label><input type="text" id="Harga_Perolehan" class="bmd-input" placeholder="0" oninput="formatRupiahBmd(this)" required></div>
+            <div><label class="bmd-label">Foto Aset (Max 5MB)</label><input type="file" id="Foto_Aset_Baru" class="bmd-input" accept="image/*" style="padding:6px; border-style:dashed;"></div>
+          </div>
+        </div>
+
+        <!-- Kolom 3: Kondisi -->
+        <div class="solid-section">
+          <h4 style="margin:0 0 16px 0; font-size:12px; color:#f87171; text-transform:uppercase;"><i class="fa-solid fa-stethoscope"></i> Kondisi Fisik</h4>
+          <div class="css-grid-1">
+            <div><label class="bmd-label" style="color: #34d399;">Baik (B)</label><input type="number" id="Kondisi_B" class="bmd-input" value="1"></div>
+            <div><label class="bmd-label" style="color: #fbbf24;">Kurang Baik (KB)</label><input type="number" id="Kondisi_KB" class="bmd-input" value="0"></div>
+            <div><label class="bmd-label" style="color: #f87171;">Rusak Berat (RB)</label><input type="number" id="Kondisi_RB" class="bmd-input" value="0"></div>
+          </div>
+        </div>
+        
+      </div>
+    </form>
+  </div>
+
+  <!-- Database Table -->
+  <div class="solid-card" style="border-top: 3px solid #8b5cf6; padding:0; overflow:hidden;">
+    <div class="flex-between" style="padding:15px; border-bottom:1px solid #334155; background-color:#0f172a;">
+      <h2 style="margin:0; font-size:14px; font-weight:bold; color:#8b5cf6;"><i class="fa-solid fa-database"></i> Database Inventaris</h2>
+      <div style="position: relative;">
+        <i class="fa-solid fa-search" style="position:absolute; left:10px; top:10px; color:#94a3b8; font-size:12px;"></i>
+        <input type="text" id="zb_search" class="bmd-input uppercase-input" style="padding-left:28px; width:220px; background-color:#1e293b;" placeholder="Cari Kode / Nama..." onkeyup="filterTableBMD()">
+      </div>
+    </div>
+    
+    <div class="bmd-table-wrapper" id="bmd-scroll-container">
+      <table class="bmd-table" id="tabel-bmd">
+        <thead>
+          <tr>
+            <th style="text-align:center; width:40px;">No</th>
+            <th>Kode</th>
+            <th>Nama & Merk</th>
+            <th style="text-align:center;">Thn</th>
+            <th style="text-align:center;">Jml</th>
+            <th style="text-align:right;">Total Nilai (Rp)</th>
+            <th style="text-align:center;">B</th>
+            <th style="text-align:center;">KB</th>
+            <th style="text-align:center;">RB</th>
+            <th style="text-align:center;">Foto</th>
+            <th style="text-align:center;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-bmd-zb">
+          <tr><td colspan="11" style="text-align:center; padding:30px; color:#94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Menyinkronkan Database...</td></tr>
+        </tbody>
+      </table>
+      <div id="lazy-loader" style="text-align:center; padding:10px; color:#38bdf8; font-size:12px; display:none;"><i class="fa-solid fa-circle-notch fa-spin"></i> Memuat...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.globalDataBMD = [];
+  window.lazyLoadLimit = 20;
+  window.currentRenderedCount = 0;
+
+  window.formatRupiahBmd = function(obj) {
+      let val = obj.value.replace(/[^,\d]/g, '');
+      let split = val.split(',');
+      let sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      if(ribuan) { let sep = sisa ? '.' : ''; rupiah += sep + ribuan.join('.'); }
+      obj.value = rupiah;
+  };
+
+  function formatRpTable(angka) {
+      var num = parseFloat(angka) || 0;
+      return num.toLocaleString('id-ID');
+  }
+
+  function initBMDEntri() {
+    document.getElementById('Tahun_Perolehan').placeholder = new Date().getFullYear().toString();
+    
+    document.querySelectorAll('.uppercase-input').forEach(function(input) {
+      input.addEventListener('input', function() {
+        var start = this.selectionStart, end = this.selectionEnd;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(start, end);
+      });
+    });
+
+    var scrollCont = document.getElementById('bmd-scroll-container');
+    if(scrollCont) {
+        scrollCont.addEventListener('scroll', function() {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 20) {
+                if (window.currentRenderedCount < window.globalDataBMD.length) loadMoreData();
+            }
+        });
+    }
+    fetchBMDData();
+  }
+
+  function fetchBMDData() {
+      if (typeof google !== 'undefined') {
+          google.script.run.withSuccessHandler(function(data) {
+              window.globalDataBMD = (data && !data.error) ? data.reverse() : [];
+              renderTableBMD_Reset();
+          }).withFailureHandler(function(err) {
+              var tb = document.getElementById('tbody-bmd-zb');
+              if(tb) tb.innerHTML = '<tr><td colspan="11" style="text-align:center; color:#f87171; padding:20px;">Gagal memuat data: ' + err.message + '</td></tr>';
+          }).getTableDataBMD();
+      }
+  }
+
+  function renderTableBMD_Reset() {
+      var tbody = document.getElementById('tbody-bmd-zb');
+      if(tbody) tbody.innerHTML = '';
+      window.currentRenderedCount = 0;
+      loadMoreData();
+  }
+
+  function loadMoreData() {
+      var tbody = document.getElementById('tbody-bmd-zb');
+      var loader = document.getElementById('lazy-loader');
+      if (!tbody || !loader) return;
+      
+      if (window.globalDataBMD.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:30px; color:#94a3b8;">Belum ada data inventaris.</td></tr>';
+          return;
+      }
+      loader.style.display = 'block';
+
+      setTimeout(function() {
+          var htmlStr = '';
+          var startIdx = window.currentRenderedCount;
+          var endIdx = Math.min(startIdx + window.lazyLoadLimit, window.globalDataBMD.length);
+
+          for (var i = startIdx; i < endIdx; i++) {
+              var row = window.globalDataBMD[i];
+              var numNo = i + 1;
+              var valAsli = String(row.Harga_Perolehan || '0').replace(/[^0-9]/g, "");
+              var urlFoto = row.Foto_Aset || "";
+              var fotoTampil = urlFoto ? '<a href="' + urlFoto + '" target="_blank" style="color:#38bdf8;"><i class="fa-solid fa-image"></i></a>' : '-';
+
+              htmlStr += '<tr class="bmd-row">';
+              htmlStr += '<td style="text-align:center; color:#94a3b8;">' + numNo + '</td>';
+              htmlStr += '<td style="color:#38bdf8; font-family:monospace; font-weight:bold;">' + (row.Kode_Barang || '-') + '</td>';
+              htmlStr += '<td><b>' + (row.Nama_Barang || '-') + '</b><br><span style="font-size:9px; color:#94a3b8;">' + (row.Merk_Model || '-') + '</span></td>';
+              htmlStr += '<td style="text-align:center;">' + (row.Tahun_Perolehan || '-') + '</td>';
+              htmlStr += '<td style="text-align:center; font-weight:bold;">' + (row.Jumlah || '0') + '</td>';
+              htmlStr += '<td style="text-align:right; font-weight:bold; color:#38bdf8; white-space:nowrap;">Rp ' + formatRpTable(valAsli) + '</td>';
+              htmlStr += '<td style="text-align:center;"><span class="bmd-badge badge-b">' + (row.Kondisi_B || '0') + '</span></td>';
+              htmlStr += '<td style="text-align:center;"><span class="bmd-badge badge-kb">' + (row.Kondisi_KB || '0') + '</span></td>';
+              htmlStr += '<td style="text-align:center;"><span class="bmd-badge badge-rb">' + (row.Kondisi_RB || '0') + '</span></td>';
+              htmlStr += '<td style="text-align:center;">' + fotoTampil + '</td>';
+              
+              htmlStr += '<td style="text-align:center; white-space:nowrap;">';
+              htmlStr += '<button onclick="bukaModalEditBMD(\'' + row.Kode_Barang + '\')" style="background:rgba(59,130,246,0.2); border:1px solid #3b82f6; color:#38bdf8; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;"><i class="fa-solid fa-pen" style="font-size:10px;"></i></button>';
+              htmlStr += '<button onclick="konfirmasiHapusBMD(\'' + row.Kode_Barang + '\')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#f87171; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash" style="font-size:10px;"></i></button>';
+              htmlStr += '</td></tr>';
+          }
+          tbody.insertAdjacentHTML('beforeend', htmlStr);
+          window.currentRenderedCount = endIdx;
+          loader.style.display = 'none';
+      }, 100);
+  }
+
+  window.submitBMD_Optimistic = function() {
+      var btn = document.getElementById('btn-submit-bmd');
+      var form = document.getElementById('form-bmd');
+      var inputKode = document.getElementById('Kode_Barang').value;
+      
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+      var payload = {
+          Kode_Barang: inputKode,
+          Nama_Barang: document.getElementById('Nama_Barang').value,
+          Merk_Model: document.getElementById('Merk_Model').value || '-',
+          No_Seri: document.getElementById('No_Seri').value || '-',
+          Ukuran: "-", Bahan: "-", Keterangan: "-",
+          Tahun_Perolehan: document.getElementById('Tahun_Perolehan').value,
+          Jumlah: document.getElementById('Jumlah').value,
+          Harga_Perolehan: document.getElementById('Harga_Perolehan').value.replace(/[^0-9]/g, ""),
+          Kondisi_B: document.getElementById('Kondisi_B').value,
+          Kondisi_KB: document.getElementById('Kondisi_KB').value,
+          Kondisi_RB: document.getElementById('Kondisi_RB').value
+      };
+
+      var fileInput = document.getElementById('Foto_Aset_Baru');
+      var file = fileInput.files.length > 0 ? fileInput.files[0] : null;
+
+      window.globalDataBMD.unshift(payload);
+      renderTableBMD_Reset();
+      form.reset();
+
+      if (typeof google !== 'undefined') {
+          if (file) {
+              var reader = new FileReader();
+              reader.onload = function(e) {
+                  payload.base64 = e.target.result.split(',')[1]; payload.mimeType = file.type; payload.fileName = "Aset_" + inputKode + "_" + file.name;
+                  sendToGoogleEntri(payload, btn);
+              };
+              reader.readAsDataURL(file);
+          } else { sendToGoogleEntri(payload, btn); }
+      } else { setTimeout(() => { btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Simpan Aset'; }, 1000); }
+  }
+
+  function sendToGoogleEntri(payload, btnElement) {
+      google.script.run.withSuccessHandler(function(res) {
+          btnElement.disabled = false; btnElement.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Simpan Aset';
+          if (res.success) {
+              if(typeof showNotify === 'function') showNotify('BERHASIL!', res.message, 'success');
+              fetchBMDData();
+          } else { if(typeof showNotify === 'function') showNotify('GAGAL!', res.message, 'error'); }
+      }).simpanDataBMDDenganFoto(payload);
+  }
+
+  window.konfirmasiHapusBMD = function(kodeBarang) {
+      Swal.fire({
+          title: 'Hapus Aset?', text: 'Kode ' + kodeBarang + ' akan dihapus.', icon: 'warning', showCancelButton: true,
+          confirmButtonColor: '#ef4444', cancelButtonColor: '#334155', confirmButtonText: 'Ya, Hapus!', background: '#1e293b', color: '#fff'
+      }).then(function(result) {
+          if (result.isConfirmed) {
+              var index = window.globalDataBMD.findIndex(r => r.Kode_Barang === kodeBarang);
+              if (index > -1) { window.globalDataBMD.splice(index, 1); renderTableBMD_Reset(); }
+              if (typeof google !== 'undefined') {
+                  google.script.run.withSuccessHandler(function(res) {
+                      if (res.success && typeof showNotify==='function') showNotify('TERHAPUS!', 'Aset dihapus.', 'success');
+                  }).deleteDataBMD(kodeBarang, sessionStorage.getItem("userNIP"), sessionStorage.getItem("userToken")); 
+              }
+          }
+      });
+  }
+
+  window.filterTableBMD = function() {
+      var filter = document.getElementById("zb_search").value.toLowerCase();
+      var rows = document.querySelectorAll(".bmd-row");
+      rows.forEach(r => {
+          r.style.display = r.innerText.toLowerCase().includes(filter) ? "" : "none";
+      });
+  }
+
+  window.bukaModalEditBMD = function(kodeBarang) {
+      var aset = window.globalDataBMD.find(r => r.Kode_Barang === kodeBarang);
+      if(!aset) return;
+      
+      // Inline styling untuk memisahkan dari class utama jika bentrok
+      var htmlStr = '<div style="text-align:left; font-size:12px; color:#cbd5e1;">';
+      htmlStr += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">';
+      htmlStr += '<div><label style="font-size:10px; color:#94a3b8; font-weight:bold; display:block; margin-bottom:4px;">Nama Barang</label><input type="text" id="ed_nama" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Nama_Barang || '') + '"></div>';
+      htmlStr += '<div><label style="font-size:10px; color:#94a3b8; font-weight:bold; display:block; margin-bottom:4px;">Merk / Model</label><input type="text" id="ed_merk" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Merk_Model || '') + '"></div>';
+      htmlStr += '<div style="grid-column: span 2;"><label style="font-size:10px; color:#94a3b8; font-weight:bold; display:block; margin-bottom:4px;">Harga Perolehan (Rp)</label><input type="text" id="ed_harga" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Harga_Perolehan || '') + '"></div>';
+      htmlStr += '</div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">';
+      htmlStr += '<div><label style="font-size:10px; color:#94a3b8; font-weight:bold; display:block; margin-bottom:4px;">Tahun</label><input type="number" id="ed_tahun" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Tahun_Perolehan || '') + '"></div>';
+      htmlStr += '<div><label style="font-size:10px; color:#94a3b8; font-weight:bold; display:block; margin-bottom:4px;">Jumlah</label><input type="number" id="ed_jumlah" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Jumlah || '') + '"></div>';
+      htmlStr += '<div style="grid-column: span 2;"><label style="font-size:10px; color:#38bdf8; font-weight:bold; display:block; margin-bottom:4px;">Update Foto</label><input type="file" id="ed_foto" style="width:100%; padding:4px; border-radius:6px; background:#0f172a; color:#fff; border:1px dashed #334155; box-sizing:border-box;"></div>';
+      htmlStr += '</div><div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
+      htmlStr += '<div><label style="font-size:10px; color:#34d399; font-weight:bold; display:block; margin-bottom:4px;">Baik (B)</label><input type="number" id="ed_b" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Kondisi_B || '0') + '"></div>';
+      htmlStr += '<div><label style="font-size:10px; color:#fbbf24; font-weight:bold; display:block; margin-bottom:4px;">Kurang (KB)</label><input type="number" id="ed_kb" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Kondisi_KB || '0') + '"></div>';
+      htmlStr += '<div><label style="font-size:10px; color:#f87171; font-weight:bold; display:block; margin-bottom:4px;">Rusak (RB)</label><input type="number" id="ed_rb" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:#fff; border:1px solid #334155; box-sizing:border-box;" value="' + (aset.Kondisi_RB || '0') + '"></div>';
+      htmlStr += '</div></div>';
+
+      Swal.fire({
+          title: '<span style="color:#fff; font-size: 16px;"><i class="fa-solid fa-pen-to-square" style="color:#38bdf8;"></i> Edit Aset</span>', width: '500px', background: '#1e293b', html: htmlStr, showCancelButton: true, confirmButtonColor: '#3b82f6', cancelButtonColor: '#334155', confirmButtonText: 'Simpan',
+          preConfirm: function() {
+              var fileInput = document.getElementById('ed_foto');
+              var file = fileInput.files.length > 0 ? fileInput.files[0] : null;
+              var payload = {
+                  Kode_Barang: kodeBarang, Nama_Barang: document.getElementById('ed_nama').value.toUpperCase(),
+                  Merk_Model: document.getElementById('ed_merk').value.toUpperCase(), No_Seri: aset.No_Seri || "-",
+                  Tahun_Perolehan: document.getElementById('ed_tahun').value, Harga_Perolehan: document.getElementById('ed_harga').value.replace(/[^0-9]/g, ""),
+                  Jumlah: document.getElementById('ed_jumlah').value, Kondisi_B: document.getElementById('ed_b').value, Kondisi_KB: document.getElementById('ed_kb').value, Kondisi_RB: document.getElementById('ed_rb').value
+              };
+              return new Promise(function(resolve) {
+                  if (file) {
+                      var r = new FileReader();
+                      r.onload = function(e) { payload.base64 = e.target.result.split(',')[1]; payload.mimeType = file.type; payload.fileName = "Aset_"+kodeBarang+"_"+file.name; resolve(payload); };
+                      r.readAsDataURL(file);
+                  } else { resolve(payload); }
+              });
+          }
+      }).then(function(result) {
+          if (result.isConfirmed) {
+              Swal.fire({ title: 'Memperbarui...', allowOutsideClick: false, background: '#1e293b', didOpen: () => Swal.showLoading() });
+              if (typeof google !== 'undefined') {
+                  google.script.run.withSuccessHandler(function(res) {
+                      if (res.success) { Swal.fire({toast:true, position:'top-end', icon:'success', title:'Diperbarui!', showConfirmButton:false, timer:3000, background:'#1e293b', color:'#38bdf8'}); fetchBMDData(); }
+                      else { Swal.fire('Gagal', res.message, 'error'); }
+                  }).editDataBMDDenganFoto(result.value);
+              }
+          }
+      });
+  }
+
+  if (document.readyState === 'loading') { document.addEventListener("DOMContentLoaded", initBMDEntri); } else { initBMDEntri(); }
+</script>

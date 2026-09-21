@@ -1,0 +1,103 @@
+<style>
+.kpg-premium { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top left, #1e293b, #020617); min-height: 85vh; padding: 30px; border-radius: 24px; color: #f8fafc; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.kpg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+.kpg-title h1 { margin: 0; font-size: 32px; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpg-title p { margin: 5px 0 0; color: #94a3b8; font-size: 13px; }
+.kpg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 35px; }
+.kpg-stat-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.kpg-stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6; }
+.kpg-stat-card.green::before { background: #10b981; }
+.kpg-stat-card.purple::before { background: #8b5cf6; }
+.kpg-stat-card h4 { margin: 0; font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 1px; }
+.kpg-stat-card h2 { margin: 10px 0 0; font-size: 36px; color: #fff; }
+.kpg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.kpg-menu-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
+.kpg-menu-card:hover { transform: translateY(-7px); background: rgba(30, 41, 59, 0.8); border-color: #3b82f6; box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2); }
+.kpg-menu-card.cyan:hover { border-color: #06b6d4; box-shadow: 0 15px 30px rgba(6, 182, 212, 0.2); }
+.kpg-menu-card.emerald:hover { border-color: #10b981; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2); }
+.kpg-menu-card.violet:hover { border-color: #8b5cf6; box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2); }
+.kpg-icon-wrap { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; margin-bottom: 15px; }
+.kpg-menu-card .kpg-icon-wrap { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.kpg-menu-card.cyan .kpg-icon-wrap { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+.kpg-menu-card.emerald .kpg-icon-wrap { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.kpg-menu-card.violet .kpg-icon-wrap { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.kpg-menu-title { font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; }
+.kpg-menu-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+</style>
+
+<div class="kpg-premium">
+  <div class="kpg-header">
+    <div class="kpg-title">
+      <h1>🚀 Dashboard Kepegawaian</h1>
+      <p>Sistem Informasi Manajemen Kehadiran & Aparatur</p>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px; color:#94a3b8; margin-bottom:5px;" id="kpg-date">Memuat Tanggal...</div>
+      <button onclick="kpgSetup()" style="background:#0f172a; border:1px solid #334155; color:#cbd5e1; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:11px;">⚙️ Setup Database</button>
+    </div>
+  </div>
+
+  <div class="kpg-stats">
+    <div class="kpg-stat-card"><h4>Total Pegawai</h4><h2 id="st-pegawai">-</h2></div>
+    <div class="kpg-stat-card green"><h4>Hadir Hari Ini</h4><h2 id="st-hadir">-</h2></div>
+    <div class="kpg-stat-card purple"><h4>Tingkat Kehadiran</h4><h2 id="st-persen">-</h2></div>
+  </div>
+
+  <div class="kpg-grid">
+    <!-- Tombol Rekam Absensi -->
+    <div class="kpg-menu-card" onclick="loadPage('AbsensiHarian')">
+      <div class="kpg-icon-wrap">📝</div>
+      <div><div class="kpg-menu-title">Rekam Absen Harian</div><div class="kpg-menu-desc">Input data absensi satuan atau upload massal via Excel.</div></div>
+    </div>
+
+    <!-- Tombol Baru: Laporan Absensi -->
+    <div class="kpg-menu-card cyan" onclick="loadPage('LaporanAbsensi')">
+      <div class="kpg-icon-wrap">📑</div>
+      <div><div class="kpg-menu-title">Pusat Laporan Absensi</div><div class="kpg-menu-desc">Cetak rekap PDF harian dan bulanan secara instan.</div></div>
+    </div>
+
+    <!-- Tombol Rekap Bulanan -->
+    <div class="kpg-menu-card emerald" onclick="loadPage('RekapBulanan')">
+      <div class="kpg-icon-wrap">📊</div>
+      <div><div class="kpg-menu-title">Rekap Bulanan</div><div class="kpg-menu-desc">Dashboard akumulasi data absensi periode tanggal 21-20.</div></div>
+    </div>
+
+    <!-- Tombol Apel Senin -->
+    <div class="kpg-menu-card violet" onclick="loadPage('ApelSeninPagi')">
+      <div class="kpg-icon-wrap">📢</div>
+      <div><div class="kpg-menu-title">Apel Senin Pagi</div><div class="kpg-menu-desc">Register absensi apel dan dokumentasi foto kegiatan.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Menampilkan waktu
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('kpg-date').innerText = new Date().toLocaleDateString('id-ID', opts);
+
+  function kpgSetup(){
+    google.script.run.withSuccessHandler(r => alert('Berhasil disiapkan!')).setupKepegawaian();
+  }
+
+  // Animasi Infografis
+  google.script.run.withSuccessHandler(d => {
+    document.getElementById('st-pegawai').innerText = d ? d.length : 0;
+  }).getMasterPegawai();
+
+  google.script.run.withSuccessHandler(d => {
+    if(!d || d.length <= 1) return;
+    let today = new Date().toISOString().slice(0,10);
+    let hadir = 0, total = 0;
+    for(let i=1; i<d.length; i++) {
+       let tgl = d[i][3]; 
+       if(tgl instanceof Date) tgl = tgl.toISOString().slice(0,10);
+       if(String(tgl).includes(today)) {
+          total++;
+          let m = String(d[i][6]).trim(), p = String(d[i][7]).trim();
+          if(m !== '-' && p !== '-') hadir++;
+       }
+    }
+    document.getElementById('st-hadir').innerText = hadir;
+    document.getElementById('st-persen').innerText = total > 0 ? Math.round((hadir/total)*100) + '%' : '-';
+  }).getTableDataKinerjaHarian();
+</script>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  
+  <!-- Memuat SweetAlert2 untuk animasi Popup Logout yang cantik -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f1f5f9; }
+    .app { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: 270px; background: #1f2937; color: white; padding: 20px 10px; overflow-y: auto; }
+    .logo { font-size: 20px; font-weight: bold; padding: 10px; margin-bottom: 15px; }
+    .menu { margin-bottom: 5px; }
+    .menu-title { padding: 11px; cursor: pointer; border-radius: 6px; }
+    .menu-title:hover { background: #374151; }
+    .submenu { display: none; padding-left: 15px; }
+    .submenu.open { display: block; }
+    .submenu-item { padding: 9px 12px; cursor: pointer; border-radius: 5px; color: #d1d5db; }
+    .submenu-item:hover { background: #374151; color: white; }
+
+    /* CONTENT */
+    .main { flex: 1; overflow: auto; transition: padding 0.3s; }
+    .topbar { background: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+    #content { transition: all 0.3s; }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- Sembunyikan Sidebar Secara Default -->
+  <aside class="sidebar" style="display: none;">
+    <div class="logo">PORTFOLIO KERJA</div>
+
+    <!-- ADMINISTRASI UMUM -->
+    <div class="menu">
+      <div class="menu-title" onclick="toggleMenu('adminUmum')">📁 Administrasi Umum</div>
+      <div id="adminUmum" class="submenu">
+        <div class="menu-title" onclick="toggleMenu('keuangan')">💰 Keuangan</div>
+        <div id="keuangan" class="submenu">
+          <div class="submenu-item" data-menu="Perencanaan" onclick="loadPage('Perencanaan')">Perencanaan</div>
+          <div class="submenu-item" data-menu="Realisasi" onclick="loadPage('Realisasi')">Realisasi</div>
+          <div class="submenu-item" data-menu="PelaporanEvaluasi" onclick="loadPage('PelaporanEvaluasi')">Pelaporan & Evaluasi</div>
+        </div>
+        
+        <!-- Hapus toggleMenu agar klik langsung membuka dashboard tanpa memunculkan dropdown -->
+    <div class="menu-title" onclick="loadPage('Kepegawaian')">👥 Kepegawaian</div>
+    
+    <!-- Elemen submenu dikosongkan teksnya, namun kerangkanya tetap dipertahankan agar sistem Hak Akses mendeteksi otorisasi pengguna -->
+    <div id="kepegawaian" class="submenu">
+      <div class="submenu-item" data-menu="AbsensiHarian"></div>
+      <div class="submenu-item" data-menu="ApelSeninPagi"></div>
+      <div class="submenu-item" data-menu="LaporanAbsensi"></div>
+    </div>
+
+        <div class="submenu-item" data-menu="SuratNaskahDinas" onclick="loadPage('SuratNaskahDinas')">Surat & Naskah Dinas</div>
+        <div class="submenu-item" data-menu="Kerumahtanggaan" onclick="loadPage('Kerumahtanggaan')">Kerumahtanggaan</div>
+        <div class="menu-title" onclick="loadPage('BMD')">📦 Barang Milik Daerah</div>
+        <div id="menuBMD" class="submenu">
+          <div class="submenu-item" data-menu="BMDEntri"></div>
+          <div class="submenu-item" data-menu="BMDLaporan"></div>
+        </div>
+        </div> <!-- Ini penutup id="adminUmum" -->
+    </div> <!-- Ini penutup class="menu" untuk Administrasi Umum -->
+
+    <!-- PERENCANAAN HUTAN -->
+    <div class="menu">
+      <div class="menu-title" onclick="toggleMenu('hutan')">🌳 Perencanaan dan Pemanfaatan Hutan</div>
+      <div id="hutan" class="submenu">
+        <div class="submenu-item" data-menu="PerencanaanHutan" onclick="loadPage('PerencanaanHutan')">Perencanaan Hutan</div>
+        <div class="submenu-item" data-menu="PerizinanPemanfaatan" onclick="loadPage('PerizinanPemanfaatan')">Perizinan dan Pemanfaatan</div>
+        <div class="submenu-item" data-menu="MonitoringEvaluasi" onclick="loadPage('MonitoringEvaluasi')">Monitoring & Evaluasi</div>
+      </div>
+    </div>
+
+    <!-- PERLINDUNGAN -->
+    <div class="menu">
+      <div class="menu-title" onclick="toggleMenu('perlindungan')">🛡️ Perlindungan, Konservasi dan Pemberdayaan Masyarakat Hutan</div>
+      <div id="perlindungan" class="submenu">
+        <div class="submenu-item" data-menu="PengamananHutan" onclick="loadPage('PengamananHutan')">Pengamanan Hutan</div>
+        <div class="submenu-item" data-menu="RehabilitasiPengendalian" onclick="loadPage('RehabilitasiPengendalian')">Rehabilitasi dan Pengendalian</div>
+        <div class="submenu-item" data-menu="KoordinasiSosialisasi" onclick="loadPage('KoordinasiSosialisasi')">Koordinasi & Sosialisasi</div>
+      </div>
+    </div>
+
+    <!-- INOVASI -->
+    <div class="menu">
+      <div class="menu-title" data-menu="InovasiDaerah" onclick="loadPage('InovasiDaerah')">💡 Inovasi Daerah</div>
+    </div>
+
+    <!-- KOMPETENSI ASN -->
+    <div class="menu">
+      <div class="menu-title" onclick="window.kompMode=''; loadPage('Kompetensi')">🎓 Pengembangan Kompetensi ASN</div>
+      <div id="kompetensi" class="submenu">
+        <div class="submenu-item" data-menu="PengembanganDiri"></div>
+        <div class="submenu-item" data-menu="AntiKorupsi"></div>
+      </div>
+    </div>
+
+    <!-- EVALUASI -->
+    <div class="menu">
+      <div class="menu-title" data-menu="EvaluasiBangkom" onclick="loadPage('EvaluasiBangkom')">📊 Evaluasi Bangkom</div>
+    </div>
+
+    <!-- SETTING ADMIN -->
+    <div class="menu" id="settingAdmin">
+      <div class="menu-title" onclick="toggleMenu('setting'); loadPage('HakAkses')">⚙️ Pengaturan</div>
+      <div id="setting" class="submenu">
+        <div class="submenu-item" data-menu="HakAkses" onclick="loadPage('HakAkses')">🔐 Hak Akses</div>
+        
+        <!-- INI ADALAH TOMBOL BARU UNTUK SETTING HIERARKI -->
+        <div class="submenu-item" data-menu="StrukturPegawai" onclick="loadPage('StrukturPegawai')">🫂 Struktur Atasan</div>
+        
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" style="padding: 0;">
+    <div class="topbar" style="display: none;">
+      <b>Portfolio Kerja</b>
+      <span style="float:right">
+        <span id="namaUser"></span>
+        <button onclick="logout()" style="margin-left:10px;background:#dc2626;color:white;border:0;padding:6px 12px;border-radius:6px;cursor:pointer">🚪 Keluar</button>
+      </span>
+    </div>
+
+    <div id="content" style="padding: 0; min-height: 100vh; background: transparent;">
+      <div style="text-align: center; padding-top: 120px; color: #64748b;">
+        <h2 style="color: #1e293b;">Sedang Memuat Sistem...</h2>
+        <p>Mengecek sesi keamanan Anda.</p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  function toggleMenu(id) {
+    const menu = document.getElementById(id);
+    if (menu) menu.classList.toggle('open');
+  }
+
+  function loadPage(page) {
+    google.script.run
+      .withSuccessHandler(function(html) {
+        document.getElementById('content').innerHTML = html;
+        executeScripts(document.getElementById('content'));
+      })
+      .withFailureHandler(function(error) {
+        document.getElementById('content').innerHTML = '<p style="color:red">' + error.message + '</p>';
+      })
+      .getPage(page);
+  }
+
+  function executeScripts(container) {
+    const scripts = container.querySelectorAll('script');
+    scripts.forEach(function(oldScript) {
+      const newScript = document.createElement('script');
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+
+  // VALIDASI LOGIN / ROUTING
+  google.script.run
+  .withSuccessHandler(function(user){
+    if(!user){
+      loadPage("Login");
+      return;
+    }
+
+    document.querySelector('.sidebar').style.display = '';
+    document.querySelector('.topbar').style.display = '';
+    document.querySelector('.main').style.padding = '25px';
+    
+    let contentEl = document.getElementById('content');
+    contentEl.style.padding = '20px';
+    contentEl.style.minHeight = '500px';
+    contentEl.style.background = 'white';
+    contentEl.style.borderRadius = '10px';
+    
+    contentEl.innerHTML = "<h2>Selamat Datang, " + user.nama + "</h2><p>Silakan pilih menu di sebelah kiri.</p>";
+    document.getElementById("namaUser").innerHTML = user.nama + " (" + user.role + ")";
+
+    // PERCEPATAN & ANTI-KEDIPAN: Eksekusi fungsi loadMenu dengan membawa data "user"
+    loadMenu(user);
+  })
+  .withFailureHandler(function(error){
+    document.getElementById('content').innerHTML = "<p style='color:red;'>Koneksi terputus: " + error.message + "</p>";
+  })
+  .getCurrentUser();
+
+  function logout(){
+    Swal.fire({
+      title: 'Keluar dari Aplikasi?',
+      text: "Sesi Anda akan diakhiri dan akan diarahkan kembali ke halaman login.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Sedang keluar dari sistem...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading()
+          }
+        });
+        
+        google.script.run.withSuccessHandler(function(){
+          window.top.location.href = "<?=ScriptApp.getService().getUrl()?>";
+        }).logoutUser();
+      }
+    });
+  }
+
+  // LOGIKA HAK AKSES (MENYEMBUNYIKAN FOLDER KOSONG)
+  function loadMenu(user){
+    
+    // 1. INSTAN: Sembunyikan semua item & folder menu sebelum loading selesai!
+    document.querySelectorAll('.menu-title, .submenu-item').forEach(function(el) {
+      el.style.display = "none";
+      el.classList.remove("menu-aktif");
+    });
+
+    google.script.run.withSuccessHandler(function(data){
+      if(!data) data = [];
+
+      // PERBAIKAN: Gunakan toUpperCase dan includes agar lebih kebal salah ketik/spasi
+      let userRole = (user.role || "").toUpperCase();
+      
+      // FAILSAFE: Berikan Hak Akses ke menu Pengaturan jika dia ADMIN
+      if(userRole.includes("ADMIN")) {
+         if(!data.some(m => m.kode === "HakAkses")) {
+            data.push({kode: "HakAkses", nama: "Hak Akses"});
+         }
+         // TAMBAHAN FAILSAFE AGAR MENU STRUKTUR ATASAN MUNCUL UNTUK ADMIN
+         if(!data.some(m => m.kode === "StrukturPegawai")) {
+            data.push({kode: "StrukturPegawai", nama: "Struktur Atasan"});
+         }
+      }
+
+      // 2. Munculkan HANYA menu yang diizinkan
+      if(data.length > 0) {
+        data.forEach(function(m){
+          let el = document.querySelector("[data-menu='"+m.kode+"']");
+          if(el){
+            el.style.display = "block";
+            el.classList.add("menu-aktif");
+          }
+        });
+      }
+
+      // 3. Evaluasi Folder (Submenu): Munculkan folder jika ada anak menu di dalamnya
+      let submenus = document.querySelectorAll('.submenu');
+      for(let i = submenus.length - 1; i >= 0; i--) {
+        let sub = submenus[i];
+        let parentTitle = sub.previousElementSibling;
+        
+        if(parentTitle && parentTitle.classList.contains('menu-title')) {
+          if(sub.querySelectorAll('.menu-aktif').length > 0) {
+            parentTitle.style.display = "block";
+          }
+        }
+      }
+
+      // 4. Evaluasi Induk Menu Utama (Folder Terluar)
+      document.querySelectorAll('.menu').forEach(function(menuBlock) {
+        let title = menuBlock.querySelector('.menu-title');
+        let activeItems = menuBlock.querySelectorAll('.menu-aktif');
+        
+        if(title && !title.hasAttribute('data-menu')) {
+           if(activeItems.length > 0) {
+             title.style.display = "block";
+           }
+        }
+      });
+
+    }).getMenuUser(user.username); 
+  }
+</script>
+
+</body>
+</html>

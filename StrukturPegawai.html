@@ -1,0 +1,197 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  
+  .sp-view { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top left, #1e293b, #020617); min-height: 85vh; padding: 30px; border-radius: 24px; color: #f8fafc; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .sp-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+  
+  .sp-title { font-size: 24px; font-weight: 800; color: #00f3ff; margin-bottom: 5px; text-transform: uppercase; }
+  .sp-desc { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+  
+  .sp-input { width: 100%; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px 16px; color: #f8fafc; font-size: 0.9rem; margin-bottom: 20px; cursor: pointer; transition: 0.3s; }
+  .sp-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.25); }
+  
+  .sp-table-wrap { max-height: 450px; overflow-y: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  .sp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .sp-table th { background: rgba(15, 23, 42, 0.95); color: #38bdf8; padding: 16px; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid rgba(56, 189, 248, 0.3); }
+  .sp-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #e2e8f0; }
+  .sp-table tr:hover td { background: rgba(56, 189, 248, 0.08); }
+  
+  /* Checkbox Custom */
+  .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; }
+  .checkbox-wrapper input { display: none; }
+  .checkmark { width: 22px; height: 22px; background: rgba(30, 41, 59, 0.8); border: 2px solid #64748b; border-radius: 6px; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+  .checkbox-wrapper input:checked + .checkmark { background: #10b981; border-color: #10b981; }
+  .checkbox-wrapper input:checked + .checkmark::after { content: '✔'; color: white; font-size: 14px; font-weight: bold; }
+  
+  .btn-simpan { background-image: linear-gradient(270deg, #2563eb, #3b82f6); color: #ffffff; font-weight: 800; border-radius: 12px; cursor: pointer; padding: 14px 24px; border: none; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 20px;}
+  .btn-simpan:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
+
+  /* Custom Scrollbar */
+  .sp-table-wrap::-webkit-scrollbar { width: 8px; }
+  .sp-table-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  .sp-table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+</style>
+
+<div class="sp-view">
+  <div class="sp-card">
+    <h2 class="sp-title"><i class="fa-solid fa-users-viewfinder"></i> Mapping Struktur Atasan & Bawahan</h2>
+    <div class="sp-desc">Tentukan staf/bawahan yang berada di bawah koordinasi masing-masing atasan untuk mempermudah pemantauan evaluasi kinerja.</div>
+    
+    <label style="font-size: 11px; color: #cbd5e1; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: block;">Pilih Pejabat Penilai (Atasan)</label>
+    <select id="select-atasan" class="sp-input" onchange="renderBawahanList()">
+      <option value="">-- Memuat Data Pegawai... --</option>
+    </select>
+  </div>
+
+  <div class="sp-card" id="panel-bawahan" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <h3 style="font-size: 14px; font-weight: bold; color: #10b981; text-transform: uppercase; margin: 0;"><i class="fa-solid fa-users"></i> Pilih Staf (Bawahan)</h3>
+      <span id="count-bawahan" style="background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">0 Terpilih</span>
+    </div>
+    
+    <div class="sp-table-wrap">
+      <table class="sp-table">
+        <thead>
+          <tr>
+            <th style="width: 50px; text-align: center;">Pilih</th>
+            <th>Nama Pegawai</th>
+            <th>NIP</th>
+            <th>Jabatan / Role saat ini</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-bawahan">
+          <!-- Data di-render lewat Javascript -->
+        </tbody>
+      </table>
+    </div>
+    
+    <button onclick="simpanStruktur()" class="btn-simpan"><i class="fa-solid fa-floppy-disk"></i> Simpan Relasi Struktur</button>
+  </div>
+</div>
+
+<script>
+  let dataPegawaiGlobal = [];
+  let dataHierarkiGlobal = [];
+
+  // Panggil Data Master saat load
+  Swal.fire({ title: 'Memuat Data...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff' });
+  
+  google.script.run.withSuccessHandler(function(pegawaiRes) {
+    dataPegawaiGlobal = pegawaiRes;
+    
+    google.script.run.withSuccessHandler(function(hierarkiRes) {
+      dataHierarkiGlobal = hierarkiRes || [];
+      populateDropdownAtasan();
+      Swal.close();
+    }).getHierarkiPegawai();
+    
+  }).getMasterPegawai();
+
+  function populateDropdownAtasan() {
+    const select = document.getElementById('select-atasan');
+    select.innerHTML = '<option value="">-- Silakan Pilih Atasan --</option>';
+    
+    dataPegawaiGlobal.forEach(p => {
+      // Kecualikan opsi kosong
+      if (p.nama && p.nip) {
+        select.innerHTML += `<option value="${p.nip}" data-nama="${p.nama}">${p.nama} - (${p.peran})</option>`;
+      }
+    });
+  }
+
+  function renderBawahanList() {
+    const select = document.getElementById('select-atasan');
+    const nipAtasan = select.value;
+    const panel = document.getElementById('panel-bawahan');
+    const tbody = document.getElementById('tbody-bawahan');
+    
+    if (!nipAtasan) {
+      panel.style.display = 'none';
+      return;
+    }
+    
+    panel.style.display = 'block';
+    let html = '';
+    
+    // Cari NIP bawahan yang sudah terekam untuk atasan ini
+    const bawahanTerekam = dataHierarkiGlobal
+                           .filter(h => h.nip_atasan === nipAtasan)
+                           .map(h => h.nip_bawahan);
+
+    dataPegawaiGlobal.forEach(p => {
+      // Atasan tidak bisa memilih dirinya sendiri sebagai bawahan
+      if (p.nip !== nipAtasan) {
+        let isChecked = bawahanTerekam.includes(p.nip) ? 'checked' : '';
+        html += `<tr>
+          <td style="text-align: center;">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" class="chk-bawahan" value="${p.nip}" data-nama="${p.nama}" onchange="hitungChecked()" ${isChecked}>
+              <span class="checkmark"></span>
+            </label>
+          </td>
+          <td style="font-weight: 500;">${p.nama}</td>
+          <td style="color: #94a3b8; font-size: 12px;">${p.nip}</td>
+          <td><span style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 10px;">${p.peran}</span></td>
+        </tr>`;
+      }
+    });
+    
+    tbody.innerHTML = html;
+    hitungChecked();
+  }
+
+  function hitungChecked() {
+    const checked = document.querySelectorAll('.chk-bawahan:checked').length;
+    document.getElementById('count-bawahan').innerText = checked + " Terpilih";
+  }
+
+  function simpanStruktur() {
+    const select = document.getElementById('select-atasan');
+    const nipAtasan = select.value;
+    if (!nipAtasan) return;
+    
+    const namaAtasan = select.options[select.selectedIndex].getAttribute('data-nama');
+    const checkboxes = document.querySelectorAll('.chk-bawahan:checked');
+    
+    let listBawahan = [];
+    checkboxes.forEach(chk => {
+      listBawahan.push({
+        nip: chk.value,
+        nama: chk.getAttribute('data-nama')
+      });
+    });
+
+    if (listBawahan.length === 0) {
+      Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Anda tidak memilih satupun bawahan. Ini akan mengosongkan hierarki atasan tersebut. Lanjutkan?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Kosongkan',
+        background: '#0f172a', color: '#fff'
+      }).then((res) => {
+        if(res.isConfirmed) eksekusiSimpan(nipAtasan, namaAtasan, listBawahan);
+      });
+    } else {
+      eksekusiSimpan(nipAtasan, namaAtasan, listBawahan);
+    }
+  }
+
+  function eksekusiSimpan(nipAtasan, namaAtasan, listBawahan) {
+    Swal.fire({ title: 'Menyimpan Hierarki...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff' });
+    
+    google.script.run.withSuccessHandler(function(res) {
+      if(res.success) {
+        // Refresh data lokal setelah simpan
+        google.script.run.withSuccessHandler(function(hierarkiRes) {
+          dataHierarkiGlobal = hierarkiRes || [];
+          Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Struktur Tersimpan!', showConfirmButton: false, timer: 2500, background: '#0f172a', color: '#10b981' });
+        }).getHierarkiPegawai();
+      } else {
+        Swal.fire('Gagal Menyimpan', res.message, 'error');
+      }
+    }).simpanHierarkiBawahan(nipAtasan, namaAtasan, listBawahan);
+  }
+</script>

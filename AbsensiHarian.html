@@ -1,0 +1,527 @@
+<style>
+.kep-wrap{font-family:Inter,Arial,sans-serif;color:#e5e7eb;background:linear-gradient(135deg,#0b1220,#111827);border:1px solid #263244;border-radius:20px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.kep-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px;flex-wrap:wrap}.kep-head h2{margin:0;font-size:24px;color:#fff}.kep-head p{margin:5px 0 0;color:#94a3b8;font-size:12px}
+.kep-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.kep-card{background:rgba(15,23,42,.78);border:1px solid #263244;border-radius:16px;padding:18px}.kep-card h3{margin:0 0 12px;color:#fff;font-size:15px}.kep-card p{font-size:12px;color:#94a3b8;line-height:1.6}
+.kep-btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;color:#fff;background:#2563eb;font-weight:700}.kep-btn:hover{filter:brightness(1.08)}.kep-btn.alt{background:#475569}.kep-btn.green{background:#059669}.kep-btn.red{background:#dc2626}.kep-btn.purple{background:#7c3aed}.kep-btn.orange{background:#d97706}.kep-btn { transition: all 0.15s ease-in-out; }.kep-btn:active { transform: scale(0.92); filter: brightness(0.9); }
+.kep-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.kep-field{display:flex;flex-direction:column;gap:6px}.kep-field label{font-size:10px;text-transform:uppercase;font-weight:800;color:#94a3b8}.kep-field input,.kep-field select,.kep-field textarea,.kep-search{width:100%;box-sizing:border-box;background:#0b1220;border:1px solid #334155;color:#fff;border-radius:9px;padding:10px;font-size:12px;outline:none}.kep-field textarea{min-height:80px;resize:vertical}.kep-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kep-full{grid-column:1/-1}
+.kep-table-wrap{overflow:auto;max-height:285px;border:1px solid #263244;border-radius:12px}.kep-table{width:100%;border-collapse:collapse;min-width:800px}.kep-table th,.kep-table td{padding:9px 10px;border-bottom:1px solid #263244;font-size:11px;text-align:left}.kep-table th{background:#0b1220;color:#cbd5e1;position:sticky;top:0;z-index:2}.kep-table td{color:#dbe4ef}.kep-badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800}.kep-hadir{background:rgba(16,185,129,.15);color:#34d399}.kep-absen{background:rgba(239,68,68,.15);color:#f87171}.kep-note{font-size:11px;color:#94a3b8}.kep-msg{margin-top:10px;font-size:12px}.kep-ok{color:#34d399}.kep-err{color:#f87171}
+.kep-drop{border:2px dashed #475569;border-radius:12px;padding:25px;text-align:center;background:#0b1220;transition:.2s}.kep-drop:hover{border-color:#10b981;background:#0f172a}.kep-drop.drag{border-color:#10b981;background:rgba(16,185,129,.08)}.kep-drop input{position:absolute;width:1px;height:1px;opacity:0}.kep-tabs{display:flex;gap:5px;background:#020617;border:1px solid #334155;padding:4px;border-radius:10px}.kep-tab{border:0;background:transparent;color:#94a3b8;padding:8px 12px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer}.kep-tab.active{background:#10b981;color:#fff}.kep-info{padding:10px 12px;border:1px solid #334155;border-radius:10px;background:#0b1220;color:#94a3b8;font-size:11px;line-height:1.6}.kep-stat{display:flex;gap:10px;flex-wrap:wrap}.kep-stat div{background:#0b1220;border:1px solid #263244;border-radius:12px;padding:12px 16px}.kep-stat b{display:block;font-size:18px;color:#fff}.kep-stat span{font-size:10px;color:#94a3b8}.kep-hidden{display:none!important}.kep-mini{font-size:10px;color:#64748b}.kep-file-name{margin-top:9px;font-size:11px;color:#34d399;font-weight:800;word-break:break-all}
+@media(max-width:850px){.kep-grid,.kep-form{grid-template-columns:1fr}.kep-full{grid-column:auto}.kep-wrap{padding:15px}.kep-tabs{width:100%}.kep-tab{flex:1}}
+</style>
+
+<!-- PENAMBAHAN KELAS PEMBUNGKUS KEP-WRAP -->
+<div class="kep-wrap">
+  <div class="kep-head">
+      <div>
+        <h2>🕘 Absensi Harian</h2>
+        <p>Input kehadiran harian pegawai, upload Excel, dan rekap otomatis ke bulanan.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="kep-btn" style="background: #1e293b; border: 1px solid #334155; color: #cbd5e1;" type="button" onclick="loadPage('Kepegawaian')">
+          ⬅ Kembali ke Dashboard
+        </button>
+        <button class="kep-btn alt" type="button" onclick="window.ahLoad()">
+          ↻ Refresh
+        </button>
+      </div>
+  </div>
+
+  <div class="kep-card" style="margin-bottom:16px;background:linear-gradient(135deg,#0f172a,#172554);border-color:#1d4ed8">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div><h3 style="margin-bottom:6px">🌐 Portal Integrasi SIAP</h3><p style="margin:0">Akses Sistem Informasi Aktivitas Presensi Pemerintah Provinsi Kepulauan Riau tanpa meninggalkan aplikasi ini.</p></div>
+      <button class="kep-btn" type="button" onclick="bukaSiapPopup()">↗ BUKA PORTAL SIAP</button>
+    </div>
+  </div>
+
+  <div class="kep-card" style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px">
+      <h3 style="margin:0">📝 Rekam Absensi</h3>
+      <div class="kep-tabs">
+        <button id="ah-tab-manual" class="kep-tab active" type="button" onclick="ahSwitchTab('manual')">Satuan</button>
+        <button id="ah-tab-excel" class="kep-tab" type="button" onclick="ahSwitchTab('excel')">Upload Excel</button>
+      </div>
+    </div>
+
+    <div id="ah-view-manual">
+      <div class="kep-form">
+        <div class="kep-field"><label>Tanggal</label><input id="ah-tgl" type="date"></div>
+        <div class="kep-field"><label>Nama Pegawai</label><select id="ah-nama"><option value="">Memuat...</option></select></div>
+        <div class="kep-field"><label>Jam Masuk</label><input id="ah-masuk" type="text" inputmode="numeric" maxlength="8" placeholder="HH:MM:SS" autocomplete="off"></div>
+        <div class="kep-field"><label>Jam Pulang</label><input id="ah-pulang" type="text" inputmode="numeric" maxlength="8" placeholder="HH:MM:SS" autocomplete="off"></div>
+        <div class="kep-field"><label>Tipe Hari</label><select id="ah-tipe"><option value="Kerja">Kerja</option><option value="Libur">Libur</option></select></div>
+        <div class="kep-field"><label>Status</label>
+            <select id="ah-status">
+              <option value="Hadir">Hadir</option>
+              <option value="Libur">Libur</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Cuti">Cuti</option>
+              <option value="Dinas Luar">Dinas Luar</option>
+              <option value="TB">Tugas Belajar</option>
+              <option value="TK">TK</option>
+            </select>
+        </div>
+        <div class="kep-field kep-full"><label>Keterangan</label><input id="ah-ket" placeholder="Opsional"></div>
+        <div class="kep-full kep-toolbar" style="margin-bottom:0">
+          <button id="ah-save-btn" class="kep-btn green" type="button" onclick="window.ahSave()">💾 Simpan Absensi</button>
+          <button id="ah-cancel-edit" class="kep-btn alt kep-hidden" type="button" onclick="window.ahCancelEdit()">✖ Batal Edit</button>
+        </div>
+        <div id="ah-msg" class="kep-full kep-msg"></div>
+      </div>
+    </div>
+
+    <div id="ah-view-excel" class="kep-hidden">
+      <div class="kep-info" style="margin-bottom:12px">
+        <b style="color:#fff">Alur Upload Excel:</b> download template → isi data → simpan Excel → pilih/upload file → sistem membaca kolom → data tanggal+pegawai yang sudah ada akan diperbarui (UPSERT) → data baru disimpan ke <b style="color:#34d399">ABSENSI_HARIAN</b>.
+      </div>
+      <div class="kep-toolbar">
+        <button class="kep-btn green" type="button" onclick="window.ahDownloadTemplate()">⬇ Download Template Excel</button>
+        <button id="ah-upload-btn" class="kep-btn" type="button" onclick="window.ahUploadExcel()" disabled>☁ Upload & Simpan Data</button>
+      </div>
+      <div id="ah-dropzone" class="kep-drop">
+        <label for="ah-excel-file" style="cursor:pointer;display:block">
+          <div style="font-size:32px;margin-bottom:7px">📊</div>
+          <div style="font-weight:800;color:#e2e8f0">Klik untuk memilih file Excel</div>
+          <div class="kep-mini" style="margin-top:4px">atau drag & drop file .xlsx / .xls ke area ini</div>
+          <div id="ah-file-name" class="kep-file-name">Belum ada file dipilih</div>
+        </label>
+        <input id="ah-excel-file" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+      </div>
+      <div id="ah-excel-result" class="kep-msg"></div>
+    </div>
+  </div>
+
+  <div class="kep-card" style="margin-bottom:16px">
+    <div class="kep-toolbar" style="align-items:center">
+      <input id="ah-search" class="kep-search" style="flex:1;min-width:180px" placeholder="Cari nama..." oninput="window.ahRender()">
+      <input id="ah-filter" type="date" class="kep-search" style="width:170px" onchange="window.ahRender()">
+      <button class="kep-btn alt" type="button" onclick="document.getElementById('ah-search').value='';document.getElementById('ah-filter').value='';window.ahRender()">Reset</button>
+    </div>
+    <div class="kep-table-wrap">
+      <table class="kep-table">
+        <thead><tr><th>No</th><th>Nama</th><th>Tanggal</th><th>Masuk</th><th>Pulang</th><th>Status</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+        <tbody id="ah-body"><tr><td colspan="8" style="text-align:center;">Memuat...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- AKHIR DARI PEMBUNGKUS KEP-WRAP -->
+
+<script>
+// =====================================================
+// KONFIGURASI LOGO KOP SURAT KPHP
+// =====================================================
+window.LOGO_KIRI = "https://lh3.googleusercontent.com/d/1wG8CueHZXCoMbwD32hRlNrZBsZbv42Gr";
+window.LOGO_KANAN = "https://lh3.googleusercontent.com/d/1FFyZX9vfiUkGwTIneKIcfXbaNXzZsaZL";
+
+async function loadLogoKPHP(){
+  try{
+    if(sessionStorage.getItem("LogoKepri_Base64") &&
+       sessionStorage.getItem("LogoKPH_Base64")) return;
+
+    async function ambil(url){
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return await new Promise(resolve=>{
+        const reader = new FileReader();
+        reader.onloadend=()=>resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    sessionStorage.setItem("LogoKepri_Base64", await ambil(window.LOGO_KIRI));
+    sessionStorage.setItem("LogoKPH_Base64", await ambil(window.LOGO_KANAN));
+
+  }catch(e){
+    console.error("Gagal memuat logo:",e);
+  }
+}
+loadLogoKPHP();
+
+(function(){
+  let data = []; 
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const $ = id => document.getElementById(id);
+
+  function esc(v) { return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+  function msg(t, ok=true) { if($('ah-msg')) $('ah-msg').innerHTML = '<span class="'+(ok?'kep-ok':'kep-err')+'">'+esc(t)+'</span>'; }
+  function excelMsg(t, ok=true) { if($('ah-excel-result')) $('ah-excel-result').innerHTML = '<span class="'+(ok?'kep-ok':'kep-err')+'">'+esc(t)+'</span>'; }
+  function today() { let d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  
+  function dateNorm(v) {
+    if(!v) return '';
+    let d = new Date(String(v).trim());
+    if(!isNaN(d.getTime())) return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return String(v).trim();
+  }
+
+  function normalisasiJam(v) {
+    if(!v) return '-'; 
+    let raw = String(v).trim().replace(/\./g,':');
+    if(/^(?:\d{1,2}:){1,2}\d{1,2}$/.test(raw)) { 
+      let p=raw.split(':'), h=p[0].padStart(2,'0'), m=(p[1]||'0').padStart(2,'0'), s=(p[2]||'0').padStart(2,'0'); 
+      return h+':'+m+':'+s; 
+    }
+    return '-';
+  }
+
+  function formatJamInput(el) { 
+    let raw=String(el.value||'').replace(/[^0-9]/g,'').slice(0,6); 
+    if(raw.length>=5) el.value=raw.slice(0,2)+':'+raw.slice(2,4)+':'+raw.slice(4,6); 
+    else if(raw.length>=3) el.value=raw.slice(0,2)+':'+raw.slice(2); 
+    else el.value=raw; 
+  }
+
+  function pasangHandlerJam(id) { 
+    let el=$(id); if(!el) return; 
+    el.addEventListener('input',()=>formatJamInput(el)); 
+    el.addEventListener('blur',()=>{
+      if(el.value){
+        let n=normalisasiJam(el.value);
+        if(!/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(n)){ msg('Format jam harus HH:MM:SS.',false); el.focus(); }
+        else el.value=n;
+      }
+    }); 
+    el.addEventListener('paste',e=>{ e.preventDefault(); let text=(e.clipboardData||window.clipboardData).getData('text')||''; el.value=normalisasiJam(text); el.dispatchEvent(new Event('blur')); }); 
+  }
+
+  function loadSheetJS(cb){
+    if(window.XLSX){cb();return;} 
+    if(window._ahSheetLoading){window._ahSheetLoading.push(cb);return;} 
+    window._ahSheetLoading=[cb];
+    const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=function(){const q=window._ahSheetLoading||[];window._ahSheetLoading=null;q.forEach(fn=>fn());};
+    s.onerror=function(){const q=window._ahSheetLoading||[];window._ahSheetLoading=null;q.forEach(fn=>fn(false));}; 
+    document.head.appendChild(s);
+  }
+
+  window.ahSwitchTab = function(tab){
+    const manual=tab==='manual';
+    $('ah-view-manual').classList.toggle('kep-hidden',!manual);
+    $('ah-view-excel').classList.toggle('kep-hidden',manual);
+    $('ah-tab-manual').classList.toggle('active',manual);
+    $('ah-tab-excel').classList.toggle('active',!manual);
+  };
+
+  window.bukaSiapPopup = function(){
+    const url='https://siap.kepriprov.go.id/'; const w=1280, h=820; 
+    const left = Math.max(0,(screen.width-w)/2), top = Math.max(0,(screen.height-h)/2); 
+    const fitur = 'width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes,status=yes,toolbar=no,menubar=no,location=yes'; 
+    const win = window.open(url,'SIAP_KEPRI',fitur); 
+    if(win) win.focus(); 
+    else if(window.Swal) Swal.fire({icon:'warning',title:'Popup diblokir',text:'Izinkan popup untuk aplikasi ini, lalu klik BUKA PORTAL SIAP kembali.'}); 
+    else alert('Popup SIAP diblokir browser.'); 
+  };
+
+  window.ahLoad = function(){
+    $('ah-body').innerHTML = '<tr><td colspan="8" style="text-align:center">Memuat data dari Google Sheets...</td></tr>';
+    
+    google.script.run.withSuccessHandler(d => {
+      data = d || [];
+      window.ahRender();
+    }).withFailureHandler(e => {
+      msg(e.message||e, false);
+      $('ah-body').innerHTML='<tr><td colspan="8" style="text-align:center;color:#f87171">Gagal mengambil data dari server.</td></tr>';
+    }).getTableDataKinerjaHarian();
+    
+    google.script.run.withSuccessHandler(d => {
+      let arr = d || [];
+      $('ah-nama').innerHTML = '<option value="">- Pilih Pegawai -</option>' + arr.map(p => '<option value="'+esc(p.nama)+'">'+esc(p.nama)+(p.nip?' — '+esc(p.nip):'')+'</option>').join('');
+    }).getMasterPegawai();
+  };
+
+  window.ahRender = function(){
+    let b = $('ah-body');
+    let q = ($('ah-search').value || '').toLowerCase().trim();
+    let f = $('ah-filter').value;
+    let rows = '';
+    let n = 1;
+    
+    if(!data || data.length <= 1){
+      b.innerHTML = '<tr><td colspan="8" style="text-align:center">Belum ada data.</td></tr>';
+      return;
+    }
+    
+    var KODE_ABSEN = ["BTA", "CAP", "CB", "CH", "CTLN", "CM", "CS", "CT", "D", "GS", "H", "IDT", "IPA", "MD", "P1", "S", "TA", "TB", "TMK"];
+    
+    for(let i = data.length-1; i >= 1; i--){
+      let r = data[i];
+      let nama = String(r[1]||'');
+      let tgl = dateNorm(r[3]);
+      let ket = String(r[13]||'-').trim();
+      if (ket === '-') ket = '';
+      
+      if(q && !nama.toLowerCase().includes(q)) continue;
+      if(f && tgl !== f) continue;
+      
+      let ku = ket.toUpperCase();
+      let tipeDb = String(r[5]||'').trim().toUpperCase();
+      let hariDb = String(r[4]||'').trim().toUpperCase();
+      let masuk = String(r[6]||'-').trim();
+      let pulang = String(r[7]||'-').trim();
+      
+      let status = 'Hadir';
+      
+      if(tipeDb.includes('LIBUR') || hariDb==='MINGGU' || hariDb==='SABTU') {
+          status = 'Libur';
+      }
+      else if (KODE_ABSEN.includes(ku)) status = ku;
+      else if(ku.includes('SAKIT')) status = 'S';
+      else if(ku.includes('IZIN')) status = 'IPA';
+      else if(ku.includes('CUTI')) status = 'CT';
+      else if(ku.includes('DINAS') || ku === 'DL') status = 'D';
+      else if(ku.includes('TANPA') || ku === 'TK') status = 'TA';
+      else if(ku.includes('TUGAS BELAJAR')) status = 'TB';
+      else if(masuk === '-' || pulang === '-' || !masuk || !pulang) status = 'TMK';
+      
+      let badge = (status==='Hadir' || status==='H' || status==='GS') ? 'kep-hadir' : (status==='Libur'?'kep-note':'kep-absen');
+      let id = String(r[0]||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      
+      rows += '<tr>' +
+        '<td>' + (n++) + '</td>' +
+        '<td><b>' + esc(nama) + '</b></td>' +
+        '<td>' + esc(tgl||r[3]||'-') + '</td>' +
+        '<td>' + esc(masuk) + '</td>' +
+        '<td>' + esc(pulang) + '</td>' +
+        '<td><span class="kep-badge '+badge+'">' + esc(status) + '</span></td>' +
+        '<td>' + esc(ket) + '</td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="kep-btn" style="padding:6px 9px;margin-right:4px" type="button" onclick="window.ahEdit('+i+')">✏️ Edit</button>' +
+          '<button class="kep-btn red" style="padding:6px 9px" type="button" onclick="window.ahDel(\''+id+'\')">Hapus</button>' +
+        '</td>' +
+      '</tr>';
+    }
+    b.innerHTML = rows || '<tr><td colspan="8" style="text-align:center">Tidak ditemukan.</td></tr>';
+  };
+
+  let editRowIndex = null;
+  window.ahEdit = function(rowIndex){
+    const r = data[rowIndex]; 
+    if(!r) return msg('Data tidak ditemukan.', false);
+    editRowIndex = rowIndex; 
+    ahSwitchTab('manual');
+    
+    $('ah-tgl').value = dateNorm(r[3]) || ''; 
+    $('ah-nama').value = String(r[1]||''); 
+    $('ah-masuk').value = normalisasiJam(r[6]); 
+    $('ah-pulang').value = normalisasiJam(r[7]); 
+    
+    let tipeDb = String(r[5]||'Kerja').toLowerCase();
+    let hariDb = String(r[4]||'').toLowerCase();
+    let isLibur = tipeDb.includes('libur') || hariDb === 'minggu' || hariDb === 'sabtu';
+    
+    $('ah-tipe').value = isLibur ? 'Libur' : 'Kerja';
+    
+    const alasan = String(r[13]||'').trim(); 
+    let status = 'Hadir';
+    
+    if (isLibur) status = 'Libur';
+    else if(/sakit/i.test(alasan)) status = 'Sakit'; 
+    else if(/izin/i.test(alasan) || /\bIPA\b/i.test(alasan)) status = 'Izin'; 
+    else if(/cuti/i.test(alasan) || /\bCT\b/i.test(alasan)) status = 'Cuti'; 
+    else if(/dinas/i.test(alasan) || /\bDL\b/i.test(alasan)) status = 'Dinas Luar'; 
+    else if(/tugas belajar/i.test(alasan) || /\bTB\b/i.test(alasan)) status = 'TB'; 
+    else if(/\bTK\b|tanpa/i.test(alasan)) status = 'TK';
+    
+    let dropdown = $('ah-status');
+    let optionExists = Array.from(dropdown.options).some(opt => opt.value === status);
+    if (!optionExists) { dropdown.add(new Option(status, status)); }
+    dropdown.value = status; 
+    
+    let ket = alasan;
+    if(status !== 'Hadir' && status !== 'Libur') ket = ket.replace(new RegExp('^'+status+'\\s*(?:-\\s*)?','i'),'').trim(); 
+    else if(/^HADIR KERJA$/i.test(ket) || /^HADIR$/i.test(ket)) ket = '';
+    
+    $('ah-ket').value = ket; 
+    $('ah-save-btn').textContent = '💾 Simpan Perubahan'; 
+    $('ah-cancel-edit').classList.remove('kep-hidden');
+    msg('Mode edit aktif.', true); 
+    $('ah-view-manual').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.ahCancelEdit = function(){
+    editRowIndex = null; 
+    $('ah-save-btn').textContent = '💾 Simpan Absensi'; 
+    $('ah-cancel-edit').classList.add('kep-hidden'); 
+    $('ah-ket').value = ''; $('ah-masuk').value = ''; $('ah-pulang').value = ''; 
+    msg('Edit dibatalkan.', true);
+  };
+
+  function ahDuplicate(tgl, nama){
+    let target = nama.trim().toUpperCase();
+    for(let i = 1; i < data.length; i++){
+      if(String(data[i][1]||'').split(/NIP|NIK|\n|\(/i)[0].trim().toUpperCase() === target && dateNorm(data[i][3]) === tgl) return true;
+    }
+    return false;
+  }
+
+  window.ahSave = function(){
+    let nama = $('ah-nama').value, tgl = $('ah-tgl').value;
+    if(!nama || !tgl) return msg('Tanggal dan pegawai wajib diisi.', false);
+    
+    let masuk = normalisasiJam($('ah-masuk').value) || '-', pulang = normalisasiJam($('ah-pulang').value) || '-';
+    if((masuk !== '-' && !/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(masuk)) || (pulang !== '-' && !/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(pulang))){
+      return msg('Format Jam salah.', false);
+    }
+
+    if(editRowIndex === null && ahDuplicate(tgl, nama)) return msg('Pegawai sudah diabsen pada tanggal ini.', false);
+    
+    let st = $('ah-status').value;
+    let ket = $('ah-ket').value.trim();
+    let tipeHari = $('ah-tipe').value;
+    
+    if (st === 'Libur') tipeHari = 'Libur';
+    
+    let alasan = '';
+    if (st === 'Hadir' || st === 'Libur') {
+       alasan = ket || (st === 'Hadir' ? 'HADIR KERJA' : '');
+    } else {
+       alasan = st.toUpperCase() + (ket ? ' - '+ket : '');
+    }
+
+    let dt = new Date(tgl + 'T00:00:00');
+    let namaHari = isNaN(dt.getTime()) ? '-' : days[dt.getDay()];
+
+    let payload = {
+      Nama_Pegawai: nama,
+      Tanggal: tgl,
+      Hari: namaHari, 
+      Tipe_Hari: tipeHari,
+      Kehadiran_Masuk: masuk,
+      Kehadiran_Pulang: pulang,
+      Alasan: alasan,
+      Keterangan: alasan,
+      NIP: String((data[editRowIndex]||[])[2]||'-')
+    };
+    
+    let btn = $('ah-save-btn'); btn.disabled = true;
+    if(editRowIndex !== null){
+      google.script.run.withSuccessHandler(r=>{
+        btn.disabled = false; msg(r.message, r.success);
+        if(r.success) { window.ahCancelEdit(); window.ahLoad(); }
+      }).withFailureHandler(e=>{
+        btn.disabled = false; msg(e.message||e, false);
+      }).updateDataKinerjaHarian(editRowIndex+1, payload);
+    } else {
+      google.script.run.withSuccessHandler(r=>{
+        btn.disabled = false; msg(r.message, r.success);
+        if(r.success) { $('ah-ket').value=''; $('ah-masuk').value=''; $('ah-pulang').value=''; window.ahLoad(); }
+      }).withFailureHandler(e=>{
+        btn.disabled = false; msg(e.message||e, false);
+      }).simpanBulkKinerjaHarian([payload]);
+    }
+  };
+
+  window.ahDel = function(id){
+    if(!confirm('Hapus data absensi ini?')) return;
+    google.script.run.withSuccessHandler(r=>{
+      msg(r.message, r.success); window.ahLoad();
+    }).withFailureHandler(e=>{ msg(e.message||e, false); }).deleteDataKinerjaHarian(id);
+  };
+
+  window.ahDownloadTemplate = function(){
+    loadSheetJS(function(){
+      const headers=['No','NIP','Nama Pegawai','Tanggal','Hari','Tipe Hari','Jadwal Masuk','Jadwal Pulang','Kehadiran Masuk','Kehadiran Setelah apel','Kehadiran Pulang','TLT','POL.TLT','PSW','POL.PSW','TLT+PSW','Alasan'];
+      const rows=[headers]; 
+      for(let i=2; i<=150; i++) rows.push(new Array(headers.length).fill(''));
+      const ws = XLSX.utils.aoa_to_sheet(rows); 
+      const wb = XLSX.utils.book_new(); 
+      XLSX.utils.book_append_sheet(wb, ws, 'Template_Harian'); 
+      XLSX.writeFile(wb, 'Template_Absensi_Harian_'+today()+'.xlsx');
+    });
+  };
+
+  function normalizeDateXls(raw){
+    if(typeof raw==='number'){ const base=new Date(Date.UTC(1899,11,30)); const d=new Date(base.getTime()+Math.floor(raw)*86400000); return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0'); }
+    return dateNorm(raw);
+  }
+
+  function normalisasiJamExcel(v){
+    if(v===null || v===undefined || v==='') return '-';
+    if(typeof v === 'number'){
+      let total = Math.round(v * 24 * 60 * 60);
+      let h = Math.floor(total/3600);
+      let m = Math.floor((total%3600)/60);
+      let s = total%60;
+      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+    let raw = String(v).trim();
+    if(/^\d{1,2}:\d{1,2}(:\d{1,2})?$/.test(raw)){
+      let p=raw.split(':');
+      return String(p[0]).padStart(2,'0')+':'+String(p[1]||0).padStart(2,'0')+':'+String(p[2]||0).padStart(2,'0');
+    }
+    return raw || '-';
+  }
+
+  window.ahUploadExcel = function(){
+    const fi = $('ah-excel-file'); 
+    if(!fi.files||!fi.files.length) return excelMsg('Pilih file Excel.', false);
+    const btn = $('ah-upload-btn'); btn.disabled = true; btn.textContent = '⏳ Membaca Data...';
+    
+    loadSheetJS(function(){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array', cellDates:false});
+          const ws = wb.Sheets[wb.SheetNames[0]]; 
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', raw:true});
+          if(rows.length < 2) throw new Error('Kosong.');
+          
+          const headers = (rows[0]||[]).map(v=>String(v??'').trim()); 
+          const norm = h=>String(h||'').toLowerCase().replace(/[.\s_]+/g,'').replace(/\+/g,'plus');
+          const findCol = (aliases,fallback) => { const wanted=aliases.map(norm); const idx=headers.findIndex(h=>wanted.includes(norm(h))); return idx>=0?idx:fallback; };
+          
+          const iNo=findCol(['No'],0), iNip=findCol(['NIP'],1), iNama=findCol(['Nama Pegawai','Nama_Pegawai','Nama'],2), iTgl=findCol(['Tanggal','Tgl'],3), iHari=findCol(['Hari'],4), iTipe=findCol(['Tipe Hari','Tipe'],5), iJMasuk=findCol(['Jadwal Masuk'],6), iJPulang=findCol(['Jadwal Pulang'],7), iMasuk=findCol(['Kehadiran Masuk','Masuk'],8), iApel=findCol(['Kehadiran Setelah apel'],9), iPulang=findCol(['Kehadiran Pulang','Pulang'],10), iTlt=findCol(['TLT'],11), iPolTlt=findCol(['POL.TLT','POT.TLT'],12), iPsw=findCol(['PSW'],13), iPolPsw=findCol(['POL.PSW','POT.PSW'],14), iTpsw=findCol(['TLT+PSW'],15), iAlasan=findCol(['Alasan'],16);
+          
+          let finalData=[], duplikat=0;
+          for(let i=1; i<rows.length; i++){
+            const r=rows[i]||[]; 
+            const nama=String(r[iNama]??'').trim().toUpperCase(); 
+            if(!nama||nama==='NAMA PEGAWAI'||nama.includes('CONTOH')) continue;
+            const tgl=normalizeDateXls(r[iTgl]); 
+            if(!/^\d{4}-\d{2}-\d{2}$/.test(tgl)) continue;
+            
+            if(finalData.some(x=>String(x.Tanggal)===tgl&&String(x.Nama_Pegawai).toUpperCase()===nama)){ duplikat++; continue; }
+            
+            finalData.push({
+              'No':String(r[iNo]??'').trim(), 'NIP':String(r[iNip]??'').trim()||'-', 
+              'Nama Pegawai':nama, Nama_Pegawai:nama, Nama:nama, Tanggal:tgl, Hari:String(r[iHari]??'').trim(), 
+              'Tipe Hari':String(r[iTipe]??'').trim(), 'Jadwal Masuk':normalisasiJamExcel(r[iJMasuk]), 'Jadwal Pulang':normalisasiJamExcel(r[iJPulang]), 
+              'Kehadiran Masuk':normalisasiJamExcel(r[iMasuk]), Kehadiran_Masuk:normalisasiJamExcel(r[iMasuk]),
+              'Kehadiran Setelah apel':normalisasiJamExcel(r[iApel]), 
+              'Kehadiran Pulang':normalisasiJamExcel(r[iPulang]), Kehadiran_Pulang:normalisasiJamExcel(r[iPulang]), TLT:String(r[iTlt]??'0'), 'POL.TLT':String(r[iPolTlt]??'0'), 
+              PSW:String(r[iPsw]??'0'), 'POL.PSW':String(r[iPolPsw]??'0'), 'TLT+PSW':String(r[iTpsw]??'0'), 
+              Alasan:String(r[iAlasan]??'').trim()
+            });
+          }
+
+          if(!finalData.length){ btn.disabled=false; btn.textContent='☁ Upload & Simpan Data'; excelMsg('Tidak ada baris yang diproses.',false); return; }
+          
+          btn.textContent = '⏳ Menyimpan '+finalData.length+' data...';
+          google.script.run.withSuccessHandler(function(res){
+            btn.disabled=false; btn.textContent='☁ Upload & Simpan Data';
+            if(res&&res.success){ excelMsg(res.message, true); fi.value=''; $('ah-file-name').textContent='File kosong'; window.ahLoad(); } 
+            else excelMsg(res.message||'Gagal.', false);
+          }).withFailureHandler(function(err){
+            btn.disabled=false; btn.textContent='☁ Upload & Simpan Data'; excelMsg(err.message||err, false);
+          }).simpanBulkKinerjaHarian(finalData);
+          
+        } catch(err){ btn.disabled=false; btn.textContent='☁ Upload & Simpan Data'; excelMsg(err.message, false); }
+      };
+      reader.onerror = function(){ btn.disabled=false; btn.textContent='☁ Upload & Simpan Data'; excelMsg('Gagal membaca.', false); };
+      reader.readAsArrayBuffer(fi.files[0]);
+    });
+  };
+
+  let excelFile = $('ah-excel-file');
+  if (excelFile) {
+    excelFile.addEventListener('change',function(){ if(this.files[0]){$('ah-file-name').textContent=this.files[0].name; $('ah-upload-btn').disabled=false;} });
+  }
+
+  // Initialize
+  pasangHandlerJam('ah-masuk');
+  pasangHandlerJam('ah-pulang');
+  window.ahLoad();
+
+})();
+</script>

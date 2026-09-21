@@ -1,0 +1,227 @@
+<style>
+  .bmd-premium { font-family: 'Inter', sans-serif; background: transparent; color: #f8fafc; }
+  .deluxe-card { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4); }
+  .bmd-input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 16px; color: #fff; font-size: 0.85rem; transition: all 0.3s ease; }
+  .neon-glow:focus { outline: none; border-color: #10b981; box-shadow: 0 0 15px rgba(16, 189, 129, 0.4), inset 0 0 8px rgba(16, 189, 129, 0.15); background: rgba(15, 23, 42, 0.8); }
+  .bmd-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; display: block; }
+  .bmd-btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; font-weight: 700; padding: 12px 30px; border-radius: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; }
+  .bmd-btn-primary:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
+  .bmd-btn-blue { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4); }
+  .bmd-btn-blue:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(14, 165, 233, 0.6); }
+</style>
+
+<div class="bmd-premium">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <h2 class="text-2xl font-bold text-white drop-shadow-md m-0"><i class="fa-solid fa-file-pdf text-[#10b981] mr-2"></i> Pusat Laporan BMD</h2>
+    <button onclick="loadPage('BMD')" class="p-2 px-4 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 hover:bg-slate-700 transition">
+      <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Dashboard
+    </button>
+  </div>
+
+  <div class="deluxe-card" style="border-top: 3px solid #10b981;">
+    <p class="text-slate-400 text-sm mb-6">Pilih periode dan tipe laporan untuk mengekspor database inventaris aset ke dalam format Vektor PDF secara instan.</p>
+    
+    <div class="flex flex-col gap-6" id="laporan-bmd-area">
+      <!-- Loading Indicator -->
+      <div id="laporan-loading" class="text-center py-4 text-[#10b981]">
+        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyiapkan data aset...
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.globalDataBMD_Laporan = [];
+
+  function initBMDLaporan() {
+      // Setup HTML Selectors
+      var dateNow = new Date();
+      var arrBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var curBulan = arrBulan[dateNow.getMonth()];
+      var curTahun = dateNow.getFullYear().toString();
+      var fullDateNow = dateNow.toISOString().split('T')[0];
+      
+      var opsiBulanHTML = "";
+      arrBulan.forEach(b => opsiBulanHTML += `<option value="${b}" ${b===curBulan ? 'selected':''}>${b}</option>`);
+      var opsiTahunHTML = "";
+      ['2024', '2025', '2026', '2027', '2028'].forEach(t => opsiTahunHTML += `<option value="${t}" ${t===curTahun ? 'selected':''}>${t}</option>`);
+
+      const userRole = (sessionStorage.getItem("userRole") || "").toUpperCase();
+      const isSuperAdmin = userRole.includes("SUPER ADMIN");
+      const isSupervisor = isSuperAdmin || userRole.includes("SUPERVISOR") || userRole.includes("TATA USAHA");
+      const userLevel = sessionStorage.getItem("userLevel") || "PELAKSANA";
+      const hidePelaksana = (!isSuperAdmin && userLevel === "PIMPINAN") ? "display: none;" : "";
+      const hidePimpinan = (!isSupervisor && userLevel !== "PIMPINAN") ? "display: none;" : "";
+
+      var ui = '';
+      ui += '<div class="flex flex-col xl:flex-row gap-4 bg-slate-900/50 p-6 rounded-xl border border-white/5 items-end shadow-inner">';
+      ui += '<div class="flex-1 w-full"><label class="bmd-label"><i class="fa-solid fa-calendar-day mr-1"></i> Laporan Harian</label><input type="date" id="lapTanggalBMD" class="bmd-input neon-glow" style="color-scheme: dark;" value="'+fullDateNow+'"></div>';
+      ui += '<button onclick="cetakLaporanHarian(\'pelaksana\')" class="w-full xl:w-auto bmd-btn-primary bmd-btn-blue !py-3" style="'+hidePelaksana+'"><i class="fa-solid fa-print"></i> Cetak Pelaksana</button>';
+      ui += '<button onclick="cetakLaporanHarian(\'pimpinan\')" class="w-full xl:w-auto bmd-btn-primary !py-3" style="'+hidePimpinan+'"><i class="fa-solid fa-print"></i> Cetak Pimpinan</button>';
+      ui += '</div>';
+      
+      ui += '<div class="flex flex-col xl:flex-row gap-4 bg-slate-900/50 p-6 rounded-xl border border-white/5 items-end shadow-inner">';
+      ui += '<div class="flex-1 w-full"><label class="bmd-label"><i class="fa-regular fa-calendar mr-1"></i> Laporan Bulanan</label><select id="lapBulanBMD" class="bmd-input neon-glow">'+opsiBulanHTML+'</select></div>';
+      ui += '<div class="flex-1 w-full"><label class="bmd-label">Tahun</label><select id="lapTahunBMD" class="bmd-input neon-glow">'+opsiTahunHTML+'</select></div>';
+      ui += '<div class="flex gap-2 w-full xl:w-auto mt-2 xl:mt-0">';
+      ui += '<button onclick="cetakLaporanBulanan(\'pelaksana\')" class="flex-1 xl:flex-none bmd-btn-primary bmd-btn-blue !py-3" style="'+hidePelaksana+'"><i class="fa-solid fa-print"></i> Cetak Pelaksana</button>';
+      ui += '<button onclick="cetakLaporanBulanan(\'pimpinan\')" class="flex-1 xl:flex-none bmd-btn-primary !py-3" style="'+hidePimpinan+'"><i class="fa-solid fa-print"></i> Cetak Pimpinan</button>';
+      ui += '</div></div>';
+
+      // Load data aset terlebih dahulu di background
+      if (typeof google !== 'undefined') {
+          google.script.run.withSuccessHandler(function(data) {
+              window.globalDataBMD_Laporan = (data && !data.error) ? data : [];
+              document.getElementById('laporan-bmd-area').innerHTML = ui; // Tampilkan tombol setelah data siap
+          }).getTableDataBMD();
+      } else {
+          document.getElementById('laporan-bmd-area').innerHTML = ui;
+      }
+  }
+
+  // --- ENGINE JSPDF ---
+  window.bmd_mJSPDF = function(cb) {
+      if (window.jspdf && window.jspdf.jsPDF.API.autoTable) { cb(); return; }
+      Swal.fire({ title: 'Menyiapkan Engine PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#1e293b', color: '#10b981' });
+      var s1 = document.createElement('script');
+      s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      s1.onload = function() {
+          var s2 = document.createElement('script');
+          s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+          s2.onload = function() { Swal.close(); cb(); };
+          document.head.appendChild(s2);
+      };
+      document.head.appendChild(s1);
+  };
+
+  // --- CONTROLLER EXPORT ---
+  window.cetakLaporanHarian = function(tipe) {
+      var tglVal = document.getElementById('lapTanggalBMD').value;
+      if(!tglVal) { Swal.fire('Peringatan', 'Pilih tanggal!', 'warning'); return; }
+      var d = new Date(tglVal);
+      var arrBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var tglFormat = d.getDate() + ' ' + arrBulan[d.getMonth()] + ' ' + d.getFullYear();
+      
+      if(tipe === 'pelaksana') generatePDF_BMD("TANGGAL: " + tglFormat.toUpperCase(), "Laporan_Harian_Pelaksana_" + tglVal + ".pdf", tglFormat, "PELAKSANA");
+      else generatePDF_BMD("TANGGAL: " + tglFormat.toUpperCase(), "Laporan_Harian_Pimpinan_" + tglVal + ".pdf", tglFormat, "PIMPINAN");
+  };
+
+  window.cetakLaporanBulanan = function(tipe) {
+      var bulan = document.getElementById('lapBulanBMD').value;
+      var tahun = document.getElementById('lapTahunBMD').value;
+      var tglSekarang = new Date();
+      var arrBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var tglTtd = tglSekarang.getDate() + ' ' + arrBulan[tglSekarang.getMonth()] + ' ' + tglSekarang.getFullYear();
+
+      if(tipe === 'pelaksana') generatePDF_BMD("PERIODE: " + bulan.toUpperCase() + " " + tahun, "Laporan_Bulanan_Pelaksana_" + bulan + ".pdf", tglTtd, "PELAKSANA");
+      else generatePDF_BMD("PERIODE: " + bulan.toUpperCase() + " " + tahun, "Laporan_Bulanan_Pimpinan_" + bulan + ".pdf", tglTtd, "PIMPINAN");
+  };
+
+  // --- MASTER GENERATOR PDF ---
+  function generatePDF_BMD(subTeks, fileName, tglTtd, jenisLaporan) {
+      if (!window.globalDataBMD_Laporan || window.globalDataBMD_Laporan.length === 0) { 
+          Swal.fire('Data Kosong', 'Tidak ada data aset untuk dicetak.', 'warning'); return; 
+      }
+      Swal.fire({ title: 'Membuat Laporan...', allowOutsideClick: false, background: '#1e293b', color: '#10b981', didOpen: () => Swal.showLoading() });
+
+      window.bmd_mJSPDF(function() {
+          var jsPDF = window.jspdf.jsPDF;
+          var doc = new jsPDF('l', 'mm', 'a4');
+          var logoData = sessionStorage.getItem("LogoKepri_Base64") || "";
+          
+          var namaTtd = sessionStorage.getItem("userNama") || "NAMA PEGAWAI";
+          var nipTtd = sessionStorage.getItem("userNIP") || "NIP PEGAWAI";
+          var jabTtd = sessionStorage.getItem("userJabatan") || (jenisLaporan === "PIMPINAN" ? "Kepala UPTD" : "Pengurus Barang");
+          if (nipTtd.toUpperCase().indexOf("NIP") === -1) nipTtd = "NIP. " + nipTtd;
+          
+          var centerX = 297 / 2;
+          var totalUnit = 0; var totalNilai = 0; var cB = 0; var cKB = 0; var cRB = 0;
+          var tableRows = [];
+
+          // Hitung & Susun Baris
+          for (var i = 0; i < window.globalDataBMD_Laporan.length; i++) {
+              var row = window.globalDataBMD_Laporan[i];
+              var jml = Number(row.Jumlah) || 0;
+              var nilai = Number(String(row.Harga_Perolehan || '0').replace(/[^0-9,-]+/g,""));
+              
+              totalUnit += jml; totalNilai += nilai; 
+              cB += Number(row.Kondisi_B) || 0; cKB += Number(row.Kondisi_KB) || 0; cRB += Number(row.Kondisi_RB) || 0;
+
+              if (jenisLaporan === "PELAKSANA") {
+                  tableRows.push([
+                      i + 1, row.Kode_Barang || '-', row.Nama_Barang || '-', row.Merk_Model || '-', row.Tahun_Perolehan || '-',
+                      jml, nilai.toLocaleString('id-ID'), row.Kondisi_B||'0', row.Kondisi_KB||'0', row.Kondisi_RB||'0'
+                  ]);
+              }
+          }
+
+          // Header KOP Surat
+          function drawKop() {
+              if (logoData.length > 100) { try { doc.addImage(logoData, 'PNG', 20, 10, 22, 26); } catch(e) {} }
+              doc.setFont("helvetica", "bold"); doc.setFontSize(13); 
+              doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", centerX, 14, { align: "center" });
+              doc.setFontSize(15); 
+              doc.text("DINAS TENAGA KERJA DAN TRANSMIGRASI", centerX, 21, { align: "center" }); 
+              doc.setFontSize(11); 
+              doc.text("UPTD PENGAWASAN KETENAGAKERJAAN KABUPATEN KARIMUN", centerX, 27, { align: "center" });
+              doc.setLineWidth(1); doc.line(20, 40, 277, 40);
+          }
+
+          if (jenisLaporan === "PELAKSANA") {
+              tableRows.push([
+                  { content: 'GRAND TOTAL', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                  { content: totalUnit.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                  { content: totalNilai.toLocaleString('id-ID'), styles: { halign: 'right', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                  { content: cB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                  { content: cKB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                  { content: cRB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } }
+              ]);
+
+              drawKop();
+              doc.setFontSize(12); doc.text("DAFTAR INVENTARIS BARANG MILIK DAERAH (BMD)", centerX, 48, { align: "center" });
+              doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.text(subTeks, centerX, 53, { align: "center" });
+
+              doc.autoTable({
+                  startY: 58,
+                  head: [["No", "Kode Barang", "Nama Barang", "Merk/Model", "Thn", "Jml", "Total Nilai (Rp)", "B", "KB", "RB"]],
+                  body: tableRows, theme: 'grid',
+                  headStyles: { fillColor: [15, 23, 42], textColor: 255, halign: 'center' },
+                  styles: { fontSize: 8, cellPadding: 2 }
+              });
+
+              let finalY = doc.lastAutoTable.finalY + 15;
+              doc.text("Tanjung Balai Karimun, " + tglTtd, 230, finalY, { align: "center" });
+              doc.text(jabTtd, 230, finalY + 5, { align: "center" });
+              doc.setFont("helvetica", "bold");
+              doc.text(namaTtd, 230, finalY + 25, { align: "center" });
+              doc.setFont("helvetica", "normal");
+              doc.text(nipTtd, 230, finalY + 30, { align: "center" });
+
+          } else {
+              // Laporan Eksekutif Pimpinan (Tanpa tabel rinci, langsung ke summary)
+              drawKop();
+              doc.setFontSize(14); doc.text("LAPORAN EKSEKUTIF PIMPINAN - ASET BMD", centerX, 50, { align: "center" });
+              doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.text(subTeks, centerX, 56, { align: "center" });
+              
+              doc.setFontSize(12);
+              doc.text("Total Aset: " + totalUnit + " Unit", 30, 75);
+              doc.text("Total Kapitalisasi Aset: Rp " + totalNilai.toLocaleString('id-ID'), 30, 85);
+              doc.text("Kondisi Baik: " + cB + " Unit", 30, 95);
+              doc.text("Kondisi Kurang Baik: " + cKB + " Unit", 30, 105);
+              doc.text("Kondisi Rusak Berat: " + cRB + " Unit", 30, 115);
+
+              doc.text("Tanjung Balai Karimun, " + tglTtd, 230, 140, { align: "center" });
+              doc.text(jabTtd, 230, 145, { align: "center" });
+              doc.setFont("helvetica", "bold"); doc.text(namaTtd, 230, 165, { align: "center" });
+              doc.setFont("helvetica", "normal"); doc.text(nipTtd, 230, 170, { align: "center" });
+          }
+
+          doc.save(fileName);
+          Swal.close();
+      });
+  }
+
+  if (document.readyState === 'loading') { document.addEventListener("DOMContentLoaded", initBMDLaporan); } else { initBMDLaporan(); }
+</script>

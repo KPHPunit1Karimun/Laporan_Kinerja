@@ -1,0 +1,54 @@
+
+<style>
+.kep-wrap{font-family:Inter,Arial,sans-serif;color:#e5e7eb;background:linear-gradient(135deg,#0b1220,#111827);border:1px solid #263244;border-radius:20px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.kep-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px;flex-wrap:wrap}.kep-head h2{margin:0;font-size:24px;color:#fff}.kep-head p{margin:5px 0 0;color:#94a3b8;font-size:12px}.kep-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.kep-card{background:rgba(15,23,42,.78);border:1px solid #263244;border-radius:16px;padding:18px}.kep-card h3{margin:0 0 12px;color:#fff;font-size:15px}.kep-card p{font-size:12px;color:#94a3b8;line-height:1.6}.kep-btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;color:#fff;background:#2563eb;font-weight:700}.kep-btn.alt{background:#475569}.kep-btn.green{background:#059669}.kep-btn.red{background:#dc2626}.kep-btn.purple{background:#7c3aed}.kep-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.kep-field{display:flex;flex-direction:column;gap:6px}.kep-field label{font-size:10px;text-transform:uppercase;font-weight:800;color:#94a3b8}.kep-field input,.kep-field select,.kep-field textarea{width:100%;box-sizing:border-box;background:#0b1220;border:1px solid #334155;color:#fff;border-radius:9px;padding:10px;font-size:12px;outline:none}.kep-field textarea{min-height:80px;resize:vertical}.kep-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kep-full{grid-column:1/-1}.kep-table-wrap{overflow:auto;border:1px solid #263244;border-radius:12px}.kep-table{width:100%;border-collapse:collapse;min-width:760px}.kep-table th,.kep-table td{padding:9px 10px;border-bottom:1px solid #263244;font-size:11px;text-align:left}.kep-table th{background:#0b1220;color:#cbd5e1;position:sticky;top:0}.kep-table td{color:#dbe4ef}.kep-badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800}.kep-hadir{background:rgba(16,185,129,.15);color:#34d399}.kep-absen{background:rgba(239,68,68,.15);color:#f87171}.kep-note{font-size:11px;color:#94a3b8}.kep-msg{margin-top:10px;font-size:12px}.kep-ok{color:#34d399}.kep-err{color:#f87171}.kep-drop{border:2px dashed #475569;border-radius:12px;padding:20px;text-align:center;background:#0b1220}.kep-checklist{max-height:330px;overflow:auto;display:flex;flex-direction:column;gap:8px}.kep-person{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px;border:1px solid #263244;border-radius:10px;background:#0b1220}.kep-person small{display:block;color:#64748b;font-size:10px}.kep-person select,.kep-person input{background:#111827;color:#fff;border:1px solid #334155;border-radius:7px;padding:7px;font-size:11px}.kep-stat{display:flex;gap:10px;flex-wrap:wrap}.kep-stat div{background:#0b1220;border:1px solid #263244;border-radius:12px;padding:12px 16px}.kep-stat b{display:block;font-size:18px;color:#fff}.kep-stat span{font-size:10px;color:#94a3b8}.kep-links{display:flex;gap:10px;flex-wrap:wrap}.kep-hidden{display:none!important}
+@media(max-width:850px){.kep-grid,.kep-form{grid-template-columns:1fr}.kep-full{grid-column:auto}.kep-person{grid-template-columns:1fr}.kep-wrap{padding:15px}}
+</style>
+
+<div class="kep-wrap"><div class="kep-head"><div><h2>📋 Apel Senin Pagi</h2><p>Register kehadiran Apel Senin, dokumentasi, dan arsip kegiatan.</p></div><button class="kep-btn alt" onclick="apLoad()">↻ Refresh Arsip</button></div><div class="kep-grid"><div class="kep-card"><div class="kep-form"><div class="kep-field"><label>Tanggal Pelaksanaan</label><input id="ap-tgl" type="date"></div><div class="kep-field"><label>Foto Dokumentasi (maks. 5 MB)</label><input id="ap-foto" type="file" accept="image/*"></div><div class="kep-field kep-full"><label>Catatan / Arahan Pembina</label><textarea id="ap-ket" placeholder="Ringkasan arahan pembina apel..."></textarea></div></div></div><div class="kep-card"><h3>Daftar Kehadiran Pegawai</h3><div id="ap-check" class="kep-checklist">Memuat pegawai...</div><div class="kep-toolbar" style="margin-top:12px"><button class="kep-btn purple" onclick="apAll('Hadir')">Semua Hadir</button><button class="kep-btn alt" onclick="apAll('Tidak Hadir')">Reset Absen</button><button class="kep-btn green" onclick="apSave()">💾 Simpan Apel</button></div><div id="ap-msg" class="kep-msg"></div></div></div><div class="kep-card" style="margin-top:16px"><div class="kep-stat"><div><b id="ap-total">0</b><span>ARSIP APEL</span></div><div><b id="ap-hadir">0</b><span>HADIR TERAKHIR</span></div></div><div class="kep-table-wrap" style="margin-top:15px"><table class="kep-table"><thead><tr><th>No</th><th>Tanggal</th><th>Arahan</th><th>Foto</th><th>Aksi</th></tr></thead><tbody id="ap-body"><tr><td colspan="5">Memuat...</td></tr></tbody></table></div></div></div>
+<script>
+(function(){
+  let peg=[],data=[]; const $=id=>document.getElementById(id);
+  function msg(t,ok=true){$('ap-msg').innerHTML='<span class="'+(ok?'kep-ok':'kep-err')+'">'+t+'</span>'}
+  function esc(s){return String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m]))}
+  function monday(){let d=new Date(),day=d.getDay();d.setDate(d.getDate()+(day===0?-6:1-day));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  $('ap-tgl').value=monday();
+  function loadPeg(){
+    google.script.run.withSuccessHandler(function(d){
+      peg=d||[]; let h='';
+      peg.forEach(function(p,i){h+='<div class="kep-person"><div><b>'+esc(p.nama)+'</b><small>'+esc(p.nip||'-')+'</small></div><select id="ap-st-'+i+'"><option>Hadir</option><option>Tidak Hadir</option></select><input id="ap-ket-'+i+'" placeholder="Ket"></div>';});
+      $('ap-check').innerHTML=h||'Belum ada master pegawai.';
+    }).withFailureHandler(function(e){msg(e.message||e,false)}).getMasterPegawai();
+  }
+  window.apAll=function(st){peg.forEach(function(p,i){let s=$('ap-st-'+i);if(s)s.value=st})};
+  window.apLoad=function(){
+    google.script.run.withSuccessHandler(function(d){data=d||[];apRender()}).withFailureHandler(function(e){msg(e.message||e,false)}).getTableDataApel();
+    loadPeg();
+  };
+  function apRender(){
+    let b=$('ap-body'),rows='',totalH=0;
+    data.forEach(function(r,i){
+      let lines=String(r.Daftar_Hadir_Pegawai||'').split('\\n');
+      totalH+=lines.filter(function(x){return /\\[Hadir\\]/i.test(x)}).length;
+      let foto=r.Foto_URL?'<a href="'+esc(r.Foto_URL)+'" target="_blank" style="color:#60a5fa">Lihat Foto</a>':'-';
+      let id=String(r.ID_Apel||'').replace(/'/g,"\\'");
+      rows+='<tr><td>'+String(i+1)+'</td><td>'+esc(r.Tanggal_Apel||'-')+'</td><td>'+esc(r.Keterangan_Arahan||'-')+'</td><td>'+foto+'</td><td><button class="kep-btn red" style="padding:6px 9px" onclick="apDel(\''+id+'\')">Hapus</button></td></tr>';
+    });
+    b.innerHTML=rows||'<tr><td colspan="5" style="text-align:center">Belum ada arsip apel.</td></tr>';
+    $('ap-total').textContent=data.length; $('ap-hadir').textContent=totalH;
+  }
+  window.apSave=function(){
+    let t=$('ap-tgl').value,f=$('ap-foto').files[0];
+    if(!t||!f)return msg('Tanggal dan foto wajib diisi.',false);
+    if(new Date(t+'T00:00:00').getDay()!==1)return msg('Tanggal Apel harus hari Senin.',false);
+    if(f.size>5*1024*1024)return msg('Ukuran foto maksimal 5 MB.',false);
+    let checks=peg.map(function(p,i){let st=$('ap-st-'+i).value,ket=$('ap-ket-'+i).value.trim();return p.nama+' ['+(st==='Hadir'?'Hadir':'Absen'+(ket?': '+ket:''))+']'});
+    let note=$('ap-ket').value; let reader=new FileReader();
+    reader.onload=function(e){
+      google.script.run.withSuccessHandler(function(r){msg(r.message,r.success);if(r.success){$('ap-ket').value='';$('ap-foto').value='';apLoad()}}).withFailureHandler(function(e){msg(e.message||e,false)}).simpanDataApelSenin({Tanggal_Apel:t,Daftar_Hadir:checks.join('\\n'),Keterangan:note,File_Base64:e.target.result,File_MimeType:f.type,File_Name:f.name});
+    }; reader.readAsDataURL(f);
+  };
+  window.apDel=function(id){if(!confirm('Hapus arsip apel dan foto?'))return;google.script.run.withSuccessHandler(function(r){msg(r.message,r.success);apLoad()}).withFailureHandler(function(e){msg(e.message||e,false)}).deleteDataApel(id)};
+  apLoad();
+})();
+</script>

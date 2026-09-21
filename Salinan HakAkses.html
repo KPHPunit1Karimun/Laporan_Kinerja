@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: 'Inter', Arial, sans-serif; background: #f8fafc; padding: 20px; color: #1e293b; }
+    .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 800px; margin: auto; }
+    h2 { margin-top: 0; color: #0f172a; }
+    select, button { padding: 10px; border-radius: 8px; font-size: 14px; }
+    select { border: 1px solid #cbd5e1; margin-bottom: 20px; width: 100%; max-width: 350px; background: #f1f5f9; outline: none;}
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+    td, th { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+    th { background: #f1f5f9; font-weight: bold; }
+    tr:hover { background-color: #f8fafc; }
+    button { background: #2563eb; color: white; border: 0; padding: 12px 20px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔐 Pengaturan Hak Akses Pegawai</h2>
+  <label style="font-weight:bold; display:block; margin-bottom:8px;">Pilih Pegawai:</label>
+  <select id="pegawai" onchange="loadAksesPegawai()">
+    <option value="">-- Memuat Data Pegawai --</option>
+  </select>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Nama Menu / Modul Kinerja</th>
+        <th style="text-align:center; width: 150px;">Beri Akses? (Lihat)</th>
+      </tr>
+    </thead>
+    <tbody id="data">
+      <tr><td colspan="2" style="text-align:center; color:#64748b;">Pilih pegawai terlebih dahulu</td></tr>
+    </tbody>
+  </table>
+  
+  <button id="btnSimpan" onclick="simpan()">💾 Simpan Hak Akses</button>
+  <p id="msg" style="color:#059669; font-weight:bold; display:none; margin-top:15px;"></p>
+</div>
+
+<script>
+let menus = [
+  { kode: "Perencanaan", nama: "Perencanaan Keuangan" },
+  { kode: "Realisasi", nama: "Realisasi Keuangan" },
+  { kode: "PelaporanEvaluasi", nama: "Pelaporan & Evaluasi" },
+  { kode: "RekapBulanan", nama: "Kepegawaian: Rekap Bulanan" },
+  { kode: "AbsensiHarian", nama: "Kepegawaian: Absensi Harian" },
+  { kode: "LaporanAbsensi", nama: "Kepegawaian: Pusat Laporan" },
+  { kode: "ApelSeninPagi", nama: "Kepegawaian: Apel Senin Pagi" },
+  { kode: "SuratNaskahDinas", nama: "Surat & Naskah Dinas" },
+  { kode: "Kerumahtanggaan", nama: "Kerumahtanggaan" },
+  { kode: "BMD", nama: "Barang Milik Daerah (BMD)" },
+  { kode: "PerencanaanHutan", nama: "Perencanaan Hutan" },
+  { kode: "PerizinanPemanfaatan", nama: "Perizinan dan Pemanfaatan" },
+  { kode: "MonitoringEvaluasi", nama: "Monitoring & Evaluasi Hutan" },
+  { kode: "PengamananHutan", nama: "Pengamanan Hutan" },
+  { kode: "RehabilitasiPengendalian", nama: "Rehabilitasi dan Pengendalian" },
+  { kode: "KoordinasiSosialisasi", nama: "Koordinasi & Sosialisasi" },
+  { kode: "InovasiDaerah", nama: "Inovasi Daerah" },
+  { kode: "PengembanganDiri", nama: "Bangkom: Pengembangan Diri" },
+  { kode: "AntiKorupsi", nama: "Bangkom: Anti Korupsi" },
+  { kode: "EvaluasiBangkom", nama: "Evaluasi Bangkom" },
+  { kode: "HakAkses", nama: "Pengaturan Hak Akses (Admin)" }
+];
+
+// Ambil daftar akun pegawai untuk dropdown
+google.script.run.withSuccessHandler(function(users){
+  let sel = document.getElementById("pegawai");
+  sel.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
+  users.forEach(u => {
+    sel.innerHTML += `<option value="${u.nip}">${u.nama} (${u.nip})</option>`;
+  });
+}).getDaftarAkun();
+
+function renderTable(aksesAktif) {
+  let html = "";
+  menus.forEach(m => {
+    let isChecked = aksesAktif.includes(m.kode) ? "checked" : "";
+    html += `
+      <tr>
+        <td>${m.nama}<br><small style="color:#64748b;">Kode: ${m.kode}</small></td>
+        <td style="text-align:center;">
+          <input type="checkbox" class="menu-chk" data-kode="${m.kode}" ${isChecked} style="transform:scale(1.4); cursor:pointer;">
+        </td>
+      </tr>
+    `;
+  });
+  document.getElementById("data").innerHTML = html;
+}
+
+function loadAksesPegawai() {
+  let nip = document.getElementById("pegawai").value;
+  if(!nip) {
+    document.getElementById("data").innerHTML = "<tr><td colspan='2' style='text-align:center;'>Pilih pegawai terlebih dahulu</td></tr>";
+    return;
+  }
+  document.getElementById("data").innerHTML = "<tr><td colspan='2' style='text-align:center;'>⏳ Memuat data...</td></tr>";
+  
+  google.script.run.withSuccessHandler(function(akses){
+    let aktifHanya = akses.filter(a => a.aktif === "YA").map(a => a.kode);
+    renderTable(aktifHanya);
+  }).getHakAksesUser(nip);
+}
+
+function simpan() {
+  let nip = document.getElementById("pegawai").value;
+  if(!nip) { alert("Pilih pegawai terlebih dahulu!"); return; }
+  
+  let checkboxes = document.querySelectorAll(".menu-chk");
+  let dataArray = [];
+  
+  checkboxes.forEach((chk, idx) => {
+    let kode = chk.getAttribute("data-kode");
+    let status = chk.checked ? "YA" : "TIDAK"; // Pastikan terekam YA atau TIDAK
+    let menuObj = menus.find(m => m.kode === kode);
+    let namaMenu = menuObj ? menuObj.nama : kode;
+    
+    dataArray.push([ idx + 1, nip, kode, namaMenu, status ]);
+  });
+  
+  let btn = document.getElementById("btnSimpan");
+  btn.textContent = "⏳ Sedang Menyimpan..."; btn.disabled = true;
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      btn.textContent = "💾 Simpan Hak Akses"; btn.disabled = false;
+      let msg = document.getElementById("msg");
+      msg.textContent = res.message; msg.style.display = "block";
+      setTimeout(() => msg.style.display = "none", 3500);
+    })
+    .withFailureHandler((err) => {
+      btn.textContent = "💾 Simpan Hak Akses"; btn.disabled = false;
+      alert("Gagal: " + err.message);
+    })
+    .simpanHakAksesUser(dataArray);
+}
+</script>
+
+</body>
+</html>

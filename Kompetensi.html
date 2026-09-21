@@ -1,0 +1,956 @@
+<style>
+  /* =========================================================
+     TEMA SUPER PREMIUM: Pengembangan Kompetensi ASN
+     (Standard CSS Version - Dijamin Jalan Tanpa Framework Tambahan)
+  ========================================================= */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  .app-view { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top left, #1e293b, #020617); min-height: 85vh; padding: 30px; border-radius: 24px; color: #f8fafc; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
+  
+  /* Latar Ornamen */
+  .bg-ornament-1 { position: absolute; top: -150px; right: -150px; width: 500px; height: 500px; background: #00f3ff; border-radius: 50%; filter: blur(140px); opacity: 0.1; pointer-events: none; }
+  .bg-ornament-2 { position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: #a855f7; border-radius: 50%; filter: blur(140px); opacity: 0.1; pointer-events: none; }
+
+  .content-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 26px; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08); position: relative; z-index: 10; margin-bottom: 30px;}
+
+  /* Kartu Statistik */
+  .bmd-stats { display: grid; gap: 24px; margin-top: 24px; margin-bottom: 32px; position: relative; z-index: 10; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .bmd-stat-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; min-height: 130px; }
+  .bmd-stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(56,189,248,0.18); }
+  .bmd-stat-card::before { content: ''; position: absolute; top: 15%; left: 0; width: 4px; height: 70%; background: #3b82f6; border-radius: 4px; }
+  .bmd-stat-card.green::before { background: #10b981; }
+  .bmd-stat-card.red::before { background: #ef4444; }
+  .bmd-stat-card h4 { margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 1px; }
+  .bmd-stat-card h2 { margin: 0; font-size: 36px; color: #fff; font-weight: bold; line-height: 1.1; }
+
+  /* Form Input */
+  .glass-input { width: 100%; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 12px 16px; color: #f8fafc; font-size: 0.85rem; transition: all 0.3s ease; min-height: 44px; box-sizing: border-box; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+  .glass-input:focus { outline: none; border-color: #38bdf8; background: rgba(15, 23, 42, 0.95); box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), inset 0 2px 4px rgba(0,0,0,0.2); }
+  .uppercase-input { text-transform: uppercase; }
+  .form-label { font-size: 11px; color: #cbd5e1; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: 0.5px; }
+  .form-group { margin-bottom: 20px; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+  /* Tab Switcher Custom */
+  .tab-switcher-container { display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; position: relative; z-index: 10; flex-wrap: wrap; }
+  .tab-btn { padding: 12px 24px; border-radius: 50px; font-weight: bold; font-size: 14px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; border: 1px solid transparent; font-family: 'Inter', sans-serif; }
+  .tab-btn-active-manual { background-color: #2563eb; color: #ffffff; box-shadow: 0 0 20px rgba(37,99,235,0.4); border-color: #60a5fa; }
+  .tab-btn-active-ai { background-color: #9333ea; color: #ffffff; box-shadow: 0 0 20px rgba(168,85,247,0.4); border-color: #c084fc; }
+  .tab-btn-inactive { background-color: rgba(15, 23, 42, 0.8); color: #94a3b8; border-color: #334155; }
+  .tab-btn-inactive:hover { color: #38bdf8; border-color: rgba(56, 189, 248, 0.5); }
+  
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeSlideIn 0.4s ease forwards; }
+
+  /* Area AI */
+  .ai-dropzone { border: 2px dashed rgba(168, 85, 247, 0.4); border-radius: 20px; padding: 30px; text-align: center; background: rgba(15, 23, 42, 0.4); cursor: pointer; transition: all 0.3s; position: relative; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px;}
+  .ai-dropzone:hover { background: rgba(30, 41, 59, 0.6); border-color: rgba(168, 85, 247, 0.7); }
+  .ai-dropzone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+
+  /* Tabel */
+  .table-wrapper { max-height: 500px; overflow-y: auto; overflow-x: auto; border-radius: 0 0 24px 24px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56,189,248,0.12); }
+  .glass-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 800px; }
+  .glass-table th { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: #38bdf8; padding: 16px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid rgba(56, 189, 248, 0.3); white-space: nowrap; }
+  .glass-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; color: #e2e8f0; transition: background 0.25s ease; }
+  .glass-table tbody tr { transition: 0.25s ease; }
+  .glass-table tbody tr:hover { transform: translateX(4px); }
+  .glass-table tbody tr:hover td { background: rgba(56, 189, 248, 0.08); }
+
+  /* Tombol Khusus */
+  @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+  .btn-simpan-deluxe, .btn-ai-deluxe, .btn-cetak-deluxe { background-size: 300% 300%; animation: gradientShift 6s ease infinite; color: #ffffff; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.4s ease; display: inline-flex; justify-content: center; align-items: center; gap: 10px; font-size: 0.85rem; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; box-sizing: border-box; border: none; }
+  
+  .btn-simpan-deluxe { padding: 14px 24px; width: 100%; background-image: linear-gradient(270deg, #2563eb, #3b82f6, #1d4ed8, #60a5fa); border: 1px solid rgba(59, 130, 246, 0.5); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.2); }
+  .btn-simpan-deluxe:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5); border-color: #93c5fd; }
+  
+  .btn-ai-deluxe { padding: 14px 24px; width: 100%; background-image: linear-gradient(270deg, #9333ea, #a855f7, #7e22ce, #c084fc); border: 1px solid rgba(168, 85, 247, 0.5); box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.2); }
+  .btn-ai-deluxe:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(168, 85, 247, 0.5); border-color: #d8b4fe; }
+
+  .btn-cetak-deluxe { padding: 0 28px; height: 44px; background: linear-gradient(270deg, #059669, #10b981, #047857, #34d399); background-size: 300% 300%; border: 1px solid rgba(16, 185, 129, 0.5); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.2); }
+  .btn-cetak-deluxe:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5); }
+
+  .btn-tab-back { background: rgba(30, 41, 59, 0.5); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; justify-content: center; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; margin-bottom: 20px;}
+  .btn-tab-back:hover { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.15); transform: translateY(-2px); }
+
+  /* Kartu Menu Awal */
+  .kpg-menu-card { background: rgba(30,41,59,.6); border:1px solid rgba(255,255,255,.1); border-radius:24px; padding:30px; cursor:pointer; transition:.3s; min-height:180px; display: flex; flex-direction: column; }
+  .kpg-menu-card:hover { transform:translateY(-7px); border-color:#38bdf8; box-shadow: 0 20px 45px rgba(56,189,248,.18); }
+  .kpg-icon-wrap { width:56px;height:56px;border-radius:16px;display:flex; justify-content:center; align-items:center;font-size:26px;margin-bottom:20px;background:rgba(59,130,246,.15);color:#38bdf8; }
+  .kpg-menu-title {font-size:20px;font-weight:800;color:#fff;margin-bottom:10px; letter-spacing: 0.5px;}
+  .kpg-menu-desc {font-size:13px;color:#94a3b8;line-height:1.6;}
+  .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  
+  .filter-panel { background: rgba(15, 23, 42, 0.8); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; position: relative; z-index: 10; }
+  .filter-group { display: flex; gap: 20px; flex-wrap: wrap; }
+  .filter-item { width: 200px; }
+
+  /* Custom Scrollbar AI Box */
+  .zb-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .zb-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+  .zb-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+  .zb-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+</style>
+
+<div id="main-content">
+   <h3 style="color:gray; text-align:center; padding-top: 50px;">Memuat Modul Kompetensi...</h3>
+</div>
+
+<script>
+try {
+    window.dummyDataKompetensi = [];
+    window.targetJPTahunan = 40; 
+    window.fileQueueAI = []; 
+    window.currentKategori = ''; 
+    window.currentSheetTarget = ''; 
+    window.kompMode = window.kompMode || ''; 
+
+    // Variabel Global Data User
+    window.activeUserNama = "";
+    window.activeUserNIP = "";
+    window.activeUserRole = "";
+    window.activeUserJabatan = "Pejabat Penilai";
+
+    // 1. FUNGSI LOGO 
+    window.LOGO_KIRI = "https://lh3.googleusercontent.com/d/1wG8CueHZXCoMbwD32hRlNrZBsZbv42Gr";
+    window.LOGO_KANAN = "https://lh3.googleusercontent.com/d/1FFyZX9vfiUkGwTIneKIcfXbaNXzZsaZL";
+
+    async function loadLogoKPHP(){
+        try{
+            if(sessionStorage.getItem("LogoKepri_Base64") && sessionStorage.getItem("LogoKPH_Base64")) return;
+            async function ambil(url){
+                const res = await fetch(url); const blob = await res.blob();
+                return await new Promise(resolve=>{ const reader = new FileReader(); reader.onloadend=()=>resolve(reader.result); reader.readAsDataURL(blob); });
+            }
+            sessionStorage.setItem("LogoKepri_Base64", await ambil(window.LOGO_KIRI));
+            sessionStorage.setItem("LogoKPH_Base64", await ambil(window.LOGO_KANAN));
+        }catch(e){ console.error("Gagal memuat logo:",e); }
+    }
+    loadLogoKPHP();
+
+    window.switchInputMode = function(mode) {
+        const wManual = document.getElementById('wadah-manual');
+        const wAi = document.getElementById('wadah-ai');
+        const bManual = document.getElementById('btn-tab-manual');
+        const bAi = document.getElementById('btn-tab-ai');
+        if(!wManual || !wAi) return;
+        if (mode === 'manual') {
+            if (wManual.classList.contains('active')) {
+                wManual.className = "tab-content"; bManual.className = "tab-btn tab-btn-inactive";
+            } else {
+                wManual.className = "tab-content active"; wAi.className = "tab-content";
+                bManual.className = "tab-btn tab-btn-active-manual"; bAi.className = "tab-btn tab-btn-inactive";
+            }
+        } else if (mode === 'ai') {
+            if (wAi.classList.contains('active')) {
+                wAi.className = "tab-content"; bAi.className = "tab-btn tab-btn-inactive";
+            } else {
+                wManual.className = "tab-content"; wAi.className = "tab-content active";
+                bAi.className = "tab-btn tab-btn-active-ai"; bManual.className = "tab-btn tab-btn-inactive";
+            }
+        }
+    };
+
+    window.switchKompMode = function(mode) {
+        window.kompMode = mode;
+        window.loadKompetensiData();
+    };
+
+    window.tampilkanMenuKompetensi = function() {
+        document.getElementById('main-content').innerHTML = `
+        <div class="app-view relative overflow-hidden">
+          <div class="content-card">
+            <h2 style="font-size: 28px; font-weight: bold; color: #00f3ff; margin-bottom: 10px; text-transform: uppercase;">
+              <i class="fa-solid fa-award"></i> Dashboard Kompetensi ASN
+            </h2>
+            <p style="color: #94a3b8; margin-bottom: 30px;">Silakan pilih submenu kompetensi yang ingin dibuka.</p>
+            <div class="grid-menu">
+              <div class="kpg-menu-card" onclick="window.switchKompMode('Pengembangan Kompetensi')">
+                <div class="kpg-icon-wrap">🎓</div>
+                <div class="kpg-menu-title">Pengembangan Diri</div>
+                <div class="kpg-menu-desc">Pengelolaan riwayat diklat, sertifikat, dan pengembangan kompetensi berkelanjutan ASN.</div>
+              </div>
+              <div class="kpg-menu-card" onclick="window.switchKompMode('Anti Korupsi')">
+                <div class="kpg-icon-wrap" style="color: #34d399; background: rgba(16, 185, 129, 0.15);">🛡️</div>
+                <div class="kpg-menu-title">Anti Korupsi</div>
+                <div class="kpg-menu-desc">Pengelolaan data kegiatan dan pembelajaran khusus terkait integritas ASN.</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    };
+
+    window.loadKompetensiData = function() {
+        if (!window.kompMode) {
+            window.tampilkanMenuKompetensi();
+            return;
+        }
+        let kategori = window.kompMode;
+        const isAntiKorupsi = String(kategori).toLowerCase().indexOf('anti korupsi') !== -1;
+        
+        if (isAntiKorupsi) {
+            window.currentKategori = 'Anti Korupsi';
+            window.currentSheetTarget = 'DB_AntiKorupsi';
+        } else {
+            window.currentKategori = 'Pengembangan Kompetensi';
+            window.currentSheetTarget = 'DB_Kompetensi';
+        }
+
+        var ui = '';
+        ui += '<div class="app-view">';
+        ui += '<div class="bg-ornament-1"></div><div class="bg-ornament-2"></div>';
+        
+        ui += '<div style="position: relative; z-index: 10; margin-bottom: 30px;">';
+        ui += '<button onclick="window.kompMode=\'\'; window.tampilkanMenuKompetensi();" class="btn-tab-back"><i class="fa-solid fa-arrow-left"></i> Kembali</button>';
+        if (isAntiKorupsi) {
+            ui += '<h2 style="font-size: 28px; font-weight: bold; color: #00f3ff; margin: 0; text-transform: uppercase;"><i class="fa-solid fa-shield-halved"></i> Anti Korupsi</h2>';
+        } else {
+            ui += '<h2 style="font-size: 28px; font-weight: bold; color: #00f3ff; margin: 0; text-transform: uppercase;"><i class="fa-solid fa-user-graduate"></i> Pengembangan Diri</h2>';
+        }
+        ui += '<p style="color: #94a3b8; margin-top: 10px;">Pengelolaan riwayat diklat, sertifikat, dan pengembangan kompetensi ASN.</p>';
+
+        if (!isAntiKorupsi) {
+            ui += '<div class="bmd-stats">';
+            ui += '<div class="bmd-stat-card"><h4>Target JP Tahunan</h4><h2 id="stat-target-box" style="color: #38bdf8;">' + window.targetJPTahunan + ' <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span></h2></div>';
+            ui += '<div class="bmd-stat-card green"><h4>Akumulasi Realisasi</h4><h2 id="stat-jp-tahun" style="color: #10b981;">0 <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span></h2></div>';
+            ui += '<div class="bmd-stat-card red" id="card-sisa-jp"><h4 id="label-sisa-jp">Sisa Target JP</h4><h2 id="stat-sisa-jp" style="color: #ef4444;">0 <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span></h2></div>';
+            ui += '</div>';
+        } else {
+            ui += '<div class="bmd-stats" style="grid-template-columns: 1fr;">';
+            ui += '<div class="bmd-stat-card green"><h4>Realisasi JP Anti Korupsi</h4><h2 id="stat-jp-tahun" style="color: #10b981;">0 <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span></h2></div>';
+            ui += '</div>';
+        }
+        ui += '</div>';
+        
+        ui += '<div class="filter-panel">';
+        ui += '<div class="filter-group">';
+        ui += '<div class="filter-item"><label class="form-label">Filter Bulan</label>';
+        ui += '<select id="filter-bulan-kompetensi" onchange="window.terapkanFilter()" class="glass-input" style="cursor: pointer;">';
+        ui += '<option value="">Sepanjang Tahun</option><option value="januari">Januari</option><option value="februari">Februari</option><option value="maret">Maret</option><option value="april">April</option><option value="mei">Mei</option><option value="juni">Juni</option><option value="juli">Juli</option><option value="agustus">Agustus</option><option value="september">September</option><option value="oktober">Oktober</option><option value="november">November</option><option value="desember">Desember</option></select></div>';
+
+        ui += '<div class="filter-item"><label class="form-label">Filter Tahun</label>';
+        ui += '<select id="filter-tahun-kompetensi" onchange="window.terapkanFilter()" class="glass-input" style="cursor: pointer;">';
+        ui += '<option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>';
+        ui += '</div>';
+
+        ui += '<button onclick="window.generateAnalisisAIKompetensi()" class="btn-cetak-deluxe"><i class="fa-solid fa-print"></i> CETAK LAPORAN</button>';
+        ui += '</div>';
+
+        ui += '<div class="tab-switcher-container">';
+        ui += '<button id="btn-tab-manual" onclick="window.switchInputMode(\'manual\')" class="tab-btn tab-btn-inactive"><i class="fa-solid fa-keyboard"></i> Rekam Manual</button>';
+        ui += '<button id="btn-tab-ai" onclick="window.switchInputMode(\'ai\')" class="tab-btn tab-btn-inactive"><i class="fa-solid fa-wand-magic-sparkles"></i> Ekstrak via AI</button>';
+        ui += '</div>';
+        
+        ui += '<div style="position: relative; z-index: 10; margin-bottom: 40px; max-width: 850px; margin-left: auto; margin-right: auto;">';
+        
+        ui += '<div id="wadah-manual" class="tab-content">';
+        ui += '<div class="content-card" style="border-top: 4px solid #3b82f6;">';
+        ui += '<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">';
+        ui += '<div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(59, 130, 246, 0.1); display: flex; justify-content: center; align-items: center; color: #60a5fa; font-size: 24px; border: 1px solid rgba(59, 130, 246, 0.2);"><i class="fa-solid fa-keyboard"></i></div>';
+        ui += '<div><h3 style="font-size: 16px; font-weight: bold; color: white; margin: 0;">Rekam Manual</h3><p style="font-size: 12px; color: #94a3b8; margin: 5px 0 0 0;">Input detail kegiatan dan upload sertifikat secara mandiri</p></div>';
+        ui += '</div>';
+        
+        ui += '<form id="form-manual-kompetensi" onsubmit="event.preventDefault(); window.bukaFormTambahKompetensi_Aman();">';
+        ui += '<div class="form-group"><label class="form-label">Nama Diklat / Kegiatan <span style="color:#ef4444;">*</span></label><input type="text" id="manual-nama-diklat" required class="glass-input uppercase-input" placeholder="CONTOH: WEBINAR KETENAGAKERJAAN"></div>';
+        ui += '<div class="form-group"><label class="form-label">Nama Penyelenggara <span style="color:#ef4444;">*</span></label><input type="text" id="manual-penyelenggara" required class="glass-input uppercase-input" placeholder="CONTOH: KEMENTERIAN KETENAGAKERJAAN"></div>';
+        ui += '<div class="form-grid-2"><div><label class="form-label">Pelaksanaan <span style="color:#ef4444;">*</span></label><input type="date" id="manual-tgl" required class="glass-input" style="color-scheme: dark;"></div><div><label class="form-label">Total JP <span style="color:#ef4444;">*</span></label><input type="number" id="manual-jp" required class="glass-input" placeholder="0"></div></div>';
+        ui += '<div class="form-group"><label class="form-label">Upload Sertifikat (Max 5MB)</label><input type="file" id="manual-file" accept="image/png, image/jpeg, application/pdf" class="glass-input" style="padding-top: 9px; cursor: pointer;"></div>';
+        ui += '<button type="submit" class="btn-simpan-deluxe" style="margin-top: 10px;"><i class="fa-solid fa-cloud-arrow-up"></i> SIMPAN REKAMAN KE DATABASE</button>';
+        ui += '</form></div></div>';
+
+        ui += '<div id="wadah-ai" class="tab-content">';
+        ui += '<div class="content-card" style="border-top: 4px solid #a855f7;">';
+        ui += '<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">';
+        ui += '<div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(168, 85, 247, 0.1); display: flex; justify-content: center; align-items: center; color: #c084fc; font-size: 24px; border: 1px solid rgba(168, 85, 247, 0.2);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>';
+        ui += '<div><h3 style="font-size: 16px; font-weight: bold; color: white; margin: 0;">Ekstrak via AI</h3><p style="font-size: 12px; color: #94a3b8; margin: 5px 0 0 0;">Sistem akan membaca teks dan nilai JP dari gambar/PDF secara otomatis</p></div>';
+        ui += '</div>';
+
+        ui += '<div id="paste-zone-sertifikat" class="ai-dropzone">';
+        ui += '<input type="file" id="File_Gambar_Sertifikat" multiple accept="image/png, image/jpeg, application/pdf" onchange="window.tambahKeAntrean(this)">';
+        ui += '<div id="file-list-container" class="zb-scrollbar" style="display: flex; flex-direction: column; gap: 10px; text-align: left; width: 100%; position: relative; z-index: 20; max-height: 140px; overflow-y: auto; margin-bottom: 15px;"></div>';
+        ui += '<div style="pointer-events: none; transition: 0.3s;"><i class="fa-solid fa-cloud-arrow-up" style="font-size: 50px; color: rgba(192, 132, 252, 0.5); margin-bottom: 15px; display: block;"></i><p style="font-size: 14px; font-weight: bold; color: #cbd5e1; margin: 0;">Klik / Drag / Paste Dokumen Di Sini</p><p style="font-size: 11px; color: #64748b; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;">Support PDF, JPG, PNG</p></div>';
+        ui += '<div id="paste-status-sertifikat" style="display: none; font-size: 12px; font-weight: bold; color: #34d399; background: rgba(16, 185, 129, 0.1); padding: 12px 16px; width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(16, 185, 129, 0.2);"></div>';
+        ui += '</div>';
+        ui += '<button type="button" onclick="window.prosesEkstrakSertifikatAI()" class="btn-ai-deluxe"><i class="fa-solid fa-bolt"></i> EKSTRAK DENGAN AI & SIMPAN</button>';
+        ui += '</div></div>';
+        ui += '</div>';
+
+        ui += '<div class="content-card" style="padding: 0; overflow: hidden; border-radius: 20px;">';
+        ui += '<div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.95);">';
+        ui += '<h3 style="font-weight: bold; font-size: 14px; color: #38bdf8; margin: 0; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-list-check" style="margin-right: 10px;"></i> Pangkalan Data <span id="label-periode-tabel"></span></h3>';
+        ui += '</div>';
+        ui += '<div class="table-wrapper zb-scrollbar">';
+        ui += '<table class="glass-table">';
+        ui += '<thead><tr><th style="text-align: center; width: 60px;">No</th><th style="text-align: left;">Uraian Kegiatan / Diklat</th><th style="text-align: left;">Penyelenggara</th><th style="text-align: center;">Tgl Pelaksanaan</th><th style="text-align: right;">Realisasi (JP)</th><th style="text-align: center; width: 160px;">Aksi</th></tr></thead>';
+        ui += '<tbody id="tbody-kompetensi"><tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 50px 0;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom: 15px; color: #38bdf8; display: block;"></i>Mengidentifikasi Pengguna & Menarik Database...</td></tr></tbody>';
+        ui += '</table></div></div></div>';
+
+        document.getElementById('main-content').innerHTML = ui;
+
+        const sekarang = new Date(); let thnInt = sekarang.getFullYear();
+        if(document.getElementById('filter-bulan-kompetensi')) document.getElementById('filter-bulan-kompetensi').value = ""; 
+        if(document.getElementById('filter-tahun-kompetensi')) document.getElementById('filter-tahun-kompetensi').value = thnInt.toString();
+
+        if (typeof google !== 'undefined') {
+            google.script.run.withSuccessHandler(function(user) {
+                if (user) {
+                    window.activeUserNama = user.nama || sessionStorage.getItem("userNama") || "NAMA PEGAWAI";
+                    window.activeUserNIP = String(user.username || sessionStorage.getItem("userNIP") || "").replace(/[^0-9]/g, ''); 
+                    window.activeUserRole = String(user.role || "").toUpperCase();
+                }
+
+                google.script.run.withSuccessHandler(function(data) {
+                    window.dummyDataKompetensi = data && data.length > 0 ? data : [];
+                    window.terapkanFilter(); 
+                }).withFailureHandler(function(err) {
+                    Swal.fire('Error DB', err.message, 'error');
+                }).getDBDataGeneric(window.currentSheetTarget);
+
+            }).withFailureHandler(function(err) {
+                window.activeUserNama = sessionStorage.getItem("userNama") || "NAMA PEGAWAI";
+                window.activeUserNIP = String(sessionStorage.getItem("userNIP") || "").replace(/[^0-9]/g, '');
+                
+                google.script.run.withSuccessHandler(function(data) {
+                    window.dummyDataKompetensi = data && data.length > 0 ? data : [];
+                    window.terapkanFilter();
+                }).getDBDataGeneric(window.currentSheetTarget);
+            }).getCurrentUser();
+        }
+
+        const pasteZone = document.getElementById('paste-zone-sertifikat');
+        if (pasteZone) {
+            document.addEventListener('paste', function(e) {
+                const items = (e.clipboardData || e.originalEvent.clipboardData).items; let hasNewFile = false;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        const file = items[i].getAsFile(); const newFile = new File([file], "Paste_Gambar_" + Date.now() + ".png", {type: file.type});
+                        window.fileQueueAI.push(newFile); hasNewFile = true;
+                    }
+                }
+                if (hasNewFile) window.renderAntreanFiles();
+            });
+        }
+    };
+
+    window.terapkanFilter = function() {
+        const tbody = document.getElementById('tbody-kompetensi');
+        const activeNIP = window.activeUserNIP || ""; 
+        const activeNama = String(window.activeUserNama || "").toUpperCase().trim();
+        const activeRole = window.activeUserRole || "";
+        
+        const fBulan = document.getElementById("filter-bulan-kompetensi").value.toLowerCase();
+        const fTahun = document.getElementById("filter-tahun-kompetensi").value;
+
+        const listBulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+        let startDate = null; let endDate = null; let startYearDate = null; let endYearDate = null; let thnInt = parseInt(fTahun);
+
+        if (fBulan !== "" && fTahun !== "") {
+            let blnIdx = listBulan.indexOf(fBulan);
+            startDate = new Date(thnInt, blnIdx - 1, 21, 0, 0, 0); endDate = new Date(thnInt, blnIdx, 20, 23, 59, 59);
+            let pB = blnIdx; let pT = thnInt; if(pB===0){ pB=12; pT--; }
+            document.getElementById('label-periode-tabel').innerHTML = 'Periode ' + pT + '-' + thnInt;
+        } else if (fTahun !== "") {
+            startYearDate = new Date(thnInt - 1, 11, 21, 0, 0, 0); endYearDate = new Date(thnInt, 11, 20, 23, 59, 59);
+            document.getElementById('label-periode-tabel').innerHTML = 'Tahun ' + fTahun;
+        } else {
+            document.getElementById('label-periode-tabel').innerHTML = 'Sepanjang Waktu';
+        }
+
+        let html = ''; let jpTahunIni = 0; let no = 1;
+        
+        const userData = window.dummyDataKompetensi.filter(d => {
+            if (activeRole.includes("ADMIN") || activeRole.includes("SUPER")) return true; 
+            if (!activeNIP || activeNIP === "") return true; 
+            let dbNIP = String(d.nip).replace(/[^0-9]/g, '');
+            let dbNama = String(d.nama).toUpperCase().trim();
+            return (dbNIP === activeNIP) || (dbNama === activeNama);
+        });
+
+        userData.forEach((row) => {
+            let fixTgl = row.tgl; let fixJp = row.jp; let fixPeny = row.penyelenggara; let fixFile = row.file;
+            if (!isNaN(parseInt(fixTgl)) && String(fixTgl).length <= 3 && (String(fixJp).includes('#') || String(fixJp).includes('http') || String(fixJp).includes('drive') || fixJp === undefined || fixJp === "")) {
+                fixFile = row.jp || "#"; fixJp = row.tgl; fixTgl = row.penyelenggara; fixPeny = "-";
+            }
+            row.tgl = fixTgl; row.jp = fixJp; row.penyelenggara = fixPeny; row.file = fixFile; 
+
+            const tglObj = window.parseTanggalLokal(fixTgl);
+            let isInMonth = false; let displayTgl = fixTgl; 
+
+            if (tglObj) {
+                const blnArrDisplay = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                displayTgl = tglObj.getDate() + " " + blnArrDisplay[tglObj.getMonth()] + " " + tglObj.getFullYear();
+                if (startYearDate && endYearDate && tglObj >= startYearDate && tglObj <= endYearDate) { jpTahunIni += parseInt(fixJp) || 0; }
+                if (startDate && endDate) isInMonth = (tglObj >= startDate && tglObj <= endDate);
+                else if (startYearDate && endYearDate) isInMonth = (tglObj >= startYearDate && tglObj <= endYearDate);
+                else isInMonth = true;
+            } else {
+                const tglLower = String(fixTgl).toLowerCase();
+                if (fTahun === "" || tglLower.includes(fTahun)) jpTahunIni += parseInt(fixJp) || 0; 
+                const matchBulan = fBulan === "" || tglLower.includes(fBulan);
+                const matchTahun = fTahun === "" || tglLower.includes(fTahun);
+                isInMonth = matchBulan && matchTahun;
+            }
+
+            if (fBulan === "") isInMonth = true; 
+
+            if (isInMonth) {
+                html += '<tr class="baris-data hover:bg-white/5 transition-colors duration-200" style="border-bottom: 1px solid rgba(255,255,255,0.05);">';
+                html += '<td style="text-align: center; color: #94a3b8; font-weight: 500;">' + (no++) + '</td>';
+                html += '<td style="color: white; font-weight: 500; letter-spacing: 0.5px;">' + row.diklat + '</td>';
+                html += '<td style="color: #cbd5e1; font-size: 12px; letter-spacing: 0.5px;">' + (fixPeny || '-') + '</td>'; 
+                html += '<td style="text-align: center; color: #94a3b8; font-weight: 500;">' + displayTgl + '</td>';
+                html += '<td style="text-align: right; font-weight: bold; color: #10b981; font-size: 15px;">' + (parseInt(fixJp)||0) + ' <span style="font-size: 12px; color: #94a3b8; font-weight: normal;">JP</span></td>';
+                html += '<td style="text-align: center;"><div style="display: flex; gap: 8px; justify-content: center;">';
+                html += '<button onclick="window.lihatSertifikat(\'' + fixFile + '\')" style="padding: 8px 12px; background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-pdf"></i> PDF</button>';
+                html += '<button onclick="window.hapusDataKompetensi(\'' + row.id + '\')" style="padding: 8px 12px; background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-trash"></i> Hapus</button>';
+                html += '</div></td></tr>';
+            }
+        });
+
+        const isAntiKorupsi = window.currentSheetTarget === 'DB_AntiKorupsi';
+
+        if (isAntiKorupsi) {
+            if(document.getElementById('stat-jp-tahun')) document.getElementById('stat-jp-tahun').innerHTML = jpTahunIni + ' <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span>';
+        } else {
+            let selisih = window.targetJPTahunan - jpTahunIni;
+            let isSurplus = selisih < 0; let sisaDisplay = Math.abs(selisih); 
+            let cardSisa = document.getElementById('card-sisa-jp');
+            let labelSisa = document.getElementById('label-sisa-jp');
+            let statSisa = document.getElementById('stat-sisa-jp');
+
+            if(cardSisa && labelSisa && statSisa) {
+                if (isSurplus) {
+                    cardSisa.className = "bmd-stat-card green"; labelSisa.innerText = "SURPLUS (KELEBIHAN) JP"; statSisa.style.color = "#10b981";
+                } else {
+                    cardSisa.className = "bmd-stat-card red"; labelSisa.innerText = "SISA TARGET JP"; statSisa.style.color = "#ef4444";
+                }
+                statSisa.innerHTML = sisaDisplay + ' <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span>';
+            }
+
+            if(document.getElementById('stat-jp-tahun')) document.getElementById('stat-jp-tahun').innerHTML = jpTahunIni + ' <span style="font-size:16px; color:#94a3b8; font-weight:600;">JP</span>';
+        }
+
+        if (html === '') tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 50px 0; font-size: 14px;">Belum ada rincian kegiatan pada periode ini.</td></tr>';
+        else tbody.innerHTML = html;
+    }
+
+    window.bukaFormTambahKompetensi_Aman = function() {
+        const diklatInput = document.getElementById('manual-nama-diklat').value;
+        const penyelenggaraInput = document.getElementById('manual-penyelenggara').value;
+        const tglRaw = document.getElementById('manual-tgl').value;
+        const jp = document.getElementById('manual-jp').value;
+        const fileInput = document.getElementById('manual-file');
+        
+        if (!diklatInput || !penyelenggaraInput || !tglRaw || !jp) { Swal.fire('Data Tidak Lengkap', 'Harap isi semua kolom berlabel bintang (*).', 'warning'); return; }
+
+        const dateObj = new Date(tglRaw); const formatTgl = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+        let fileObj = fileInput.files.length > 0 ? fileInput.files[0] : null;
+
+        let baseData = { id: Date.now(), nama: window.activeUserNama, nip: window.activeUserNIP, diklat: diklatInput.trim().toUpperCase(), penyelenggara: penyelenggaraInput.trim().toUpperCase(), tgl: formatTgl, jp: parseInt(jp) || 0, file: "#" };
+
+        Swal.fire({ title: 'Menyimpan Data...', html: '<span style="color:#34d399; font-size:14px; font-weight:bold;">Mengirim ke Database Google Sheet...</span>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff' });
+
+        if (fileObj) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (typeof google !== 'undefined') {
+                    google.script.run
+                    .withSuccessHandler(fileUrl => {
+                        baseData.file = fileUrl;
+                        google.script.run
+                        .withSuccessHandler(() => {
+                            window.dummyDataKompetensi.unshift(baseData); window.terapkanFilter(); document.getElementById('form-manual-kompetensi').reset();
+                            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Data Berhasil Terekam!', showConfirmButton: false, timer: 3000, background: '#0f172a', color: '#10b981' });
+                        }).withFailureHandler(err => { Swal.fire('Gagal Menyimpan Database', 'Terdapat error: ' + err.message, 'error'); }).simpanDBDataGeneric(window.currentSheetTarget, baseData);
+                    }).withFailureHandler(err => { Swal.fire('Gagal Upload Sertifikat', err.message, 'error'); }).uploadKeDrive(e.target.result, fileObj.name);
+                }
+            };
+            reader.readAsDataURL(fileObj);
+        } else {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(() => {
+                    window.dummyDataKompetensi.unshift(baseData); window.terapkanFilter(); document.getElementById('form-manual-kompetensi').reset();
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Data Berhasil Terekam!', showConfirmButton: false, timer: 3000, background: '#0f172a', color: '#10b981' });
+                }).withFailureHandler(err => { Swal.fire('Gagal Menyimpan Database', 'Terdapat error: ' + err.message, 'error'); }).simpanDBDataGeneric(window.currentSheetTarget, baseData);
+            }
+        }
+    }
+
+    window.tambahKeAntrean = function(inputElement) {
+        if (inputElement.files && inputElement.files.length > 0) { Array.from(inputElement.files).forEach(f => window.fileQueueAI.push(f)); window.renderAntreanFiles(); }
+        inputElement.value = ""; 
+    }
+
+    window.renderAntreanFiles = function() {
+        const container = document.getElementById('file-list-container'); const status = document.getElementById('paste-status-sertifikat');
+        if (window.fileQueueAI.length === 0) { container.innerHTML = ""; status.style.display = 'none'; return; }
+
+        let html = "";
+        window.fileQueueAI.forEach((f, idx) => {
+            let iconClass = f.type.includes('pdf') ? 'fa-file-pdf' : 'fa-file-image'; let iconColor = f.type.includes('pdf') ? '#f87171' : '#60a5fa';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.8); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">';
+            html += '<span style="font-size: 12px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;"><i class="fa-solid ' + iconClass + '" style="margin-right: 8px; color: ' + iconColor + ';"></i> ' + f.name + '</span>';
+            html += '<button type="button" onclick="window.hapusDariAntrean(' + idx + ')" style="background: rgba(239, 68, 68, 0.1); color: #f87171; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button></div>';
+        });
+        container.innerHTML = html; status.innerHTML = '<i class="fa-solid fa-check-circle" style="margin-right: 5px;"></i> ' + window.fileQueueAI.length + ' File Siap Diekstrak'; status.style.display = 'block';
+    }
+
+    window.hapusDariAntrean = function(idx) { window.fileQueueAI.splice(idx, 1); window.renderAntreanFiles(); }
+
+    window.formatTanggalLokal = function(tglRaw) {
+        if (!tglRaw) return tglRaw; let tglStr = String(tglRaw).trim(); let parts = [];
+        if (tglStr.includes('-')) parts = tglStr.split('-'); else if (tglStr.includes('/')) parts = tglStr.split('/'); else return tglStr;
+        if (parts.length !== 3) return tglStr;
+        const blnArr = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        let d = parseInt(parts[0]); let m = parseInt(parts[1]) - 1; let y = parseInt(parts[2]);
+        if (String(parts[0]).length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1]) - 1; d = parseInt(parts[2]); }
+        if (m < 0 || m > 11) return tglStr;
+        return d + ' ' + blnArr[m] + ' ' + y;
+    }
+
+    window.parseTanggalLokal = function(tglStr) {
+        if (!tglStr) return null;
+        const tgl = String(tglStr).trim().toLowerCase().replace(/\s+/g, ' '); 
+        const listBulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+        const parts = tgl.split(' ');
+        if (parts.length >= 3) {
+            const d = parseInt(parts[0]); const m = listBulan.indexOf(parts[1]); const y = parseInt(parts[2]);
+            if (!isNaN(d) && m !== -1 && !isNaN(y)) return new Date(y, m, d);
+        }
+        let numParts = [];
+        if (tgl.includes('-')) numParts = tgl.split('-');
+        else if (tgl.includes('/')) numParts = tgl.split('/');
+        if (numParts.length === 3) {
+            let d = parseInt(numParts[0]); let m = parseInt(numParts[1]) - 1;  let y = parseInt(numParts[2]);
+            if (String(numParts[0]).length === 4) { y = parseInt(numParts[0]); m = parseInt(numParts[1]) - 1; d = parseInt(numParts[2]); }
+            if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+        }
+        const parsedDate = new Date(tglStr);
+        if (!isNaN(parsedDate.getTime())) return parsedDate;
+        return null;
+    }
+
+    window.prosesEkstrakSertifikatAI = function() {
+        if (!window.fileQueueAI || window.fileQueueAI.length === 0) { Swal.fire({icon: 'warning', title: 'Antrean Kosong', text: 'Silakan Tambah File PDF/Gambar terlebih dahulu!', background: '#0f172a', color: '#fff'}); return; }
+        const filesArray = [...window.fileQueueAI]; let currentIndex = 0; let extractedDataToSave = [];
+
+        function processNextFile() {
+            if (currentIndex >= filesArray.length) {
+                if (extractedDataToSave.length > 0) {
+                    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff' });
+                    google.script.run
+                    .withSuccessHandler(function() {
+                        extractedDataToSave.forEach(d => window.dummyDataKompetensi.unshift(d));
+                        window.fileQueueAI = []; window.renderAntreanFiles(); window.terapkanFilter();
+                        Swal.fire({ title: 'Selesai!', text: 'Berhasil mengekstrak sertifikat ke Pangkalan Data.', icon: 'success', background: '#0f172a', color: '#fff' });
+                    }).withFailureHandler(function(err) { Swal.fire('Gagal Menyimpan Database', err.message, 'error'); }).simpanBulkDataGeneric(window.currentSheetTarget, extractedDataToSave);
+                } else { Swal.fire({ title: 'Gagal', text: 'Gagal membaca file dari AI.', icon: 'error', background: '#0f172a', color: '#fff' }); }
+                return;
+            }
+
+            Swal.fire({ title: 'Memproses AI: ' + (currentIndex + 1) + '/' + filesArray.length, text: 'Membaca dan Mengekstrak Dokumen...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff' });
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result; const originalName = filesArray[currentIndex].name || ("Sertifikat_" + Date.now() + ".pdf");
+                if (typeof google !== 'undefined') {
+                    google.script.run.withSuccessHandler(res => {
+                        if (res.success) {
+                            const dataAI = Array.isArray(res.data) ? res.data[0] : res.data;
+                            let formatTgl = window.formatTanggalLokal(dataAI.Tanggal_Pelaksanaan) || dataAI.Tanggal_Pelaksanaan;
+                            let penyelenggaraAI = dataAI.Penyelenggara || "-";
+
+                            google.script.run.withSuccessHandler(fileUrl => {
+                                extractedDataToSave.push({ id: Date.now() + currentIndex, nama: window.activeUserNama, nip: window.activeUserNIP, diklat: dataAI.Nama_Diklat, penyelenggara: penyelenggaraAI, tgl: formatTgl, jp: parseInt(dataAI.Total_JP) || 0, file: fileUrl });
+                                currentIndex++; setTimeout(processNextFile, 500);
+                            }).withFailureHandler(err => {
+                                extractedDataToSave.push({ id: Date.now() + currentIndex, nama: window.activeUserNama, nip: window.activeUserNIP, diklat: dataAI.Nama_Diklat, penyelenggara: penyelenggaraAI, tgl: formatTgl, jp: parseInt(dataAI.Total_JP) || 0, file: "#" });
+                                currentIndex++; setTimeout(processNextFile, 500);
+                            }).uploadKeDrive(base64Data, originalName);
+                        } else { currentIndex++; setTimeout(processNextFile, 500); }
+                    }).withFailureHandler(function(error) { currentIndex++; setTimeout(processNextFile, 500); }).ekstrakDataSertifikatDariGambar(base64Data);
+                }
+            };
+            reader.readAsDataURL(filesArray[currentIndex]);
+        }
+        processNextFile();
+    }
+
+    window.lihatSertifikat = function(url) {
+        if (!url || url === "#") Swal.fire({ icon: 'info', title: 'Belum Ada Lampiran', text: 'File fisik tidak ditemukan di database.', background: '#0f172a', color: '#fff' });
+        else window.open(url, '_blank');
+    }
+
+    window.hapusDataKompetensi = function(id) {
+      Swal.fire({ title: 'Hapus Riwayat?', text: 'Yakin menghapus permanen catatan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b', confirmButtonText: 'Ya, Hapus!', background: '#0f172a', color: '#fff'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0f172a', color: '#fff'});
+          if (typeof google !== 'undefined') {
+              google.script.run.withSuccessHandler(function() {
+                  const realIndex = window.dummyDataKompetensi.findIndex(d => String(d.id) === String(id));
+                  if(realIndex !== -1) window.dummyDataKompetensi.splice(realIndex, 1);
+                  window.terapkanFilter();
+                  Swal.close();
+              }).hapusDBDataGeneric(window.currentSheetTarget, id);
+          }
+        }
+      });
+    }
+
+   // =========================================================================
+    // CETAK LAPORAN VEKTOR PREMIUM (JUSTIFY - NARASI ~150 KATA)
+    // =========================================================================
+    window.generateAnalisisAIKompetensi = function() {
+        const activeNIP = window.activeUserNIP || String(sessionStorage.getItem("userNIP")).replace(/[^0-9]/g, '') || "198005172010011008"; 
+        const activeNama = window.activeUserNama || sessionStorage.getItem("userNama") || "KUSMAYADI, S.Hut";
+        
+        const fBulan = document.getElementById('filter-bulan-kompetensi').value;
+        const fTahun = document.getElementById('filter-tahun-kompetensi').value;
+        const isAntiKorupsi = window.currentSheetTarget === 'DB_AntiKorupsi';
+        
+        const listBulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+        const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        
+        let startDate = null; let endDate = null; let startYearDate = null; let endYearDate = null; let thnInt = parseInt(fTahun);
+
+        if (fBulan !== "" && fTahun !== "") {
+            let blnIdx = listBulan.indexOf(fBulan.toLowerCase());
+            startDate = new Date(thnInt, blnIdx - 1, 21, 0, 0, 0); endDate = new Date(thnInt, blnIdx, 20, 23, 59, 59);
+        }
+        if (fTahun !== "") {
+            startYearDate = new Date(thnInt - 1, 11, 21, 0, 0, 0); endYearDate = new Date(thnInt, 11, 20, 23, 59, 59);
+        }
+        
+        const userData = window.dummyDataKompetensi.filter(d => { 
+            const nipDB = String(d.nip).replace(/[^0-9]/g, '');
+            return nipDB === activeNIP; 
+        });
+        
+        let tbRows = []; let no = 1; let jpBulanIni = 0; let jpTahunIni = 0;
+        let fileSertifikatUrls = []; 
+
+        userData.forEach(row => {
+            const tglObj = window.parseTanggalLokal(row.tgl);
+            let isInMonth = false; let displayTgl = row.tgl;
+
+            if (tglObj) {
+                displayTgl = tglObj.getDate() + " " + namaBulan[tglObj.getMonth()] + " " + tglObj.getFullYear();
+                if (startYearDate && endYearDate && tglObj >= startYearDate && tglObj <= endYearDate) jpTahunIni += parseInt(row.jp) || 0;
+                if (startDate && endDate) isInMonth = (tglObj >= startDate && tglObj <= endDate);
+                else if (startYearDate && endYearDate) isInMonth = (tglObj >= startYearDate && tglObj <= endYearDate);
+                else isInMonth = true;
+            } else {
+                const tglLower = String(row.tgl).toLowerCase();
+                if(fTahun === "" || tglLower.includes(fTahun)) jpTahunIni += parseInt(row.jp) || 0;
+                const matchBulan = fBulan === "" || tglLower.includes(fBulan); const matchTahun = fTahun === "" || tglLower.includes(fTahun);
+                isInMonth = matchBulan && matchTahun;
+            }
+
+            if (isInMonth) {
+                jpBulanIni += parseInt(row.jp) || 0;
+                tbRows.push([ no++, row.diklat, displayTgl, (parseInt(row.jp)||0) + ' JP' ]);
+                if (row.file && row.file !== "#" && row.file.includes("drive")) fileSertifikatUrls.push(row.file);
+            }
+        });
+
+        if (jpBulanIni === 0 && jpTahunIni === 0) {
+            Swal.fire('Data Kosong', 'Belum ada rincian kegiatan pada periode ini.', 'warning'); return;
+        }
+
+        Swal.fire({ title: 'Membangun Laporan...', html: '<span class="text-emerald-400 text-sm font-bold">Menyiapkan Mesin Rendering Vektor...</span>', allowOutsideClick: false, background: '#0f172a', color: '#00f3ff', didOpen: () => { Swal.showLoading(); } });
+
+        function renderFinalPDF(fotoArray, realJabatan) {
+            Swal.update({ html: '<span class="text-[#10b981] text-sm font-bold">Menyusun Tata Letak & Merajut Teks Justify...</span>' });
+
+            let bulanReport = fBulan ? fBulan.toUpperCase() : 'SEPANJANG TAHUN';
+            let tahunReport = fTahun ? fTahun : new Date().getFullYear().toString();
+            let judulPDF = isAntiKorupsi ? "KOMPETENSI ANTI KORUPSI" : "PENGEMBANGAN KOMPETENSI ASN";
+            let periodeStr = bulanReport + " " + tahunReport;
+
+            const uNama = activeNama;
+            const uNip = activeNIP;
+            const uJabatan = realJabatan; 
+
+            let selisih = window.targetJPTahunan - jpTahunIni; 
+            let sisaJP = Math.abs(selisih); 
+            let isSurplus = selisih < 0;
+            let persentase = window.targetJPTahunan === 0 ? 0 : ((jpTahunIni / window.targetJPTahunan) * 100).toFixed(1);
+            
+            // =========================================================================
+            // NARASI EKSPANSI (MIN. 100 KATA) UNTUK TIGA KONDISI
+            // =========================================================================
+            let narasiKesimpulan = "";
+            if (isAntiKorupsi) {
+                narasiKesimpulan = `Berdasarkan hasil rekapitulasi dan evaluasi terhadap capaian pengembangan kompetensi Aparatur Sipil Negara (ASN) khusus pada pilar integritas periode ini, disimpulkan bahwa pegawai yang bersangkutan telah berpartisipasi aktif dalam program bertemakan Anti Korupsi dengan total akumulasi sebesar ${jpTahunIni} Jam Pelajaran (JP). Partisipasi ini memiliki nilai strategis yang sangat tinggi, mengingat penguatan nilai-nilai integritas, transparansi, dan akuntabilitas merupakan fondasi mutlak dalam mewujudkan tata kelola pemerintahan yang bersih dan bebas dari praktik korupsi, kolusi, maupun nepotisme (KKN). Melalui pelatihan ini, pegawai diharapkan mampu menyerap materi krusial terkait identifikasi benturan kepentingan, pencegahan gratifikasi, serta internalisasi budaya kerja yang menjunjung tinggi etika birokrasi. Pemahaman komprehensif terhadap instrumen pencegahan korupsi ini harus termanifestasi secara konkret dalam setiap pengambilan keputusan dan pelayanan kepada masyarakat. Keberhasilan mengakumulasi JP pada klaster ini merupakan wujud nyata komitmen individu dalam menjaga muruah aparatur negara demi mewujudkan birokrasi yang bersih dan prima.`;
+            } else if (persentase >= 100) {
+                narasiKesimpulan = `Berdasarkan hasil rekapitulasi dan evaluasi komprehensif terhadap capaian pengembangan kompetensi Aparatur Sipil Negara (ASN) pada periode pelaporan ini, dapat disimpulkan bahwa pegawai yang bersangkutan telah menunjukkan dedikasi dan komitmen yang sangat baik dalam memenuhi kewajiban pengembangan kompetensi tahunan sesuai dengan standar minimal peraturan kepegawaian. Pegawai tidak hanya berhasil mencapai target yang ditetapkan, namun juga membuktikan inisiatif tinggi dalam memperkaya wawasan, meningkatkan kapasitas analitis, dan mengasah keahlian teknis maupun manajerial melalui berbagai program pelatihan yang relevan dengan tugas pokok organisasinya. Pencapaian target ini merupakan wujud nyata kontribusi pegawai dalam membangun postur birokrasi yang profesional, adaptif, dan responsif terhadap dinamika pelayanan publik di era digital. Diharapkan ilmu pengetahuan dan keterampilan mutakhir yang telah diperoleh dapat segera diimplementasikan secara terukur di lingkungan unit kerja, memberikan dampak positif terhadap peningkatan sasaran kinerja, serta mampu menjadi inspirasi dan teladan bagi rekan sejawat lainnya.`;
+            } else {
+                narasiKesimpulan = `Berdasarkan hasil rekapitulasi dan telaah evaluasi komprehensif terhadap capaian pengembangan kompetensi Aparatur Sipil Negara (ASN) pada periode pelaporan ini, disimpulkan secara faktual bahwa tingkat partisipasi dan realisasi Jam Pelajaran (JP) pegawai bersangkutan masih berada di bawah ambang batas standar minimal yang ditetapkan regulasi kepegawaian. Hingga dokumen evaluasi ini diterbitkan, sistem mencatat adanya defisit capaian target yang membutuhkan atensi segera. Oleh karena itu, pegawai yang bersangkutan diimbau dan diinstruksikan untuk proaktif mengambil langkah akselerasi dengan mengikuti berbagai program pelatihan, bimbingan teknis, lokakarya, atau webinar yang berkesesuaian erat dengan penjabaran tugas pokok dan fungsinya. Langkah mitigasi ini sangat esensial guna memenuhi sisa defisit target sebanyak ${sisaJP} JP secara paripurna sebelum batas waktu pelaporan akhir tahun anggaran diberlakukan. Sangat krusial untuk dipahami bahwa kelalaian dalam memenuhi kewajiban kompetensi ini akan berdampak langsung pada penurunan skor indeks profesionalitas ASN dan evaluasi kinerja tahunan.`;
+            }
+
+            function drawKopKPHP(doc, w) {
+                var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+                var logoKanan = sessionStorage.getItem("LogoKPH_Base64") || "";
+                if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', 15, 10, 18, 22); } catch(e){} }
+                if (logoKanan.length > 100) { try { doc.addImage(logoKanan, logoKanan.indexOf('png') !== -1 ? 'PNG' : 'JPEG', w - 35, 10, 20, 22); } catch(e){} }
+                doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+                doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 14, { align: "center" });
+                doc.setFontSize(16); doc.setTextColor(37, 99, 235); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 21, { align: "center" });
+                doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("UPTD KESATUAN PENGELOLAAN HUTAN PRODUKSI UNIT I KARIMUN", w/2, 27, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
+                doc.text("Komplek Balai Penyuluh Pertanian Jalan Teluk Paku Kel. Pasir Panjang Kec. Meral Barat Kabupaten Karimun", w/2, 32, { align: "center" });
+                doc.setDrawColor(15, 23, 42); doc.setLineWidth(1); doc.line(15, 38, w - 15, 38); 
+                doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.3); doc.line(15, 39.5, w - 15, 39.5);
+            }
+
+            function drawCover(doc, w, h, title, subtitle, periode, sN) {
+                doc.setDrawColor(37, 99, 235); doc.setLineWidth(1.5); doc.roundedRect(10, 10, w - 20, h - 20, 4, 4);
+                var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+                if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', (w/2)-18, 45, 36, 42); } catch(e){} }
+                doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 105, { align: "center" });
+                doc.setFontSize(16); doc.setTextColor(100, 116, 139); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 115, { align: "center" }); 
+                doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("UPTD KPHP UNIT I KARIMUN", w/2, 125, { align: "center" });
+                doc.setDrawColor(37, 99, 235); doc.setLineWidth(1); doc.line((w/2)-30, 135, (w/2)+30, 135); 
+                doc.setFontSize(26); doc.setTextColor(37, 99, 235); doc.text(title, w/2, 160, { align: "center" }); 
+                doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text(subtitle, w/2, 170, { align: "center" });
+                doc.setFillColor(241, 245, 249); doc.roundedRect((w/2)-60, 185, 120, 14, 4, 4, 'FD'); 
+                doc.setFontSize(11); doc.setTextColor(30, 64, 175); doc.text(periode, w/2, 194, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100, 116, 139); doc.text("Dilaporkan Oleh:", w/2, 240, { align: "center" }); 
+                doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(sN, w/2, 248, { align: "center" });
+            }
+
+            function drawSignature(doc, w, y, role, sN, nipStr) {
+                var d = new Date(); var strTgl = "Karimun, " + d.getDate() + " " + namaBulan[d.getMonth()] + " " + d.getFullYear();
+                doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+                doc.text(strTgl, w - 45, y, { align: "center" }); 
+                var splitRole = doc.splitTextToSize(role, 65);
+                doc.text(splitRole, w - 45, y + 5, { align: "center" });
+                var roleOffset = splitRole.length * 4;
+                doc.setFont("helvetica", "bold"); doc.text(sN, w - 45, y + roleOffset + 20, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.text(nipStr.includes('NIP') ? nipStr : 'NIP. ' + nipStr, w - 45, y + roleOffset + 25, { align: "center" });
+            }
+
+            var themePremium = {
+                theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold', halign: 'center', fontSize: 9, cellPadding: 4 },
+                bodyStyles: { textColor: [15, 23, 42], fontSize: 9, cellPadding: 3, halign: 'center' },
+                alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: { 1: { halign: 'left', fontStyle: 'bold' } }
+            };
+
+            function generateJsPDF() {
+                var jsPDF = window.jspdf.jsPDF; 
+                var doc = new jsPDF('p', 'mm', 'a4'); 
+                var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+
+                drawCover(doc, w, h, "LAPORAN EVALUASI", judulPDF, "PERIODE: " + periodeStr, uNama);
+                
+                doc.addPage(); 
+                drawKopKPHP(doc, w); 
+                
+                var startY = 48;
+                doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+                doc.text("LAPORAN EVALUASI " + judulPDF, w/2, startY, {align: "center"});
+                doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(100, 116, 139);
+                doc.text("Periode: " + periodeStr, w/2, startY + 6, {align: "center"});
+
+                startY += 15;
+                doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+                doc.text("Nama Pegawai", 15, startY); doc.text(":", 45, startY); doc.setTextColor(15, 23, 42); doc.text(uNama, 48, startY);
+                doc.setTextColor(71, 85, 105);
+                doc.text("NIP", 15, startY + 6); doc.text(":", 45, startY + 6); doc.setTextColor(15, 23, 42); doc.text(uNip, 48, startY + 6);
+                doc.setTextColor(71, 85, 105);
+                doc.text("Jabatan", 15, startY + 12); doc.text(":", 45, startY + 12); doc.setTextColor(15, 23, 42); doc.text(uJabatan, 48, startY + 12);
+
+                startY += 22;
+                if (isAntiKorupsi) {
+                    doc.setFillColor(248, 250, 252); doc.setDrawColor(16, 185, 129); doc.setLineWidth(1); doc.roundedRect(w/4, startY, w/2, 22, 3, 3, 'FD');
+                    doc.setFontSize(9); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold"); doc.text("TOTAL REALISASI (ANTI KORUPSI)", w/2, startY + 7, {align: "center"});
+                    doc.setFontSize(18); doc.setTextColor(16, 185, 129); doc.text(jpTahunIni + " JP", w/2, startY + 15, {align: "center"});
+                } else {
+                    doc.setFillColor(248, 250, 252); doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.5); doc.roundedRect(14, startY, w - 28, 22, 3, 3, 'FD');
+                    
+                    doc.setDrawColor(59, 130, 246); doc.setLineWidth(1); doc.line(16, startY, 56, startY);
+                    doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold"); doc.text("TARGET MINIMAL", 36, startY + 7, {align: "center"});
+                    doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text(window.targetJPTahunan + " JP", 36, startY + 15, {align: "center"});
+                    
+                    doc.setDrawColor(16, 185, 129); doc.setLineWidth(1); doc.line(61, startY, 101, startY);
+                    doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("TOTAL REALISASI", 81, startY + 7, {align: "center"});
+                    doc.setFontSize(14); doc.setTextColor(16, 185, 129); doc.text(jpTahunIni + " JP", 81, startY + 15, {align: "center"});
+                    
+                    let colorSisa = isSurplus ? [16, 185, 129] : [239, 68, 68];
+                    doc.setDrawColor(colorSisa[0], colorSisa[1], colorSisa[2]); doc.setLineWidth(1); doc.line(106, startY, 146, startY);
+                    doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text(isSurplus ? "SURPLUS JP" : "SISA TARGET JP", 126, startY + 7, {align: "center"});
+                    doc.setFontSize(14); doc.setTextColor(colorSisa[0], colorSisa[1], colorSisa[2]); doc.text(sisaJP + " JP", 126, startY + 15, {align: "center"});
+                    
+                    doc.setDrawColor(139, 92, 246); doc.setLineWidth(1); doc.line(151, startY, 191, startY);
+                    doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("AGREGAT SERAPAN", 171, startY + 7, {align: "center"});
+                    doc.setFontSize(14); doc.setTextColor(139, 92, 246); doc.text(persentase + "%", 171, startY + 15, {align: "center"});
+                }
+
+                // =========================================================================
+                // RENDERING KOTAK NARASI DENGAN TEKS JUSTIFY (RATA KANAN-KIRI)
+                // =========================================================================
+                startY += 28;
+                doc.setFontSize(9.5); // Font disesuaikan agar rapi untuk 150 kata
+                
+                var splitText = doc.splitTextToSize(narasiKesimpulan, w - 38);
+                var aiBoxHeight = (splitText.length * 4.5) + 14; 
+                
+                doc.setFillColor(240, 253, 244); 
+                doc.roundedRect(15, startY, w - 30, aiBoxHeight, 2, 2, 'FD');
+                doc.setDrawColor(16, 185, 129); doc.setLineWidth(1.5); 
+                doc.line(15, startY+1, 15, startY + aiBoxHeight - 1);
+                
+                doc.setFontSize(10); doc.setTextColor(20, 83, 45); doc.setFont("helvetica", "bold");
+                doc.text("Analisis & Kesimpulan Kinerja:", 19, startY + 6);
+                
+                doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(22, 101, 52);
+                
+                // Menerapkan Align Justify
+                doc.text(narasiKesimpulan, 19, startY + 12, { maxWidth: w - 38, align: "justify" });
+
+                // =========================================================================
+                // AUTO-TABLE RINCIAN (SISTEM PEMISAH HALAMAN OTOMATIS JIKA KOTAK BESAR)
+                // =========================================================================
+                var tableStartY = startY + aiBoxHeight + 8;
+                
+                if (tableStartY > 255) {
+                    doc.addPage();
+                    drawKopKPHP(doc, w);
+                    tableStartY = 48;
+                }
+
+                doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(15, 23, 42); 
+                doc.text("Rincian Histori Kegiatan:", 15, tableStartY);
+                
+                doc.autoTable(Object.assign({}, themePremium, { 
+                    startY: tableStartY + 3, 
+                    head: [["NO", "URAIAN KEGIATAN / DIKLAT / WEBINAR", "TANGGAL PELAKSANAAN", "REALISASI"]], 
+                    body: tbRows,
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 12 },
+                        1: { halign: 'left', cellWidth: 'auto' },
+                        2: { halign: 'center', cellWidth: 50 },
+                        3: { halign: 'center', fontStyle: 'bold', cellWidth: 30 }
+                    }
+                }));
+                
+                var fy = doc.lastAutoTable.finalY || 150; 
+                fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+                drawSignature(doc, w, fy, uJabatan, uNama, uNip);
+                
+                return doc.output('arraybuffer');
+            }
+
+            async function compileAndDownloadPDF() {
+                try {
+                    const laporanBuffer = generateJsPDF();
+                    
+                    Swal.update({ html: '<span class="text-blue-400 text-sm font-bold">Menggabungkan (Merge) File Sertifikat...</span>' });
+                    const { PDFDocument } = window.PDFLib;
+                    const pdfGabungan = await PDFDocument.load(laporanBuffer);
+
+                    if (fotoArray && fotoArray.length > 0) {
+                        for (let i = 0; i < fotoArray.length; i++) {
+                            let f = fotoArray[i];
+                            if (f.base64 && f.base64.includes('application/pdf')) {
+                                let base64str = f.base64.split(',')[1];
+                                const sertifikatDoc = await PDFDocument.load(base64str);
+                                const halamanDicopy = await pdfGabungan.copyPages(sertifikatDoc, sertifikatDoc.getPageIndices());
+                                halamanDicopy.forEach((page) => pdfGabungan.addPage(page));
+                            } else if (f.base64 && f.base64.includes('image')) {
+                                const page = pdfGabungan.addPage([595.28, 841.89]); 
+                                let img = f.base64.includes('png') ? await pdfGabungan.embedPng(f.base64) : await pdfGabungan.embedJpg(f.base64);
+                                const imgScale = img.scaleToFit(500, 700);
+                                page.drawImage(img, { x: (595.28 - imgScale.width) / 2, y: (841.89 - imgScale.height) / 2, width: imgScale.width, height: imgScale.height });
+                            }
+                        }
+                    }
+
+                    const pdfBytes = await pdfGabungan.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    
+                    const fBulanTeks = fBulan ? fBulan.toUpperCase() : 'TAHUNAN';
+                    link.download = `LAPORAN_${window.currentSheetTarget}_${fBulanTeks}_${fTahun}.pdf`;
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    Swal.close();
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Laporan & Sertifikat PDF Selesai Digabung!', showConfirmButton: false, timer: 4000, background: '#0f172a', color: '#10b981' });
+                } catch (err) {
+                    Swal.close();
+                    Swal.fire('Error Merge PDF', 'Gagal menggabungkan PDF: ' + err.message, 'error');
+                }
+            }
+            compileAndDownloadPDF();
+        }
+
+        function lanjutkanPersiapanPDF(realJabatan) {
+            let libsLoaded = 0;
+            function checkLibs() { 
+                if (++libsLoaded >= 2) { 
+                    if (fileSertifikatUrls.length > 0) { 
+                        Swal.update({ html: '<span class="text-blue-400 text-sm font-bold">Mengunduh Sertifikat Lampiran...</span>' });
+                        let photoPayload = fileSertifikatUrls.map(url => { return { tgl: "Sertifikat", url: url }; }); 
+                        google.script.run
+                            .withSuccessHandler(d => renderFinalPDF(d || [], realJabatan))
+                            .withFailureHandler(() => renderFinalPDF([], realJabatan))
+                            .getBase64FotosApel(photoPayload); 
+                    } else { 
+                        renderFinalPDF([], realJabatan); 
+                    } 
+                } 
+            }
+
+            if (typeof window.jspdf === 'undefined') { 
+                let s1 = document.createElement('script'); s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; 
+                s1.onload = () => {
+                    let s2 = document.createElement('script'); s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+                    s2.onload = checkLibs; document.head.appendChild(s2);
+                };
+                document.head.appendChild(s1); 
+            } else { checkLibs(); }
+            
+            if (typeof window.PDFLib === 'undefined') { 
+                let s3 = document.createElement('script'); s3.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'; 
+                s3.onload = checkLibs; document.head.appendChild(s3); 
+            } else { checkLibs(); }
+        }
+
+        if (typeof google !== 'undefined') {
+            google.script.run.withSuccessHandler(function(masterData) {
+                let finalJabatan = "Kepala Sub Bagian Tata Usaha"; 
+                
+                if (masterData && masterData.length > 0) {
+                    let m = masterData.find(x => String(x.NIP).replace(/[^0-9]/g, '') === String(activeNIP).replace(/[^0-9]/g, ''));
+                    if (m && m.JABATAN && m.JABATAN.trim() !== "") {
+                        finalJabatan = m.JABATAN.trim();
+                    }
+                }
+                
+                window.activeUserJabatan = finalJabatan;
+                sessionStorage.setItem("userJabatan", finalJabatan);
+                
+                lanjutkanPersiapanPDF(finalJabatan);
+            }).withFailureHandler(function() {
+                let fallbackJabatan = (window.activeUserJabatan && window.activeUserJabatan !== "Pejabat Penilai") ? window.activeUserJabatan : "Kepala Sub Bagian Tata Usaha";
+                lanjutkanPersiapanPDF(fallbackJabatan);
+            }).getTableData("MASTER_PEGAWAI");
+        } else {
+            let fallbackJabatan = (window.activeUserJabatan && window.activeUserJabatan !== "Pejabat Penilai") ? window.activeUserJabatan : "Kepala Sub Bagian Tata Usaha";
+            lanjutkanPersiapanPDF(fallbackJabatan);
+        }
+    }
+
+    // PANGGIL AWAL
+    loadKompetensiData();
+
+} catch (errorOuter) {
+    alert("Kesalahan Sistem Utama: " + errorOuter.message);
+}
+</script>

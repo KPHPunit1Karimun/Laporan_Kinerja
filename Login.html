@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+body{font-family:Arial;background:#f1f5f9}
+.login-box{max-width:380px;margin:80px auto;background:white;padding:30px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,.15)}
+h2{text-align:center}
+input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+button{width:100%;padding:12px;background:#2563eb;color:white;border:0;border-radius:8px;cursor:pointer}
+button:hover{background:#1d4ed8}
+#msg{text-align:center;font-weight:bold;margin-top:15px}
+</style>
+</head>
+<body>
+<div class="login-box">
+<h2>🔐 Login Sistem</h2>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<script>
+// Ganti bagian login() menjadi seperti ini:
+function login(){
+  let username=document.getElementById("u").value.trim();
+  let password=document.getElementById("p").value.trim();
+
+  if(!username||!password){
+    document.getElementById("msg").innerHTML="Username dan password wajib diisi";
+    return;
+  }
+
+  google.script.run.withSuccessHandler(function(r){
+    if(r.success){
+      document.getElementById("msg").innerHTML="Login berhasil sebagai "+r.nama;
+
+      google.script.run.withSuccessHandler(function(){
+        // Menggunakan URL bawaan ScriptApp untuk masuk ke sistem
+        window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>";
+      }).setLoginSession(r);
+
+    }else{
+      document.getElementById("msg").innerHTML=r.message;
+    }
+  }).withFailureHandler(function(e){
+    document.getElementById("msg").innerHTML="Error: "+e.message;
+  }).loginUser(username,password);
+}
+</script>
+</body>
+</html>

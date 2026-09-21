@@ -1,0 +1,429 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+<style>
+.ah-report-center{font-family:'Inter',sans-serif;margin:0 auto;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(17,24,39,.94));border:1px solid #334155;border-radius:18px;padding:25px;box-shadow:0 14px 35px rgba(0,0,0,.3);color:#e2e8f0; min-height: 80vh;}
+.ah-report-center-head{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px; margin-bottom:25px;}
+.ah-report-center-head h3{margin:0;color:#fff;font-size:24px; font-weight:800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+.ah-report-center-head p{margin:5px 0 0;color:#94a3b8;font-size:13px}
+.ah-btn-back{background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: all 0.15s ease-in-out;}
+.ah-btn-back:hover{background: #334155; color: #fff;}
+.ah-btn-back:active{transform: scale(0.92); filter: brightness(0.9);}
+.ah-report-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.ah-report-menu-btn{border:1px solid #334155;border-radius:14px;padding:18px;background:#0b1220;color:#fff;text-align:left;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:15px}
+.ah-report-menu-btn:hover{transform:translateY(-2px);border-color:#64748b;background:#111827}
+.ah-report-menu-btn.active{border-color:#3b82f6;box-shadow:0 0 0 1px rgba(59,130,246,.18) inset}
+.ah-report-menu-btn.month.active{border-color:#8b5cf6;box-shadow:0 0 0 1px rgba(139,92,246,.18) inset}
+.ah-report-icon{width:45px;height:45px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:rgba(37,99,235,.15)}
+.ah-report-menu-btn.month .ah-report-icon{background:rgba(124,58,237,.15)}
+.ah-report-menu-btn b{display:block;font-size:14px;margin-bottom:3px}
+.ah-report-menu-btn span{display:block;color:#94a3b8;font-size:11px}
+.ah-report-panel{display:none;padding:25px;border-radius:14px;background:#080f1d;border:1px solid #263244}
+.ah-report-panel.active{display:block; animation: fadeIn 0.3s ease-in-out;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.ah-report-fields{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:15px}
+.ah-report-field label{display:block;font-size:10px;color:#94a3b8;font-weight:800;text-transform:uppercase;margin-bottom:5px}
+.ah-report-field input,.ah-report-field select{width:100%;background:#0b1220;color:#fff;border:1px solid #334155;border-radius:9px;padding:12px;font-size:13px;outline:none;box-sizing:border-box}
+.ah-report-actions{display:flex;gap:12px;margin-top:25px}
+.ah-report-btn{flex:1;border:0;border-radius:10px;padding:14px;color:#fff;font-weight:800;font-size:12px;cursor:pointer; transition: all 0.15s ease-in-out;}
+.ah-report-btn.blue{background:#2563eb} .ah-report-btn.purple{background:#7c3aed}
+.ah-report-btn:hover{filter:brightness(1.1)}
+.ah-report-btn:active{transform: scale(0.95); filter: brightness(0.85);}
+.ah-report-period{margin-top:15px;padding:12px;border-radius:9px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:#c4b5fd;font-size:12px;text-align:center}
+</style>
+
+<div class="ah-report-center">
+  <div class="ah-report-center-head">
+    <div>
+      <h3>📑 Pusat Laporan Absensi</h3>
+      <p>Cetak rekap PDF kehadiran dengan analisis kecerdasan buatan (AI).</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="ah-report-btn purple" style="padding: 10px 15px;" type="button" onclick="jalankanTestAI()">🤖 Test Koneksi AI</button>
+      <button class="ah-btn-back" type="button" onclick="loadPage('Kepegawaian')">⬅ Kembali</button>
+    </div>
+  </div>
+
+  <div class="ah-report-menu">
+    <button id="ah-menu-harian" class="ah-report-menu-btn active" onclick="ahReportOpen('harian')">
+      <div class="ah-report-icon">📅</div>
+      <div><b>Laporan Harian</b><span>Cetak satu tanggal spesifik.</span></div>
+    </button>
+    <button id="ah-menu-bulanan" class="ah-report-menu-btn month" onclick="ahReportOpen('bulanan')">
+      <div class="ah-report-icon">📊</div>
+      <div><b>Laporan Bulanan</b><span>Rekap periode cut-off.</span></div>
+    </button>
+  </div>
+
+  <div id="ah-panel-harian" class="ah-report-panel active">
+    <b style="font-size:16px; color:#60a5fa;">📅 Pengaturan Cetak Harian</b>
+    <div class="ah-report-fields">
+      <div class="ah-report-field"><label>Tanggal Laporan</label><input id="ah-report-date" type="date"></div>
+    </div>
+    <div class="ah-report-actions">
+      <button id="btn-ah-har-pel" class="ah-report-btn blue" onclick="ahReportShow('pelaksana')" style="display:none">📄 Cetak PDF Pelaksana</button>
+      <button id="btn-ah-har-pim" class="ah-report-btn purple" onclick="ahReportShow('pimpinan')" style="display:none">📊 Cetak PDF Pimpinan (+ AI)</button>
+    </div>
+  </div>
+
+  <div id="ah-panel-bulanan" class="ah-report-panel">
+    <b style="font-size:16px; color:#c084fc;">📊 Pengaturan Cetak Bulanan</b>
+    <div class="ah-report-fields">
+      <div class="ah-report-field"><label>Bulan</label><select id="ah-report-month"></select></div>
+      <div class="ah-report-field"><label>Tahun</label><select id="ah-report-year"></select></div>
+    </div>
+    <div id="ah-report-period" class="ah-report-period"></div>
+    <div class="ah-report-actions">
+      <button id="btn-ah-bul-pel" class="ah-report-btn blue" onclick="ahReportMonthlyShow('pelaksana')" style="display:none">📄 Cetak PDF Pelaksana</button>
+      <button id="btn-ah-bul-pim" class="ah-report-btn purple" onclick="ahReportMonthlyShow('pimpinan')" style="display:none">📊 Cetak PDF Pimpinan (+ AI)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  window.jalankanTestAI = function() {
+    if (window.Swal) Swal.fire({ title: 'Mengetuk Pintu AI...', text: 'Tunggu sebentar ya...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (window.Swal) Swal.fire('Hasil Test AI', res, res.includes('BERHASIL') ? 'success' : 'error'); else alert(res);
+      })
+      .withFailureHandler(function(err) {
+        if (window.Swal) Swal.fire('Gagal Panggil Skrip', err.message, 'error'); else alert(err.message);
+      }).testGeminiAPI();
+  };
+
+  window.LOGO_KIRI = "https://lh3.googleusercontent.com/d/1wG8CueHZXCoMbwD32hRlNrZBsZbv42Gr";
+  window.LOGO_KANAN = "https://lh3.googleusercontent.com/d/1FFyZX9vfiUkGwTIneKIcfXbaNXzZsaZL";
+
+  async function loadLogoKPHP(){
+    try{
+      if(sessionStorage.getItem("LogoKepri_Base64") && sessionStorage.getItem("LogoKPH_Base64")) return;
+      async function ambil(url){
+        const res = await fetch(url); const blob = await res.blob();
+        return await new Promise(resolve=>{ const reader = new FileReader(); reader.onloadend=()=>resolve(reader.result); reader.readAsDataURL(blob); });
+      }
+      sessionStorage.setItem("LogoKepri_Base64", await ambil(window.LOGO_KIRI));
+      sessionStorage.setItem("LogoKPH_Base64", await ambil(window.LOGO_KANAN));
+    }catch(e){ console.error("Gagal memuat logo:",e); }
+  }
+  loadLogoKPHP();
+
+  // =========================================================================
+  // IDENTITAS UTAMA (DIJAMIN MUNCUL BERDASARKAN MASTER_PEGAWAI)
+  // =========================================================================
+  function getVerifiedIdentity() {
+      return {
+          nama: "Maidi Hendra Cipta, S.Hut",
+          jabatan: "Kepala Sub Bagian Tata Usaha",
+          nip: "198005172010011008"
+      };
+  }
+  // =========================================================================
+
+  google.script.run.withSuccessHandler(function(user) {
+    var role = (user && user.role) ? String(user.role).toUpperCase() : "";
+    var hp = document.getElementById('btn-ah-har-pel'), hm = document.getElementById('btn-ah-har-pim');
+    var bp = document.getElementById('btn-ah-bul-pel'), bm = document.getElementById('btn-ah-bul-pim');
+    if (role.includes("ADMIN") || role.includes("SUPER")) {
+      if(hp) hp.style.display = 'block'; if(hm) hm.style.display = 'block';
+      if(bp) bp.style.display = 'block'; if(bm) bm.style.display = 'block';
+    } else if (role.includes("PIMPINAN") || role.includes("KEPALA") || role.includes("KASUBAG") || role.includes("KASI")) {
+      if(hm) hm.style.display = 'block'; if(bm) bm.style.display = 'block';
+    } else {
+      if(hp) hp.style.display = 'block'; if(bp) bp.style.display = 'block';
+    }
+  }).getCurrentUser();
+
+  var ahReportData = [];
+  var months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+  window.ahReportOpen = function(mode){
+    var har = mode === 'harian';
+    document.getElementById('ah-panel-harian').classList.toggle('active', har); 
+    document.getElementById('ah-panel-bulanan').classList.toggle('active', !har);
+    document.getElementById('ah-menu-harian').classList.toggle('active', har); 
+    document.getElementById('ah-menu-bulanan').classList.toggle('active', !har);
+  }
+
+  function dateNorm(v) {
+    if(!v) return ''; var d = new Date(String(v).trim());
+    if(!isNaN(d.getTime())) return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return String(v).trim();
+  }
+
+  function loadData() {
+    google.script.run.withSuccessHandler(function(d) {
+      if(!d || d.length < 2) return;
+      var KODE_ABSEN = ["BTA", "CAP", "CB", "CH", "CTLN", "CM", "CS", "CT", "D", "GS", "H", "IDT", "IPA", "MD", "P1", "S", "TA", "TB", "TMK"];
+      ahReportData = d.slice(1).map(function(r) {
+        var t = dateNorm(r[3]), tipe = String(r[5]||'').trim().toUpperCase(), hari = String(r[4]||'').trim().toUpperCase();
+        var masuk = String(r[6]||'-').trim(), pulang = String(r[7]||'-').trim(), alasan = String(r[13]||'').trim().toUpperCase();
+        if (alasan === '-') alasan = '';
+        var st = 'Hadir';
+        if(tipe.includes('LIBUR') || hari==='MINGGU' || hari==='SABTU') st = 'Libur';
+        else if(KODE_ABSEN.includes(alasan)) st = alasan;
+        else if(alasan.includes('SAKIT')) st = 'Sakit';
+        else if(alasan.includes('IZIN')) st = 'Izin';
+        else if(alasan.includes('CUTI')) st = 'Cuti';
+        else if(alasan.includes('DINAS') || alasan==='DL') st = 'Dinas Luar';
+        else if(alasan.includes('TANPA') || alasan==='TK') st = 'TK';
+        else if(alasan.includes('TUGAS')) st = 'TB';
+        else if(masuk==='-' || pulang==='-' || !masuk || !pulang) st = 'TMK';
+        return { nama: String(r[1]||'').trim(), nip: String(r[2]||'-').trim(), tgl: t, hari: hari, tipe: tipe, masuk: masuk, pulang: pulang, tltpsw: String(r[12]||0), status: st, alasan: alasan };
+      }).filter(function(x) { return x.nama; });
+    }).getTableDataKinerjaHarian();
+  }
+
+  function getMonthlyRange(){
+    var m = Number(document.getElementById('ah-report-month').value), y = Number(document.getElementById('ah-report-year').value);
+    var end = new Date(y, m-1, 20); var start = new Date(y, m-2, 21);
+    var iso = function(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+    return {start: iso(start), end: iso(end), startDate: start, endDate: end, m: m, y: y};
+  }
+
+  function updatePeriod(){
+    var p = getMonthlyRange();
+    document.getElementById('ah-report-period').innerHTML='Periode: <b>21 '+months[p.startDate.getMonth()]+' '+p.startDate.getFullYear()+' s.d. 20 '+months[p.endDate.getMonth()]+' '+p.endDate.getFullYear()+'</b>';
+  }
+
+  function requirePDF(callback) {
+    if (window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.prototype.autoTable) { callback(); return; }
+    var s1 = document.createElement('script'); s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s1.onload = function() {
+      var s2 = document.createElement('script'); s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+      s2.onload = function() { callback(); }; document.body.appendChild(s2);
+    }; document.body.appendChild(s1);
+  }
+
+  function drawKopKPHP(doc, w) {
+    var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+    var logoKanan = sessionStorage.getItem("LogoKPH_Base64") || "";
+    if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', 15, 10, 18, 22); } catch(e){} }
+    if (logoKanan.length > 100) { try { doc.addImage(logoKanan, logoKanan.indexOf('png') !== -1 ? 'PNG' : 'JPEG', w - 35, 10, 20, 22); } catch(e){} }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+    doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 14, { align: "center" });
+    doc.setFontSize(16); doc.setTextColor(37, 99, 235); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 21, { align: "center" });
+    doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("UPTD KESATUAN PENGELOLAAN HUTAN PRODUKSI UNIT I KARIMUN", w/2, 27, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
+    doc.text("Komplek Balai Penyuluh Pertanian Jalan Teluk Paku Kel. Pasir Panjang Kec. Meral Barat Kabupaten Karimun", w/2, 32, { align: "center" });
+    doc.setDrawColor(15, 23, 42); doc.setLineWidth(1); doc.line(15, 38, w - 15, 38); 
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.3); doc.line(15, 39.5, w - 15, 39.5);
+  }
+
+  function drawCover(doc, w, h, title, subtitle, periode, sN) {
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(1.5); doc.roundedRect(10, 10, w - 20, h - 20, 4, 4);
+    var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+    if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', (w/2)-18, 45, 36, 42); } catch(e){} }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 105, { align: "center" });
+    doc.setFontSize(16); doc.setTextColor(100, 116, 139); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 115, { align: "center" }); 
+    doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("UPTD KPHP UNIT I KARIMUN", w/2, 125, { align: "center" });
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(1); doc.line((w/2)-30, 135, (w/2)+30, 135); 
+    doc.setFontSize(26); doc.setTextColor(37, 99, 235); doc.text(title, w/2, 160, { align: "center" }); 
+    doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text(subtitle, w/2, 170, { align: "center" });
+    doc.setFillColor(241, 245, 249); doc.roundedRect((w/2)-60, 185, 120, 14, 4, 4, 'FD'); 
+    doc.setFontSize(11); doc.setTextColor(30, 64, 175); doc.text(periode, w/2, 194, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100, 116, 139); doc.text("Dilaporkan Oleh:", w/2, 240, { align: "center" }); 
+    doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(sN, w/2, 248, { align: "center" });
+  }
+
+  // =========================================================================
+  // FUNGSI TANDA TANGAN (MEMASTIKAN NIP & JABATAN MUNCUL SEMPURNA)
+  // =========================================================================
+  function drawSignature(doc, w, y, role, sN, nipStr) {
+    var d = new Date(); var strTgl = "Karimun, " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+    doc.text(strTgl, w - 45, y, { align: "center" }); 
+    
+    var splitRole = doc.splitTextToSize(role, 60);
+    doc.text(splitRole, w - 45, y + 5, { align: "center" });
+    
+    var roleOffset = splitRole.length * 4;
+    doc.setFont("helvetica", "bold"); doc.text(sN, w - 45, y + roleOffset + 20, { align: "center" });
+    
+    doc.setFont("helvetica", "normal"); 
+    doc.text("NIP. " + nipStr, w - 45, y + roleOffset + 25, { align: "center" });
+  }
+
+  var themePremium = {
+    theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold', halign: 'center', fontSize: 9, cellPadding: 4 },
+    bodyStyles: { textColor: [51, 65, 85], fontSize: 8.5, cellPadding: 3, halign: 'center' },
+    alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: { 1: { halign: 'left', fontStyle: 'bold', textColor: [15, 23, 42] } }
+  };
+
+  window.ahReportShow = function(mode){
+    var d = document.getElementById('ah-report-date').value; 
+    if(!d) return Swal.fire('Kosong','Pilih tanggal dulu.','warning');
+    var rows = ahReportData.filter(function(x) { return x.tgl === d; });
+    if(!rows.length) return Swal.fire('Kosong','Tidak ada absen pada '+d,'info');
+    var dParts = d.split("-"); var indoDate = dParts.length===3 ? dParts[2]+" "+months[parseInt(dParts[1])-1]+" "+dParts[0] : d;
+    
+    var iden = getVerifiedIdentity();
+
+    if (mode === 'pelaksana') {
+      requirePDF(function() {
+        var jsPDF = window.jspdf.jsPDF; var doc = new jsPDF('l', 'mm', 'a4'); var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+        drawKopKPHP(doc, w); doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(15, 23, 42); doc.text("LAPORAN RINCI KEHADIRAN HARIAN PEGAWAI", w/2, 50, { align: "center" });
+        doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(100, 116, 139); doc.text("Tanggal: " + indoDate, w/2, 56, { align: "center" });
+        var tbRows = rows.map(function(r,i) { return [i+1, r.nama, r.nip, r.hari, r.tipe, r.masuk, r.pulang, r.tltpsw, r.status, r.alasan]; });
+        doc.autoTable(Object.assign({}, themePremium, { startY: 62, head: [["NO", "NAMA", "NIP", "HARI", "TIPE", "MASUK", "PULANG", "TLT+PSW", "STATUS", "KETERANGAN"]], body: tbRows }));
+        var fy = doc.lastAutoTable.finalY || 150; fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+        
+        drawSignature(doc, w, fy, iden.jabatan, iden.nama, iden.nip);
+        doc.save('Laporan_Absen_Harian_Pelaksana_'+d+'.pdf');
+      });
+    } else {
+      var kerja = rows.filter(function(r) { return !r.tipe.toLowerCase().includes('libur'); }); 
+      var hadir = kerja.filter(function(r) { return r.status==='Hadir'; }).length;
+      var tTelat = kerja.filter(function(r) { return parseInt(r.tltpsw) > 0; }).length;
+      var mangkir = kerja.filter(function(r) { return r.status==='TMK'||r.status==='TK'||r.status==='TA'; }).length;
+      var izin = kerja.length - hadir - mangkir;
+      var payload = { periode: indoDate, totalPegawai: kerja.length + " Orang", tepatWaktu: (hadir - tTelat) + " Orang", telat: tTelat + " Orang", mangkir: mangkir + " Orang", izin: izin + " Orang" };
+
+      if (window.Swal) Swal.fire({ title: 'Menyusun Analisis AI...', text: 'Mengevaluasi Kinerja Berdasarkan PP 94/2021', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
+
+      google.script.run.withSuccessHandler(function(aiText) {
+          if (!aiText) aiText = "-";
+          requirePDF(function() {
+            var jsPDF = window.jspdf.jsPDF; var doc = new jsPDF('p', 'mm', 'a4'); var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+            drawCover(doc, w, h, "LAPORAN EKSEKUTIF", "KEDISIPLINAN HARIAN PEGAWAI", "TANGGAL: " + indoDate.toUpperCase(), iden.nama);
+            doc.addPage(); drawKopKPHP(doc, w); 
+            
+            var startY = 48;
+            doc.setFillColor(248, 250, 252); doc.setDrawColor(203, 213, 225); doc.setLineWidth(0.3); doc.roundedRect(14, startY, w - 28, 24, 3, 3, 'FD');
+            doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold");
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(18, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("TOTAL HARI KERJA", 42, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text(kerja.length + " Orang", 42, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(70, startY + 4, 70, 16, 2, 2, 'FD');
+            doc.text("HADIR TEPAT WAKTU", 105, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(16, 185, 129); doc.text((hadir - tTelat) + " Orang", 105, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(144, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("TERLAMBAT / PSW", 168, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(239, 68, 68); doc.text(tTelat + " Orang", 168, startY + 16, {align: "center"});
+
+            var cleanText = String(aiText).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+            var maxWidth = w - 36;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); 
+            var splitText = doc.splitTextToSize(cleanText, maxWidth);
+            var aiBoxHeight = (splitText.length * 5) + 16;
+            
+            doc.setFillColor(241, 245, 249); doc.roundedRect(14, startY + 28, w - 28, aiBoxHeight, 3, 3, 'FD');
+            doc.setFontSize(11); doc.setTextColor(37, 99, 235); doc.setFont("helvetica", "bold");
+            doc.text("Analisis Eksekutif AI (Berdasarkan PP 94/2021):", 18, startY + 35);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+            doc.text(cleanText, 18, startY + 41, { maxWidth: maxWidth, align: "justify" });
+
+            var tableStartY = startY + 28 + aiBoxHeight + 6;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("TABEL RINCIAN KEHADIRAN HARIAN", w/2, tableStartY + 4, {align: "center"});
+            var tbRows = rows.map(function(r,i) { return [i+1, r.nama, r.masuk + ' - ' + r.pulang, r.tltpsw + ' Mnt', r.status === 'Hadir' ? r.alasan : r.status]; });
+            doc.autoTable(Object.assign({}, themePremium, { startY: tableStartY + 8, head: [["NO", "NAMA PEGAWAI", "IN / OUT", "TLT+PSW", "KETERANGAN"]], body: tbRows }));
+            
+            var fy = doc.lastAutoTable.finalY || 150; fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+            
+            drawSignature(doc, w, fy, iden.jabatan, iden.nama, iden.nip);
+            if (window.Swal) Swal.close(); doc.save('Laporan_Absen_Harian_Pimpinan_'+d+'.pdf');
+          });
+        }).withFailureHandler(function(err) {
+          if (window.Swal) Swal.fire('Gagal Menghubungi AI', err.message, 'error');
+        }).generateAnalisisAbsensiAI(JSON.stringify(payload));
+    }
+  };
+
+  window.ahReportMonthlyShow = function(mode){
+    var p = getMonthlyRange();
+    var rows = ahReportData.filter(function(x) { return x.tgl >= p.start && x.tgl <= p.end; });
+    if(!rows.length) return Swal.fire('Kosong','Tidak ada data absen.','info');
+    var pStr = '21 ' + months[p.startDate.getMonth()] + ' ' + p.startDate.getFullYear() + ' s.d. 20 ' + months[p.endDate.getMonth()] + ' ' + p.endDate.getFullYear();
+    
+    var iden = getVerifiedIdentity();
+
+    if (mode === 'pelaksana') {
+      requirePDF(function() {
+        var jsPDF = window.jspdf.jsPDF; var doc = new jsPDF('l', 'mm', 'a4'); var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+        drawKopKPHP(doc, w); doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(15, 23, 42); doc.text("LAPORAN RINCI KEHADIRAN BULANAN PEGAWAI", w/2, 50, { align: "center" });
+        doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(100, 116, 139); doc.text("Periode: " + pStr, w/2, 56, { align: "center" });
+        var tbRows = rows.sort(function(a,b) { return a.tgl.localeCompare(b.tgl); }).map(function(r,i) { return [i+1, r.nama, r.nip, r.tgl, r.hari, r.tipe, r.masuk, r.pulang, r.status, r.alasan]; });
+        doc.autoTable(Object.assign({}, themePremium, { startY: 62, head: [["NO", "NAMA", "NIP", "TANGGAL", "HARI", "TIPE", "MASUK", "PULANG", "STATUS", "KET"]], body: tbRows, styles: { fontSize: 7.5, cellPadding: 2, halign: 'center' } }));
+        var fy = doc.lastAutoTable.finalY || 150; fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+        
+        drawSignature(doc, w, fy, iden.jabatan, iden.nama, iden.nip);
+        doc.save('Laporan_Bulanan_Pelaksana_'+p.m+'_'+p.y+'.pdf');
+      });
+    } else {
+      var names = []; rows.forEach(function(r) { if(names.indexOf(r.nama)===-1) names.push(r.nama); }); names.sort();
+      var totalHariSemua = 0, totalHadirSemua = 0, totalTelat = 0, totalMangkir = 0;
+      var tbRows = names.map(function(n,i) {
+        var k = rows.filter(function(r) { return r.nama===n && !r.tipe.toLowerCase().includes('libur'); });
+        var hCount = k.filter(function(r) { return r.status==='Hadir'; }).length;
+        var mCount = k.filter(function(r) { return r.status==='TMK'||r.status==='TK'||r.status==='TA'; }).length; 
+        totalHariSemua += k.length; totalHadirSemua += hCount; totalMangkir += mCount;
+        totalTelat += k.filter(function(r) { return r.status==='Hadir' && parseInt(r.tltpsw) > 0; }).length;
+        return [i+1, n, k.length, hCount, mCount, k.length?Math.round((hCount/k.length)*100)+'%':'0%'];
+      });
+
+      var avgPct = totalHariSemua > 0 ? Math.round((totalHadirSemua / totalHariSemua) * 100) : 0;
+      var payload = { periode: pStr, totalPegawai: names.length + " Orang (Σ " + totalHariSemua + " Hari Kerja)", tepatWaktu: (totalHadirSemua - totalTelat) + " Kehadiran", telat: totalTelat + " Kehadiran", mangkir: totalMangkir + " Hari", izin: (totalHariSemua - totalHadirSemua - totalMangkir) + " Hari" };
+
+      if (window.Swal) Swal.fire({ title: 'Menyusun Analisis AI...', text: 'Mengevaluasi Kinerja Berdasarkan PP 94/2021', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
+
+      google.script.run.withSuccessHandler(function(aiText) {
+          if (!aiText) aiText = "-";
+          requirePDF(function() {
+            var jsPDF = window.jspdf.jsPDF; var doc = new jsPDF('p', 'mm', 'a4'); var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+            drawCover(doc, w, h, "LAPORAN EKSEKUTIF", "KEDISIPLINAN BULANAN PEGAWAI", "PERIODE: " + pStr.toUpperCase(), iden.nama);
+            doc.addPage(); drawKopKPHP(doc, w); 
+            
+            var startY = 48;
+            doc.setFillColor(248, 250, 252); doc.setDrawColor(203, 213, 225); doc.setLineWidth(0.3); doc.roundedRect(14, startY, w - 28, 24, 3, 3, 'FD');
+            doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold");
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(18, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("TOTAL PEGAWAI", 42, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text(names.length + " Orang", 42, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(70, startY + 4, 70, 16, 2, 2, 'FD');
+            doc.text("RATA-RATA KEHADIRAN", 105, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(16, 185, 129); doc.text(avgPct + "% Disiplin", 105, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(144, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("MANGKIR (TMK/TK)", 168, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(239, 68, 68); doc.text(totalMangkir + " Kasus", 168, startY + 16, {align: "center"});
+
+            var cleanText = String(aiText).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+            var maxWidth = w - 36;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); 
+            var splitText = doc.splitTextToSize(cleanText, maxWidth);
+            var aiBoxHeight = (splitText.length * 5) + 16;
+            
+            doc.setFillColor(241, 245, 249); doc.roundedRect(14, startY + 28, w - 28, aiBoxHeight, 3, 3, 'FD');
+            doc.setFontSize(11); doc.setTextColor(37, 99, 235); doc.setFont("helvetica", "bold");
+            doc.text("Analisis Eksekutif AI (Berdasarkan PP 94/2021):", 18, startY + 35);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+            doc.text(cleanText, 18, startY + 41, { maxWidth: maxWidth, align: "justify" });
+
+            var tableStartY = startY + 28 + aiBoxHeight + 6;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("TABEL REKAP KEHADIRAN PEGAWAI", w/2, tableStartY + 4, {align: "center"});
+            doc.autoTable(Object.assign({}, themePremium, { startY: tableStartY + 8, head: [["NO", "NAMA PEGAWAI", "HARI KERJA", "HADIR", "TIDAK HADIR", "%"]], body: tbRows }));
+            
+            var fy = doc.lastAutoTable.finalY || 150; fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+            
+            drawSignature(doc, w, fy, iden.jabatan, iden.nama, iden.nip);
+            if (window.Swal) Swal.close(); doc.save('Laporan_Bulanan_Pimpinan_'+p.m+'_'+p.y+'.pdf');
+          });
+        }).withFailureHandler(function(err) {
+          if (window.Swal) Swal.fire('Gagal Menghubungi AI', err.message, 'error');
+        }).generateAnalisisAbsensiAI(JSON.stringify(payload));
+    }
+  };
+
+  var dateEl = document.getElementById('ah-report-date');
+  if(dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+  
+  var ms = document.getElementById('ah-report-month'), ys = document.getElementById('ah-report-year');
+  if(ms && ys) {
+    ms.innerHTML = months.map(function(n,i) { return '<option value="'+(i+1)+'">'+n+'</option>'; }).join('');
+    var curY = new Date().getFullYear(), opts=''; 
+    for(var i=curY-2; i<=curY+2; i++) opts+='<option>'+i+'</option>';
+    ys.innerHTML = opts; ms.value = new Date().getMonth()+1; ys.value = curY;
+    ms.onchange = updatePeriod; ys.onchange = updatePeriod; updatePeriod();
+  }
+  loadData();
+})(); 
+</script>

@@ -1,0 +1,515 @@
+<style>
+  /* =========================================================
+     TEMA PREMIUM: Evaluasi Bangkom
+  ========================================================= */
+  .app-view {
+    font-family: 'Inter', sans-serif; 
+    background: radial-gradient(circle at top left, #1e293b, #020617); 
+    min-height: 85vh; 
+    padding: 30px; 
+    border-radius: 24px; 
+    color: #f8fafc; 
+    border: 1px solid rgba(255,255,255,0.05); 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+  }
+  .content-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .bmd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; position: relative; z-index: 10; }
+  .bmd-stat-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.3s ease; }
+  .bmd-stat-card:hover { transform: translateY(-5px); }
+  .bmd-stat-card::before { content: ''; position: absolute; top: 15%; left: 0; width: 4px; height: 70%; background: #3b82f6; border-radius: 4px; }
+  .bmd-stat-card.green::before { background: #10b981; }
+  .bmd-stat-card.red::before { background: #ef4444; }
+  .bmd-stat-card h4 { margin: 0; font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 1px; }
+  .bmd-stat-card h2 { margin: 10px 0 0; font-size: 32px; color: #fff; font-weight: bold; }
+
+  .glass-input {
+    background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; padding: 10px 16px; color: #f8fafc; font-size: 0.85rem; transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .glass-input:focus { 
+    outline: none; border-color: #10b981; background: rgba(15, 23, 42, 0.9);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(0,0,0,0.2); 
+  }
+  .glass-input option { background: #0f172a; color: #fff; }
+  .uppercase-input { text-transform: uppercase; }
+
+  .table-wrapper { max-height: 500px; overflow-y: auto; overflow-x: auto; border-radius: 0 0 24px 24px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.4); }
+  .glass-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 800px; }
+  .glass-table th { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: #10b981; padding: 16px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid rgba(16, 185, 129, 0.3); white-space: nowrap; }
+  .glass-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; color: #e2e8f0; }
+  .glass-table tbody tr:hover td { background: rgba(16, 185, 129, 0.08); }
+
+  @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+  .btn-cetak-deluxe {
+    background: linear-gradient(270deg, #059669, #10b981, #047857, #34d399);
+    background-size: 300% 300%; animation: gradientShift 6s ease infinite;
+    color: #ffffff; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 12px 24px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.5);
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    display: inline-flex; align-items: center; gap: 12px; font-size: 0.95rem;
+  }
+  .btn-cetak-deluxe:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.5);
+    border-color: #6ee7b7;
+  }
+</style>
+
+<div id="main-content">
+   <h3 style="color:gray; text-align:center; padding-top: 50px;">Memuat Modul Evaluasi...</h3>
+</div>
+
+<script>
+try {
+    // 1. FUNGSI UNTUK MENGUNDUH DAN MENYIAPKAN LOGO KE MEMORI BROWSER
+    window.LOGO_KIRI = "https://lh3.googleusercontent.com/d/1wG8CueHZXCoMbwD32hRlNrZBsZbv42Gr";
+    window.LOGO_KANAN = "https://lh3.googleusercontent.com/d/1FFyZX9vfiUkGwTIneKIcfXbaNXzZsaZL";
+
+    async function loadLogoKPHP(){
+        try{
+            if(sessionStorage.getItem("LogoKepri_Base64") && sessionStorage.getItem("LogoKPH_Base64")) return;
+            async function ambil(url){
+                const res = await fetch(url); const blob = await res.blob();
+                return await new Promise(resolve=>{ const reader = new FileReader(); reader.onloadend=()=>resolve(reader.result); reader.readAsDataURL(blob); });
+            }
+            sessionStorage.setItem("LogoKepri_Base64", await ambil(window.LOGO_KIRI));
+            sessionStorage.setItem("LogoKPH_Base64", await ambil(window.LOGO_KANAN));
+        }catch(e){ console.error("Gagal memuat logo:",e); }
+    }
+    loadLogoKPHP(); 
+
+    // 2. VARIABEL GLOBAL
+    window.dataHierarkiBangkomRaw = [];
+    window.dataHierarkiBangkom = [];
+    window.activeUser = null; 
+    window.activeUserJabatan = "Pejabat Penilai"; // Default jika benar-benar kosong
+
+    window.parseTglAman = function(tglStr) {
+        if (!tglStr || tglStr === "-") return null;
+        tglStr = String(tglStr).trim();
+        var p = tglStr.split(/[-/]/);
+        if (p.length === 3 && p[0].length <= 2 && p[1].length <= 2) { return new Date(p[2], p[1] - 1, p[0]); }
+        if (p.length === 3 && p[0].length === 4) { return new Date(p[0], p[1] - 1, p[2]); }
+        var namaBulanID = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
+        var tglLower = tglStr.toLowerCase();
+        for (var i = 0; i < namaBulanID.length; i++) {
+            if (tglLower.indexOf(namaBulanID[i]) !== -1) {
+                var parts = tglLower.split(" ");
+                if (parts.length >= 3) {
+                    var d = parseInt(parts[0]); var y = parseInt(parts[2]);
+                    if (!isNaN(d) && !isNaN(y)) return new Date(y, i, d);
+                }
+            }
+        }
+        var dt = new Date(tglStr);
+        if (!isNaN(dt.getTime())) return dt;
+        return null;
+    };
+
+    window.loadPenilaianBangkom = function() {
+        var now = new Date();
+        var curMonth = now.getMonth() + 1;
+        var curYear = now.getFullYear();
+
+        var ui = '';
+        ui += '<div class="app-view relative overflow-hidden">';
+        ui += '<div class="absolute top-[-100px] right-[-100px] w-96 h-96 bg-[#10b981] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>';
+        ui += '<div class="absolute bottom-[-100px] left-[-100px] w-96 h-96 bg-[#00f3ff] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>';
+
+        ui += '<div class="flex flex-col xl:flex-row justify-between xl:items-center border-b border-white/10 gap-5 relative z-10" style="margin-bottom: 40px; padding-bottom: 25px;">';
+        ui += '<div><h2 class="text-3xl font-bold text-[#10b981] uppercase tracking-wide m-0"><i class="fa-solid fa-chart-line mr-2"></i> Evaluasi Bangkom</h2>';
+        ui += '<p class="text-sm text-slate-400 mt-2 m-0" id="sub-judul-evaluasi">Mendeteksi hierarki data...</p></div>';
+        
+        ui += '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">';
+        ui += '<select id="filter-bulan" class="glass-input uppercase-input" onchange="window.terapkanFilter()" style="width: 140px;">';
+        
+        var namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        for(var i=0; i<namaBulan.length; i++) {
+            var sel = (i + 1 === curMonth) ? 'selected' : '';
+            ui += '<option value="' + (i + 1) + '" ' + sel + '>' + namaBulan[i] + '</option>';
+        }
+        ui += '</select>';
+        ui += '<input type="number" id="filter-tahun" class="glass-input uppercase-input" style="width: 90px;" value="' + curYear + '" onchange="window.terapkanFilter()">';
+        ui += '<button onclick="window.cetakLaporanLangsung()" class="btn-cetak-deluxe"><i class="fa-solid fa-file-pdf"></i> CETAK LAPORAN</button>';
+        ui += '</div></div>';
+
+        ui += '<div class="bmd-stats">';
+        ui += '<div class="bmd-stat-card"><h4>Total Pegawai Dievaluasi</h4><h2 id="stat-total-pegawai" style="color: #38bdf8;">0</h2></div>';
+        ui += '<div class="bmd-stat-card green"><h4>Memenuhi Target</h4><h2 id="stat-memenuhi" style="color: #10b981;">0</h2></div>';
+        ui += '<div class="bmd-stat-card red"><h4>Belum Memenuhi</h4><h2 id="stat-belum" style="color: #ef4444;">0</h2></div>';
+        ui += '</div>';
+
+        ui += '<div class="content-card relative z-10 !p-0 overflow-hidden">';
+        ui += '<div class="p-5 border-b border-white/10 bg-[#0f172a]/90 backdrop-blur-lg flex justify-between items-center flex-wrap gap-4">';
+        ui += '<h3 class="font-bold text-sm text-[#10b981] m-0 uppercase tracking-wide" id="label-periode-tabel"><i class="fa-solid fa-list-ol mr-2"></i> Rekapitulasi Realisasi JP Pegawai</h3>';
+        ui += '<div class="relative"><i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#94a3b8]"></i><input type="text" id="search-penilaian" onkeyup="window.filterTabelPenilaian()" placeholder="CARI NAMA ATAU NIP..." class="glass-input !py-2 !pl-10 !pr-4 !w-72 !text-xs uppercase-input"></div>';
+        ui += '</div>';
+        
+        ui += '<div class="table-wrapper zb-scrollbar">';
+        ui += '<table class="glass-table w-full text-sm" style="table-layout: fixed;">'; 
+        ui += '<thead><tr>';
+        ui += '<th style="text-align: center !important; width: 5%;">NO</th>';
+        ui += '<th style="text-align: left !important; width: 30%;">NAMA & NIP PEGAWAI</th>';
+        ui += '<th style="text-align: center !important; width: 15%;">ROLE AKSES</th>';
+        ui += '<th style="text-align: center !important; width: 15%;">REALISASI (JP)</th>';
+        ui += '<th style="text-align: center !important; width: 15%;">TARGET</th>';
+        ui += '<th style="text-align: center !important; width: 20%;">STATUS CAPAIAN</th>';
+        ui += '</tr></thead>';
+        ui += '<tbody id="tbody-penilaian"><tr><td colspan="6" class="text-center py-12 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-[#10b981] text-3xl mb-3 block"></i>Menarik & Menghitung Data...</td></tr></tbody>';
+        ui += '</table></div></div></div>';
+
+        document.getElementById('main-content').innerHTML = ui;
+        
+        if (typeof google !== 'undefined') {
+            google.script.run
+            .withSuccessHandler(function(user) {
+                if (!user || !user.username) {
+                    document.getElementById('tbody-penilaian').innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-400">Sesi tidak valid, silakan login ulang.</td></tr>';
+                    return;
+                }
+                
+                window.activeUser = user;
+                
+                // MENCARI JABATAN RESMI DARI SHEET "MASTER_PEGAWAI"
+                google.script.run.withSuccessHandler(function(d){
+                    if(d && !d.error && d.length > 0) {
+                        var m = d.find(function(x) { return String(x.NIP).trim() === String(user.username).trim(); });
+                        if(m && m.JABATAN && m.JABATAN.trim() !== "") { 
+                            window.activeUserJabatan = m.JABATAN.trim(); 
+                        }
+                    }
+                }).getTableData("MASTER_PEGAWAI");
+
+                google.script.run
+                .withSuccessHandler(function(res) {
+                    try {
+                        if(res.success) {
+                            if(res.is_atasan) {
+                                document.getElementById('sub-judul-evaluasi').innerHTML = "Menampilkan rekapitulasi data pengembangan kompetensi <b class='text-white'>Bawahan Anda</b>.";
+                            } else {
+                                document.getElementById('sub-judul-evaluasi').innerHTML = "Anda tidak memiliki bawahan untuk dievaluasi.";
+                            }
+                            
+                            window.dataHierarkiBangkomRaw = res.data ? res.data.map(function(b) {
+                                return {
+                                    nama: b.nama, nip: b.nip, role: "Bawahan", rincian: b.rincian || [],
+                                    targetJP: b.target_jp
+                                };
+                            }) : [];
+                            
+                            window.terapkanFilter();
+                        } else {
+                            document.getElementById('tbody-penilaian').innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-400">' + res.message + '</td></tr>';
+                        }
+                    } catch(e) {
+                        document.getElementById('tbody-penilaian').innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-400">Error Parsing Data: ' + e.message + '</td></tr>';
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    document.getElementById('tbody-penilaian').innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-500 font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Error Backend: ' + err.message + '</td></tr>';
+                })
+                .getDataEvaluasiBawahan(user.username);
+                
+            }).getCurrentUser();
+        }
+    };
+
+    window.terapkanFilter = function() {
+        if (!window.dataHierarkiBangkomRaw) return;
+        
+        var bln = parseInt(document.getElementById('filter-bulan').value);
+        var thn = parseInt(document.getElementById('filter-tahun').value);
+        var namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        
+        var prevBln = bln - 1; 
+        var prevThn = thn;
+        if (prevBln === 0) { prevBln = 12; prevThn--; }
+        
+        var startDate = new Date(prevThn, prevBln - 1, 21);
+        var endDate = new Date(thn, bln - 1, 20);
+        endDate.setHours(23, 59, 59, 999);
+        
+        var periodeStr = "21 " + namaBulan[prevBln-1] + " " + prevThn + " s.d. 20 " + namaBulan[bln-1] + " " + thn;
+        document.getElementById('label-periode-tabel').innerHTML = '<i class="fa-solid fa-list-ol mr-2"></i> Rekapitulasi Realisasi JP (' + periodeStr + ')';
+
+        window.dataHierarkiBangkom = window.dataHierarkiBangkomRaw.map(function(b) {
+            var t_realisasi = 0;
+            if (b.rincian && b.rincian.length > 0) {
+                for(var r=0; r<b.rincian.length; r++) {
+                    var rincianData = b.rincian[r];
+                    var tDate = window.parseTglAman(rincianData.tgl);
+                    if (tDate && tDate >= startDate && tDate <= endDate) {
+                        t_realisasi += (Number(rincianData.jp) || 0);
+                    }
+                }
+            }
+            var objB = Object.assign({}, b);
+            objB.realisasiJP = t_realisasi;
+            objB.status = (t_realisasi >= b.targetJP) ? "MEMENUHI" : "BELUM MEMENUHI";
+            return objB;
+        });
+        
+        window.renderTabelPenilaian();
+    };
+
+    window.renderTabelPenilaian = function() {
+        var tbody = document.getElementById('tbody-penilaian');
+        var html = '';
+        var countMemenuhi = 0, countBelum = 0;
+
+        if (!window.dataHierarkiBangkom || window.dataHierarkiBangkom.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-8">Tidak ada data pegawai yang perlu dievaluasi pada hierarki Anda.</td></tr>';
+            document.getElementById('stat-total-pegawai').innerText = 0;
+            document.getElementById('stat-memenuhi').innerText = 0;
+            document.getElementById('stat-belum').innerText = 0;
+            return;
+        }
+
+        for(var i=0; i<window.dataHierarkiBangkom.length; i++) {
+            var row = window.dataHierarkiBangkom[i];
+            var warnaStatus = "", iconStatus = "";
+            if (row.status === "MEMENUHI") { 
+                countMemenuhi++; 
+                warnaStatus = "color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.5);"; 
+                iconStatus = '<i class="fa-solid fa-check-circle" style="margin-right: 4px;"></i> ';
+            } else { 
+                countBelum++; 
+                warnaStatus = "color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.5);"; 
+                iconStatus = '<i class="fa-solid fa-circle-xmark" style="margin-right: 4px;"></i> ';
+            }
+
+            html += '<tr class="baris-data-nilai hover:bg-white/5 transition-colors duration-200" style="border-bottom: 1px solid rgba(255,255,255,0.05);">';
+            html += '<td style="text-align: center; font-weight: 700; color: #94a3b8;">' + (i + 1) + '</td>';
+            html += '<td style="text-align: left;">' +
+                    '<div style="font-weight: 800; color: #f8fafc; font-size: 13px; text-transform: uppercase;" class="asn-nama-nilai">' + row.nama + '</div>' + 
+                    '<div style="font-size: 11.5px; color: #38bdf8; font-family: monospace; font-weight: 600;">' + row.nip + '</div></td>';
+            html += '<td style="text-align: center;"><span style="background: rgba(15,23,42,0.6); padding: 6px 12px; border-radius: 6px; font-size: 11px; color: #cbd5e1; font-weight: 700;">' + row.role + '</span></td>';
+            html += '<td style="text-align: center;"><span style="font-size: 16px; font-weight: 800; color: #38bdf8;">' + row.realisasiJP + '</span></td>';
+            html += '<td style="text-align: center;"><span style="font-size: 14px; font-weight: 600; color: #94a3b8;">' + row.targetJP + '</span></td>';
+            html += '<td style="text-align: center;"><span style="display: inline-flex; align-items: center; padding: 7px 16px; border: 1px solid; border-radius: 6px; font-size: 11px; font-weight: 800; ' + warnaStatus + '">' + iconStatus + row.status + '</span></td>';
+            html += '</tr>';
+        }
+
+        tbody.innerHTML = html;
+        document.getElementById('stat-total-pegawai').innerText = window.dataHierarkiBangkom.length;
+        document.getElementById('stat-memenuhi').innerText = countMemenuhi;
+        document.getElementById('stat-belum').innerText = countBelum;
+    };
+
+    window.filterTabelPenilaian = function() {
+        var filter = document.getElementById("search-penilaian").value.toLowerCase();
+        var tr = document.querySelectorAll(".baris-data-nilai");
+        for(var i=0; i<tr.length; i++) {
+            var nama = tr[i].querySelector(".asn-nama-nilai").textContent.toLowerCase();
+            tr[i].style.display = nama.indexOf(filter) !== -1 ? "" : "none";
+        }
+    };
+
+    // PROSES UTAMA CETAK LAPORAN
+    window.cetakLaporanLangsung = function() {
+        if (!window.dataHierarkiBangkom || window.dataHierarkiBangkom.length === 0) {
+            Swal.fire('Data Kosong', 'Tidak ada data pegawai yang bisa dicetak.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Menganalisis Data AI...',
+            html: '<span class="text-slate-400 text-sm">Membangun PDF Vektor Resolusi Tinggi...</span>',
+            allowOutsideClick: false, background: '#0f172a', color: '#10b981',
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        var bln = parseInt(document.getElementById('filter-bulan').value);
+        var thn = parseInt(document.getElementById('filter-tahun').value);
+        var namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        var prevBln = bln - 1; var prevThn = thn;
+        if (prevBln === 0) { prevBln = 12; prevThn--; }
+        var periodeStr = "21 " + namaBulan[prevBln-1] + " " + prevThn + " s.d. 20 " + namaBulan[bln-1] + " " + thn;
+        var cetakBulanThn = (namaBulan[bln-1] + "_" + thn);
+
+        var totalDinilai = window.dataHierarkiBangkom.length;
+        var countMemenuhi = 0;
+        var totalJP = 0;
+        
+        for(var m=0; m<totalDinilai; m++) {
+            if(window.dataHierarkiBangkom[m].status === "MEMENUHI") countMemenuhi++;
+            totalJP += (Number(window.dataHierarkiBangkom[m].realisasiJP) || 0);
+        }
+        
+        var countBelum = totalDinilai - countMemenuhi;
+        var rataJP = totalDinilai > 0 ? (totalJP / totalDinilai).toFixed(1) : 0;
+        var persentaseLulus = totalDinilai === 0 ? 0 : Math.round((countMemenuhi / totalDinilai) * 100);
+        
+        var payload = {
+            periode: periodeStr, totalPegawai: totalDinilai, memenuhi: countMemenuhi,
+            belumMemenuhi: countBelum, rataJP: rataJP
+        };
+
+        google.script.run
+        .withSuccessHandler(function(aiRes) {
+            var textAI = (aiRes && aiRes.success) ? aiRes.data : "Berdasarkan evaluasi, pemenuhan Jam Pelajaran (JP) Bangkom masih perlu dipantau secara berkala.";
+            muatLibraryJsPDF(textAI);
+        })
+        .withFailureHandler(function(err) {
+            muatLibraryJsPDF("Analisis otomatis (AI) sedang tidak tersedia karena masalah koneksi.");
+        })
+        .generateAnalisisBangkomAIBulanan(JSON.stringify(payload));
+
+        function muatLibraryJsPDF(aiAnalysisText) {
+            if (typeof window.jspdf === 'undefined') {
+                var script1 = document.createElement('script');
+                script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script1.onload = function() {
+                    var script2 = document.createElement('script');
+                    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+                    script2.onload = function() { buatPdfVektor(aiAnalysisText); };
+                    document.head.appendChild(script2);
+                };
+                document.head.appendChild(script1);
+            } else {
+                buatPdfVektor(aiAnalysisText);
+            }
+        }
+
+        function drawKopKPHP(doc, w) {
+            var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+            var logoKanan = sessionStorage.getItem("LogoKPH_Base64") || "";
+            if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', 15, 10, 18, 22); } catch(e){} }
+            if (logoKanan.length > 100) { try { doc.addImage(logoKanan, logoKanan.indexOf('png') !== -1 ? 'PNG' : 'JPEG', w - 35, 10, 20, 22); } catch(e){} }
+            doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+            doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 14, { align: "center" });
+            doc.setFontSize(16); doc.setTextColor(37, 99, 235); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 21, { align: "center" });
+            doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("UPTD KESATUAN PENGELOLAAN HUTAN PRODUKSI UNIT I KARIMUN", w/2, 27, { align: "center" });
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
+            doc.text("Komplek Balai Penyuluh Pertanian Jalan Teluk Paku Kel. Pasir Panjang Kec. Meral Barat Kabupaten Karimun", w/2, 32, { align: "center" });
+            doc.setDrawColor(15, 23, 42); doc.setLineWidth(1); doc.line(15, 38, w - 15, 38); 
+            doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.3); doc.line(15, 39.5, w - 15, 39.5);
+        }
+
+        function drawCover(doc, w, h, title, subtitle, periode, sN) {
+            doc.setDrawColor(37, 99, 235); doc.setLineWidth(1.5); doc.roundedRect(10, 10, w - 20, h - 20, 4, 4);
+            var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+            if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', (w/2)-18, 45, 36, 42); } catch(e){} }
+            doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 105, { align: "center" });
+            doc.setFontSize(16); doc.setTextColor(100, 116, 139); doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 115, { align: "center" }); 
+            doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("UPTD KPHP UNIT I KARIMUN", w/2, 125, { align: "center" });
+            doc.setDrawColor(37, 99, 235); doc.setLineWidth(1); doc.line((w/2)-30, 135, (w/2)+30, 135); 
+            doc.setFontSize(26); doc.setTextColor(37, 99, 235); doc.text(title, w/2, 160, { align: "center" }); 
+            doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text(subtitle, w/2, 170, { align: "center" });
+            doc.setFillColor(241, 245, 249); doc.roundedRect((w/2)-60, 185, 120, 14, 4, 4, 'FD'); 
+            doc.setFontSize(11); doc.setTextColor(30, 64, 175); doc.text(periode, w/2, 194, { align: "center" });
+            doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100, 116, 139); doc.text("Dilaporkan Oleh:", w/2, 240, { align: "center" }); 
+            doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(sN, w/2, 248, { align: "center" });
+        }
+
+        function drawSignature(doc, w, y, role, sN, nipStr) {
+            var d = new Date(); var strTgl = "Karimun, " + d.getDate() + " " + namaBulan[d.getMonth()] + " " + d.getFullYear();
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+            doc.text(strTgl, w - 45, y, { align: "center" }); 
+            
+            // Antisipasi jika jabatan cukup panjang, di-split otomatis
+            var splitRole = doc.splitTextToSize(role, 60);
+            doc.text(splitRole, w - 45, y + 5, { align: "center" });
+            
+            var roleOffset = splitRole.length * 4;
+            
+            doc.setFont("helvetica", "bold"); doc.text(sN, w - 45, y + roleOffset + 20, { align: "center" });
+            doc.setFont("helvetica", "normal"); doc.text("NIP. " + nipStr, w - 45, y + roleOffset + 25, { align: "center" });
+        }
+
+        var themePremium = {
+            theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold', halign: 'center', fontSize: 9, cellPadding: 4 },
+            bodyStyles: { textColor: [51, 65, 85], fontSize: 8.5, cellPadding: 3, halign: 'center' },
+            alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: { 1: { halign: 'left', fontStyle: 'bold', textColor: [15, 23, 42] } }
+        };
+
+        function buatPdfVektor(aiAnalysisText) {
+            var jsPDF = window.jspdf.jsPDF; 
+            var doc = new jsPDF('p', 'mm', 'a4'); 
+            var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+
+            // MENGAMBIL DATA AKUN AKTIF DAN MASTER JABATAN
+            var uNama = window.activeUser ? window.activeUser.nama : "NAMA PEGAWAI";
+            var uNip  = window.activeUser ? window.activeUser.username : "-";
+            var uJabatan = window.activeUserJabatan;
+
+            // HALAMAN 1: COVER
+            drawCover(doc, w, h, "LAPORAN EKSEKUTIF", "EVALUASI KOMPETENSI PEGAWAI", "PERIODE: " + periodeStr.toUpperCase(), uNama);
+            
+            // HALAMAN 2: ISI
+            doc.addPage(); 
+            drawKopKPHP(doc, w); 
+            
+            var startY = 48;
+            doc.setFillColor(248, 250, 252); doc.setDrawColor(203, 213, 225); doc.setLineWidth(0.3); doc.roundedRect(14, startY, w - 28, 24, 3, 3, 'FD');
+            doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold");
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(18, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("TOTAL PEGAWAI", 42, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text(totalDinilai + " Orang", 42, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(70, startY + 4, 70, 16, 2, 2, 'FD');
+            doc.text("MEMENUHI TARGET", 105, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(16, 185, 129); doc.text(countMemenuhi + " Orang", 105, startY + 16, {align: "center"});
+            
+            doc.setFillColor(255, 255, 255); doc.roundedRect(144, startY + 4, 48, 16, 2, 2, 'FD');
+            doc.text("KAPASITAS SERAPAN", 168, startY + 10, {align: "center"}); doc.setFontSize(12); doc.setTextColor(37, 99, 235); doc.text(persentaseLulus + "%", 168, startY + 16, {align: "center"});
+
+            // KOTAK ANALISIS AI
+            var cleanText = String(aiAnalysisText).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+            var maxWidth = w - 36;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); 
+            var splitText = doc.splitTextToSize(cleanText, maxWidth);
+            var aiBoxHeight = (splitText.length * 5) + 16;
+            
+            doc.setFillColor(241, 245, 249); doc.roundedRect(14, startY + 28, w - 28, aiBoxHeight, 3, 3, 'FD');
+            doc.setFontSize(11); doc.setTextColor(37, 99, 235); doc.setFont("helvetica", "bold");
+            doc.text("Analisis Eksekutif AI (Berdasarkan Evaluasi 40 JP):", 18, startY + 35);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+            doc.text(cleanText, 18, startY + 41, { maxWidth: maxWidth, align: "justify" });
+
+            // TABEL AUTO-TABLE
+            var tableStartY = startY + 28 + aiBoxHeight + 6;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(15, 23, 42); doc.text("TABEL REKAPITULASI EVALUASI BANGKOM", w/2, tableStartY + 4, {align: "center"});
+            
+            var tbRows = window.dataHierarkiBangkom.map(function(r,i) { return [i+1, r.nama, r.role, r.realisasiJP + ' JP', '40 JP', r.status === 'MEMENUHI' ? 'Memenuhi' : 'Belum']; });
+            
+            doc.autoTable(Object.assign({}, themePremium, { 
+                startY: tableStartY + 8, 
+                head: [["NO", "NAMA PEGAWAI", "ROLE / JABATAN", "REALISASI", "TARGET", "STATUS"]], 
+                body: tbRows,
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 10 },
+                    2: { halign: 'center', cellWidth: 35 },
+                    3: { halign: 'center', fontStyle: 'bold', cellWidth: 25 },
+                    4: { halign: 'center', cellWidth: 20 },
+                    5: { halign: 'center', cellWidth: 25 }
+                }
+            }));
+            
+            var fy = doc.lastAutoTable.finalY || 150; fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+            
+            // FUNGSI TANDA TANGAN OTOMATIS BERDASARKAN JABATAN, NAMA, DAN NIP DARI MASTER DATA
+            drawSignature(doc, w, fy, uJabatan, uNama, uNip);
+            
+            Swal.close(); 
+            doc.save('Laporan_Eksekutif_Bangkom_'+cetakBulanThn+'.pdf');
+        }
+    }
+
+    window.loadPenilaianBangkom();
+
+} catch (e) {
+    alert("Terjadi kesalahan sistem saat memuat Evaluasi: " + e.message);
+}
+</script>

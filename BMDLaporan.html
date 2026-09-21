@@ -1,0 +1,517 @@
+<style>
+  .bmd-lap-premium {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top left, #1e293b, #020617);
+    min-height: 85vh;
+    padding: 30px;
+    border-radius: 24px;
+    color: #f8fafc;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    box-sizing: border-box;
+  }
+  .bmd-lap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 20px;
+  }
+  .bmd-lap-title h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bmd-lap-title p { margin: 5px 0 0; color: #94a3b8; font-size: 13px; }
+  
+  .bmd-card-box {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .bmd-input-dark {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  .bmd-input-dark:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
+  .bmd-lbl { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; display: block; }
+  
+  .btn-print-action {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    color: #fff; font-weight: 700; padding: 12px 20px; border-radius: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem;
+    text-decoration: none;
+  }
+  .btn-print-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); }
+  
+  .btn-back-dashboard {
+    background-color: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-back-dashboard:hover { background-color: #475569; color: #fff; }
+</style>
+
+<div class="bmd-lap-premium">
+  <div class="bmd-lap-header">
+    <div class="bmd-lap-title">
+      <h1><i class="fa-solid fa-file-pdf mr-2"></i> Pusat Laporan BMD</h1>
+      <p>Cetak Laporan Evaluasi Inventaris Aset UPTD KPHP Unit I Karimun</p>
+    </div>
+    <div>
+      <button onclick="loadPage('BMD')" class="btn-back-dashboard"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</button>
+    </div>
+  </div>
+
+  <div class="bmd-card-box">
+    <h3 style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+      <i class="fa-solid fa-print mr-2"></i> Parameter Filter Laporan Aset KPHP
+    </h3>
+    
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 25px;">
+      Sistem akan menarik data pelapor dari MASTER_PEGAWAI dan mencetak Laporan Eksekutif (Cover Halaman Penuh, Kop Surat 2 Logo, Teks Narasi Justify, dan Identitas Lampiran Gambar).
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <!-- Filter Harian -->
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: end;">
+        <div>
+          <label class="bmd-lbl"><i class="fa-solid fa-calendar-day mr-1"></i> Laporan Harian (Per Tanggal)</label>
+          <input type="date" id="lap-tgl-harian" class="bmd-input-dark" style="color-scheme: dark;">
+        </div>
+        <div>
+          <button onclick="prosesCetakBMD('harian')" class="btn-print-action" style="width: 100%;">
+            <i class="fa-solid fa-file-arrow-down"></i> Ekspor Laporan & Foto Aset
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Bulanan / Tahunan -->
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+        <div>
+          <label class="bmd-lbl"><i class="fa-regular fa-calendar mr-1"></i> Bulan</label>
+          <select id="lap-bln-bulanan" class="bmd-input-dark">
+            <option value="">-- SEPANJANG TAHUN --</option>
+            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option>
+            <option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
+            <option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September" selected>September</option>
+            <option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+          </select>
+        </div>
+        <div>
+          <label class="bmd-lbl">Tahun</label>
+          <select id="lap-thn-bulanan" class="bmd-input-dark">
+            <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option>
+            <option value="2027">2027</option><option value="2028">2028</option>
+          </select>
+        </div>
+        <div>
+          <button onclick="prosesCetakBMD('bulanan')" class="btn-print-action" style="width: 100%;">
+            <i class="fa-solid fa-file-arrow-down"></i> Ekspor Laporan & Foto Aset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // PRE-LOAD LOGO PROVINSI DAN KPH
+  // ==========================================
+  window.LOGO_KIRI_URL = "https://lh3.googleusercontent.com/d/1wG8CueHZXCoMbwD32hRlNrZBsZbv42Gr";
+  window.LOGO_KANAN_URL = "https://lh3.googleusercontent.com/d/1FFyZX9vfiUkGwTIneKIcfXbaNXzZsaZL";
+
+  async function prepLoadLogos() {
+      try {
+          async function fetchAsBase64(url) {
+              const res = await fetch(url); const blob = await res.blob();
+              return await new Promise(resolve => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+          }
+          if(!sessionStorage.getItem("LogoKepri_Base64")) sessionStorage.setItem("LogoKepri_Base64", await fetchAsBase64(window.LOGO_KIRI_URL));
+          if(!sessionStorage.getItem("LogoKPH_Base64")) sessionStorage.setItem("LogoKPH_Base64", await fetchAsBase64(window.LOGO_KANAN_URL));
+      } catch(e) { console.error("Gagal memuat logo: ", e); }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+      prepLoadLogos();
+      var dNow = new Date().toISOString().split('T')[0];
+      var elTgl = document.getElementById('lap-tgl-harian');
+      if(elTgl) elTgl.value = dNow;
+  });
+
+  // ==========================================
+  // FUNGSI UTAMA PEMROSESAN DAN PENCETAKAN
+  // ==========================================
+  window.prosesCetakBMD = function(tipe) {
+      if (!window.globalDataBMD || window.globalDataBMD.length === 0) {
+          Swal.fire('Data Kosong', 'Belum ada data inventaris yang dimuat di memori sistem.', 'warning');
+          return;
+      }
+
+      var teksPeriode = ""; var namaFile = "";
+      var arrBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+      if (tipe === 'harian') {
+          var valTgl = document.getElementById('lap-tgl-harian').value;
+          if(!valTgl) { Swal.fire('Peringatan', 'Pilih tanggal harian terlebih dahulu!', 'warning'); return; }
+          var dtObj = new Date(valTgl);
+          teksPeriode = "TANGGAL " + dtObj.getDate() + ' ' + arrBulan[dtObj.getMonth()].toUpperCase() + ' ' + dtObj.getFullYear();
+          namaFile = "LAPORAN_BMD_" + valTgl + ".pdf";
+      } else {
+          var bln = document.getElementById('lap-bln-bulanan').value;
+          var thn = document.getElementById('lap-thn-bulanan').value;
+          if (bln === "") {
+              teksPeriode = "SEPANJANG TAHUN " + thn;
+              namaFile = "LAPORAN_BMD_TAHUNAN_" + thn + ".pdf";
+          } else {
+              teksPeriode = "BULAN " + bln.toUpperCase() + " TAHUN " + thn;
+              namaFile = "LAPORAN_BMD_" + bln.toUpperCase() + "_" + thn + ".pdf";
+          }
+      }
+
+      Swal.fire({ title: 'Membangun Laporan...', html: '<span class="text-emerald-400 text-sm font-bold">Menarik Data MASTER PEGAWAI...</span>', allowOutsideClick: false, background: '#0f172a', color: '#00f3ff', didOpen: () => { Swal.showLoading(); } });
+
+      // ALUR 1: Tarik Data Jabatan & Nama Pegawai (Persis Koding Kompetensi)
+      if (typeof google !== 'undefined') {
+          google.script.run.withSuccessHandler(function(masterData) {
+              let finalJabatan = "Kepala Sub Bagian Tata Usaha"; 
+              let finalNama = window.activeUserNama || sessionStorage.getItem("userNama") || "Maidi Hendra Cipta, S.Hut";
+              let finalNIP = window.activeUserNIP || String(sessionStorage.getItem("userNIP")).replace(/[^0-9]/g, '') || "198005172010011008";
+              
+              if (masterData && masterData.length > 0 && finalNIP) {
+                  let m = masterData.find(x => String(x.NIP).replace(/[^0-9]/g, '') === String(finalNIP).replace(/[^0-9]/g, ''));
+                  if (m) {
+                      if (m.JABATAN && m.JABATAN.trim() !== "") { finalJabatan = m.JABATAN.trim(); }
+                      if (m.NAMA && m.NAMA.trim() !== "") { finalNama = m.NAMA.trim(); }
+                  }
+              }
+              jalankanRender(finalJabatan, finalNama, finalNIP);
+          }).withFailureHandler(function() {
+              jalankanRender("Kepala Sub Bagian Tata Usaha", "Maidi Hendra Cipta, S.Hut", "198005172010011008");
+          }).getTableData("MASTER_PEGAWAI");
+      } else {
+          jalankanRender("Kepala Sub Bagian Tata Usaha", "Maidi Hendra Cipta, S.Hut", "198005172010011008");
+      }
+
+      // ALUR 2: Load Library & Tarik Base64 Foto dari Drive
+      function jalankanRender(uJabatan, uNama, uNip) {
+          let itemsWithFoto = window.globalDataBMD.filter(r => r.Foto_Aset && r.Foto_Aset.includes("http"));
+          
+          let photoPayload = itemsWithFoto.map(item => { 
+              // Menyisipkan identitas barang ke dalam parameter 'tgl' agar dikenali saat render
+              return { 
+                  tgl: item.Kode_Barang + "|" + item.Nama_Barang + "|" + item.Merk_Model + "|" + item.Tahun_Perolehan, 
+                  url: item.Foto_Aset 
+              }; 
+          });
+
+          let libsLoaded = 0;
+          function checkLibs() { 
+              if (++libsLoaded >= 2) { 
+                  if (photoPayload.length > 0) { 
+                      Swal.update({ html: '<span class="text-blue-400 text-sm font-bold">Mengunduh Foto Aset dari Google Drive...</span>' });
+                      google.script.run
+                          .withSuccessHandler(base64Arr => buildFinalPDF(uJabatan, uNama, uNip, base64Arr))
+                          .withFailureHandler(() => buildFinalPDF(uJabatan, uNama, uNip, []))
+                          .getBase64FotosApel(photoPayload); 
+                  } else { 
+                      buildFinalPDF(uJabatan, uNama, uNip, []); 
+                  } 
+              } 
+          }
+
+          if (typeof window.jspdf === 'undefined') { 
+              let s1 = document.createElement('script'); s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; 
+              s1.onload = () => {
+                  let s2 = document.createElement('script'); s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+                  s2.onload = checkLibs; document.head.appendChild(s2);
+              }; document.head.appendChild(s1); 
+          } else { checkLibs(); }
+
+          if (typeof window.PDFLib === 'undefined') { 
+              let s3 = document.createElement('script'); s3.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'; 
+              s3.onload = checkLibs; document.head.appendChild(s3); 
+          } else { checkLibs(); }
+      }
+
+      // ALUR 3: Proses Tata Letak dan Menggambar PDF
+      async function buildFinalPDF(uJabatan, uNama, uNip, base64Arr) {
+          Swal.update({ html: '<span class="text-[#10b981] text-sm font-bold">Menyusun Tata Letak & Merajut Teks Justify...</span>' });
+
+          var jsPDF = window.jspdf.jsPDF; 
+          var doc = new jsPDF('p', 'mm', 'a4'); // PORTRAIT A4
+          var w = doc.internal.pageSize.getWidth();
+          var h = doc.internal.pageSize.getHeight();
+          
+          if (uNip.toUpperCase().indexOf("NIP") === -1) uNip = "NIP. " + uNip;
+
+          // Perhitungan Data Tabel & Statistik
+          var tableRows = [];
+          var totalUnit = 0; var totalNilai = 0; var condB = 0; var condKB = 0; var condRB = 0;
+
+          for (var i = 0; i < window.globalDataBMD.length; i++) {
+              var r = window.globalDataBMD[i];
+              var jml = Number(r.Jumlah) || 0;
+              var nilai = Number(String(r.Harga_Perolehan || '0').replace(/[^0-9,-]+/g,"")) || 0;
+              totalUnit += jml; totalNilai += nilai; 
+              var b = Number(r.Kondisi_B) || 0; var kb = Number(r.Kondisi_KB) || 0; var rb = Number(r.Kondisi_RB) || 0;
+              condB += b; condKB += kb; condRB += rb;
+
+              tableRows.push([
+                  i + 1, r.Kode_Barang || '-', (r.Nama_Barang || '-').substring(0, 30), r.Merk_Model || '-', r.Tahun_Perolehan || '-',
+                  jml, nilai.toLocaleString('id-ID'), b, kb, rb
+              ]);
+          }
+
+          tableRows.push([
+              { content: 'GRAND TOTAL', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+              { content: totalUnit.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+              { content: totalNilai.toLocaleString('id-ID'), styles: { halign: 'right', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+              { content: condB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+              { content: condKB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } },
+              { content: condRB.toString(), styles: { halign: 'center', fontStyle: 'bold', fillColor: [241, 245, 249] } }
+          ]);
+
+          // --- KOP SURAT IDENTIK KOMPETENSI ---
+          function drawKopKPHP(docObj, wParam) {
+              var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+              var logoKanan = sessionStorage.getItem("LogoKPH_Base64") || "";
+              if (logoKiri.length > 100) { try { docObj.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', 15, 10, 18, 22); } catch(e){} }
+              if (logoKanan.length > 100) { try { docObj.addImage(logoKanan, logoKanan.indexOf('png') !== -1 ? 'PNG' : 'JPEG', wParam - 35, 10, 20, 22); } catch(e){} }
+              
+              docObj.setFont("helvetica", "bold"); docObj.setFontSize(14); docObj.setTextColor(15, 23, 42); 
+              docObj.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", wParam/2, 14, { align: "center" });
+              docObj.setFontSize(16); docObj.setTextColor(37, 99, 235); docObj.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", wParam/2, 21, { align: "center" });
+              docObj.setFontSize(12); docObj.setTextColor(15, 23, 42); docObj.text("UPTD KESATUAN PENGELOLAAN HUTAN PRODUKSI UNIT I KARIMUN", wParam/2, 27, { align: "center" });
+              
+              docObj.setFont("helvetica", "normal"); docObj.setFontSize(9); docObj.setTextColor(100, 116, 139);
+              docObj.text("Komplek Balai Penyuluh Pertanian Jalan Teluk Paku Kel. Pasir Panjang Kec. Meral Barat Kabupaten Karimun", wParam/2, 32, { align: "center" });
+              
+              docObj.setDrawColor(15, 23, 42); docObj.setLineWidth(1); docObj.line(15, 38, wParam - 15, 38); 
+              docObj.setDrawColor(37, 99, 235); docObj.setLineWidth(0.3); docObj.line(15, 39.5, wParam - 15, 39.5);
+          }
+
+          // --- 1. HALAMAN COVER (SAMPUL VERTIKAL) ---
+          doc.setDrawColor(37, 99, 235); doc.setLineWidth(1.5); doc.roundedRect(10, 10, w - 20, h - 20, 4, 4);
+          var logoKiri = sessionStorage.getItem("LogoKepri_Base64") || "";
+          if (logoKiri.length > 100) { try { doc.addImage(logoKiri, logoKiri.indexOf('png') !== -1 ? 'PNG' : 'JPEG', (w/2)-18, 45, 36, 42); } catch(e){} }
+          
+          doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(15, 23, 42); 
+          doc.text("PEMERINTAH PROVINSI KEPULAUAN RIAU", w/2, 105, { align: "center" });
+          doc.setFontSize(16); doc.setTextColor(100, 116, 139); 
+          doc.text("DINAS LINGKUNGAN HIDUP DAN KEHUTANAN", w/2, 115, { align: "center" }); 
+          doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+          doc.text("UPTD KPHP UNIT I KARIMUN", w/2, 125, { align: "center" });
+          
+          doc.setDrawColor(37, 99, 235); doc.setLineWidth(1); doc.line((w/2)-30, 135, (w/2)+30, 135); 
+          
+          doc.setFontSize(26); doc.setTextColor(37, 99, 235); doc.text("LAPORAN EVALUASI", w/2, 160, { align: "center" }); 
+          doc.setFontSize(18); doc.setTextColor(15, 23, 42); doc.text("INVENTARIS BARANG MILIK DAERAH (BMD)", w/2, 170, { align: "center" });
+          
+          doc.setFillColor(241, 245, 249); doc.roundedRect((w/2)-60, 185, 120, 14, 4, 4, 'FD'); 
+          doc.setFontSize(11); doc.setTextColor(30, 64, 175); doc.text("PERIODE: " + teksPeriode, w/2, 194, { align: "center" });
+          
+          doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100, 116, 139); doc.text("Dilaporkan Oleh:", w/2, 240, { align: "center" }); 
+          doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(uNama, w/2, 248, { align: "center" });
+
+          // --- 2. HALAMAN DATA (KOP SURAT, INFO, 3 KOTAK STATISTIK, NARASI JUSTIFY, TABEL) ---
+          doc.addPage();
+          drawKopKPHP(doc, w);
+
+          var startY = 48;
+          doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(15, 23, 42); 
+          doc.text("LAPORAN EVALUASI INVENTARIS BMD", w/2, startY, {align: "center"});
+          doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(100, 116, 139);
+          doc.text("Periode: " + teksPeriode, w/2, startY + 6, {align: "center"});
+
+          startY += 15;
+          doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+          doc.text("Nama Pegawai", 15, startY); doc.text(":", 45, startY); doc.setTextColor(15, 23, 42); doc.text(uNama, 48, startY);
+          doc.setTextColor(71, 85, 105);
+          doc.text("NIP", 15, startY + 6); doc.text(":", 45, startY + 6); doc.setTextColor(15, 23, 42); doc.text(uNip, 48, startY + 6);
+          doc.setTextColor(71, 85, 105);
+          doc.text("Jabatan", 15, startY + 12); doc.text(":", 45, startY + 12); doc.setTextColor(15, 23, 42); doc.text(uJabatan, 48, startY + 12);
+
+          startY += 22;
+          
+          // KOTAK STATISTIK (Sama seperti Laporan Kompetensi)
+          doc.setFillColor(248, 250, 252); doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.5); 
+          doc.roundedRect(14, startY, w - 28, 22, 3, 3, 'FD');
+          
+          doc.setDrawColor(59, 130, 246); doc.setLineWidth(1); doc.line(16, startY, 56, startY);
+          doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.setFont("helvetica", "bold"); doc.text("TOTAL UNIT ASET", 36, startY + 7, {align: "center"});
+          doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text(totalUnit + " Unit", 36, startY + 15, {align: "center"});
+          
+          doc.setDrawColor(16, 185, 129); doc.setLineWidth(1); doc.line(61, startY, 130, startY);
+          doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("NILAI KAPITALISASI (Rp)", 95, startY + 7, {align: "center"});
+          doc.setFontSize(14); doc.setTextColor(16, 185, 129); doc.text(totalNilai.toLocaleString('id-ID'), 95, startY + 15, {align: "center"});
+          
+          doc.setDrawColor(139, 92, 246); doc.setLineWidth(1); doc.line(135, startY, 191, startY);
+          doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text("KONDISI BAIK", 163, startY + 7, {align: "center"});
+          doc.setFontSize(14); doc.setTextColor(139, 92, 246); doc.text(condB + " Unit", 163, startY + 15, {align: "center"});
+
+          startY += 28;
+
+          // KOTAK NARASI JUSTIFY
+          let narasiKesimpulan = `Berdasarkan hasil rekapitulasi dan evaluasi komprehensif terhadap pangkalan data Barang Milik Daerah (BMD) pada periode pelaporan ini, disimpulkan bahwa secara administratif dan faktual, seluruh aset inventaris yang tercatat berada dalam pengawasan yang baik. Laporan ini mencatat akumulasi sebanyak ${totalUnit} unit aset dengan estimasi total nilai perolehan kapitalisasi sebesar Rp ${totalNilai.toLocaleString('id-ID')}. Secara spesifik, mayoritas inventaris berada dalam kondisi baik dan siap dioperasionalkan secara optimal untuk mendukung tugas pokok serta fungsi pelayanan publik di lingkungan unit kerja. Evaluasi dan pencatatan inventaris ini merupakan wujud nyata kepatuhan terhadap prinsip tata kelola pemerintahan yang baik (Good Corporate Governance) serta transparansi penuh dalam pengelolaan kekayaan daerah. Diharapkan pengawasan yang ketat, pencatatan yang tertib, serta perawatan berkala dapat terus dipertahankan guna mengoptimalkan masa usia pakai aset dan mengefisiensikan anggaran pengadaan di masa mendatang.`;
+
+          doc.setFontSize(9.5);
+          var splitText = doc.splitTextToSize(narasiKesimpulan, w - 38);
+          var aiBoxHeight = (splitText.length * 4.5) + 14; 
+          
+          doc.setFillColor(240, 253, 244); 
+          doc.roundedRect(15, startY, w - 30, aiBoxHeight, 2, 2, 'FD');
+          doc.setDrawColor(16, 185, 129); doc.setLineWidth(1.5); 
+          doc.line(15, startY+1, 15, startY + aiBoxHeight - 1);
+          
+          doc.setFontSize(10); doc.setTextColor(20, 83, 45); doc.setFont("helvetica", "bold");
+          doc.text("Analisis & Kesimpulan Kinerja BMD:", 19, startY + 6);
+          doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(22, 101, 52);
+          doc.text(narasiKesimpulan, 19, startY + 12, { maxWidth: w - 38, align: "justify" });
+
+          // TABEL DATA
+          var tableStartY = startY + aiBoxHeight + 8;
+          if (tableStartY > 255) { doc.addPage(); drawKopKPHP(doc, w); tableStartY = 48; }
+
+          doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(15, 23, 42); 
+          doc.text("Rincian Database Inventaris:", 15, tableStartY);
+
+          doc.autoTable({
+              startY: tableStartY + 3,
+              head: [["NO", "KODE", "NAMA BARANG", "MERK", "THN", "JML", "NILAI (Rp)", "B", "KB", "RB"]],
+              body: tableRows,
+              theme: 'grid',
+              headStyles: { fillColor: [15, 23, 42], textColor: 255, halign: 'center', fontSize: 7.5, cellPadding: 3 },
+              bodyStyles: { textColor: [15, 23, 42], fontSize: 7.5, cellPadding: 2, halign: 'center' },
+              alternateRowStyles: { fillColor: [248, 250, 252] },
+              columnStyles: {
+                  0: { cellWidth: 8 },
+                  1: { halign: 'left', cellWidth: 26, fontStyle: 'bold' },
+                  2: { halign: 'left', cellWidth: 38 },
+                  3: { halign: 'left', cellWidth: 30 },
+                  4: { cellWidth: 10 },
+                  5: { cellWidth: 10, fontStyle: 'bold' },
+                  6: { halign: 'right', fontStyle: 'bold', textColor: [16, 185, 129], cellWidth: 24 },
+                  7: { cellWidth: 8 }, 8: { cellWidth: 8 }, 9: { cellWidth: 8 }
+              }
+          });
+
+          // TANDA TANGAN (Koding Kompetensi)
+          var fy = doc.lastAutoTable.finalY || 150; 
+          fy += 20; if (fy > h - 40) { doc.addPage(); fy = 30; drawKopKPHP(doc, w); }
+          
+          var d = new Date(); var strTgl = "Karimun, " + d.getDate() + " " + arrBulan[d.getMonth()] + " " + d.getFullYear();
+          doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+          doc.text(strTgl, w - 45, fy, { align: "center" }); 
+          var splitRole = doc.splitTextToSize(uJabatan, 65);
+          doc.text(splitRole, w - 45, fy + 5, { align: "center" });
+          var roleOffset = splitRole.length * 4;
+          doc.setFont("helvetica", "bold"); doc.text(uNama, w - 45, fy + roleOffset + 20, { align: "center" });
+          doc.setFont("helvetica", "normal"); doc.text(uNip, w - 45, fy + roleOffset + 25, { align: "center" });
+
+          // --- 3. HALAMAN LAMPIRAN GAMBAR IDENTITAS (FULL PAGE) ---
+          let pdfsToMerge = []; // Cadangan jika ternyata file nya PDF
+
+          if (base64Arr && base64Arr.length > 0) {
+              Swal.update({ html: '<span class="text-blue-400 text-sm font-bold">Menyiapkan Halaman Lampiran Foto...</span>' });
+
+              for (let i = 0; i < base64Arr.length; i++) {
+                  let f = base64Arr[i];
+                  if (f.base64 && f.base64.includes('application/pdf')) {
+                      pdfsToMerge.push(f);
+                  } else if (f.base64 && f.base64.includes('image')) {
+                      doc.addPage();
+                      drawKopKPHP(doc, w); // Terapkan Kop Surat KPHP
+
+                      // Pecah string Identitas yang dikirimkan oleh payload tgl
+                      let identitas = f.tgl.split('|');
+                      let aKode = identitas[0] || "-";
+                      let aNama = identitas[1] || "-";
+                      let aMerk = identitas[2] || "-";
+                      let aThn = identitas[3] || "-";
+
+                      doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(15, 23, 42); 
+                      doc.text("LAMPIRAN DOKUMENTASI FOTO FISIK ASET", w/2, 48, { align: "center" });
+
+                      // Kotak Identitas Atas Gambar
+                      doc.setFillColor(248, 250, 252); doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.5);
+                      doc.roundedRect(15, 53, w - 30, 18, 2, 2, 'FD');
+                      
+                      doc.setFontSize(11); doc.setTextColor(15, 23, 42);
+                      doc.text(aKode + " - " + aNama.substring(0, 50), 19, 60);
+                      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
+                      doc.text("Merk / Model: " + aMerk + "   |   Tahun Perolehan: " + aThn, 19, 66);
+
+                      // Kalkulasi Proporsi Gambar Mulus (Tanpa Distorsi)
+                      let dims = await new Promise(res => {
+                          let img = new Image();
+                          img.onload = () => res({ w: img.width, h: img.height });
+                          img.onerror = () => res({ w: 400, h: 400 });
+                          img.src = f.base64;
+                      });
+
+                      let maxWidth = w - 30; // Batas Kanan Kiri Kertas
+                      let maxHeight = h - 90; // Sisa tinggi dari judul dan footer
+                      let ratio = Math.min(maxWidth / dims.w, maxHeight / dims.h);
+                      let finalW = dims.w * ratio;
+                      let finalH = dims.h * ratio;
+                      let finalX = (w - finalW) / 2; // Posisi Tengah Horisontal
+                      
+                      try {
+                          let format = f.base64.includes('png') ? 'PNG' : 'JPEG';
+                          doc.addImage(f.base64, format, finalX, 78, finalW, finalH);
+                      } catch(e) {}
+                  }
+              }
+          }
+
+          // Lakukan Merge jika ada PDF, atau langsung unduh jsPDF jika hanya foto
+          if (pdfsToMerge.length > 0) {
+              await mergeWithPDFLib(doc.output('arraybuffer'), pdfsToMerge);
+          } else {
+              doc.save(namaFile);
+              Swal.close();
+              Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Laporan & Lampiran Berhasil Diunduh!', showConfirmButton: false, timer: 3000, background: '#0f172a', color: '#10b981' });
+          }
+      }
+
+      // ALUR 4: Fungsi Cadangan Merge via PDF-Lib
+      async function mergeWithPDFLib(mainPdfBuffer, pdfsToMerge) {
+          Swal.update({ html: '<span class="text-blue-400 text-sm font-bold">Menggabungkan Lampiran PDF...</span>' });
+          const { PDFDocument } = window.PDFLib;
+          const pdfGabungan = await PDFDocument.load(mainPdfBuffer);
+
+          for (let i = 0; i < pdfsToMerge.length; i++) {
+              let base64str = pdfsToMerge[i].base64.split(',')[1];
+              const lampiranDoc = await PDFDocument.load(base64str);
+              const halamanDicopy = await pdfGabungan.copyPages(lampiranDoc, lampiranDoc.getPageIndices());
+              halamanDicopy.forEach((page) => pdfGabungan.addPage(page));
+          }
+
+          const pdfBytes = await pdfGabungan.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = namaFile;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          Swal.close();
+          Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Laporan & Lampiran Berhasil Diunduh!', showConfirmButton: false, timer: 3000, background: '#0f172a', color: '#10b981' });
+      }
+  }
+</script>
